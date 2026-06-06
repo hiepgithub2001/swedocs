@@ -19,12 +19,6 @@ the data live* — before and while you write the code.
   algorithms.
 
 **A typical request path**
-
-![A typical request path](./assets/what-is-system-design.png)
-
-<details>
-<summary>▸ Diagram source (Mermaid)</summary>
-
 ```mermaid
 flowchart LR
     User --> DNS --> LB[Load Balancer]
@@ -34,7 +28,6 @@ flowchart LR
     S1 --> DB[(Database)]
     S1 --> Q[Message Queue] --> W[Worker]
 ```
-</details>
 
 **The questions every design must answer**
 1. **Functional requirements** — what must it *do*? (post a tweet, send a message)

@@ -21,5 +21,6 @@ How real systems are designed end-to-end: URL shortener, news feed, chat,
 notifications, video streaming, ride-sharing, and how big companies solved them.
 
 ## 3️⃣ Practice — [catalog »](./3-practice/)
-Runnable labs with a simple local setup so you can *see* a concept work:
-load balancing, caching, rate limiting, replication, sharding, message queues.
+Runnable labs so you can *see* a concept work — in **two tracks**: a 🐳 local Docker
+track (free) and an ☁️ [AWS track](./3-practice/aws/) on managed services. Covers load
+balancing, caching, rate limiting, replication, sharding, message queues, CDN, and more.

@@ -24,7 +24,7 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
 - ✅ [Video streaming (VOD)](./project-video-streaming.md)
   — upload → object storage → transcode workers → HLS segments → CDN → adaptive player.
   *Connects:* object storage, async pipeline, CDN, adaptive bitrate.
-- ⬜ [CDC → search index sync](./project-cdc-search.md)
+- ✅ [CDC → search index sync](./project-cdc-search.md)
   — Postgres → Debezium → Kafka → OpenSearch. *Connects:* change data capture, streaming,
   search indexing, eventual consistency.
 
@@ -52,14 +52,14 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
 - ✅ [Saga / distributed transaction](./project-saga.md)
   — order + payment + inventory with orchestration + compensation. *Connects:*
   microservices, saga, events, idempotency.
-- ⬜ [Make a service resilient](./project-resilience.md)
+- ✅ [Make a service resilient](./project-resilience.md)
   — add circuit breaker, retries, rate limiting, graceful degradation to a project.
   *Connects:* resilience patterns, load shedding.
 
 ## D. Cross-cutting (apply to any project above)
-- ⬜ [Observability: metrics, logs, traces](./cross-observability.md)
+- ✅ [Observability: metrics, logs, traces](./cross-observability.md)
   — instrument a project with Prometheus + Grafana + Jaeger (OTel) → CloudWatch / X-Ray.
-- ⬜ [Autoscaling & load testing](./cross-autoscaling.md)
+- ✅ [Autoscaling & load testing](./cross-autoscaling.md)
   — drive a project with k6, then scale it (compose/k8s HPA → ASG / ECS).
 
 ---

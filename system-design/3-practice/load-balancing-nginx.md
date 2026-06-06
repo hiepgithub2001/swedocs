@@ -139,8 +139,29 @@ Hostname: web3
 docker compose down
 ```
 
+## In the real world (common production pattern)
+You rarely hand-write Nginx upstreams for internal service-to-service traffic at scale.
+The common patterns:
+- **Cloud load balancers** — AWS **ALB** (L7, path/host routing, TLS termination) for
+  HTTP, **NLB** (L4) for raw TCP/extreme throughput; GCP/Azure equivalents. Targets are
+  registered/deregistered automatically by **autoscaling groups**.
+- **Service mesh (Envoy/Istio, Linkerd)** — for microservices, a sidecar proxy does
+  **client-side load balancing** plus retries, timeouts, **circuit breaking**, and
+  **outlier detection** (ejects hosts returning errors — active+passive health checks).
+- **DNS / anycast + global LB** — to spread traffic across regions (e.g. Route 53,
+  Cloudflare) before it ever reaches a regional LB.
+- **Stateless services + shared session store** — production avoids `ip_hash` sticky
+  sessions (they break on scale-down/failure); instead services are stateless and put
+  session state in **Redis**, so any instance can serve any request. The lab's `ip_hash`
+  experiment shows exactly the coupling you want to avoid.
+
+Typical real stack: `DNS → global LB → regional ALB → autoscaling group of stateless
+pods/instances`, with a mesh handling east-west calls.
+
 ## Connect to theory
 - Concept: [Load balancers (L4/L7, algorithms, health checks)](../1-knowledge/building-blocks/load-balancers.md)
 - Managed equivalent: [AWS ALB lab](./aws/load-balancing-alb.md) — the same behavior with
   a cloud Application Load Balancer + EC2 targets.
-- Real-world: every horizontally-scaled service sits behind exactly this pattern.
+- Used in: [URL shortener](../2-case-studies/url-shortener.md),
+  [news feed](../2-case-studies/news-feed.md), and essentially every horizontally-scaled
+  service.

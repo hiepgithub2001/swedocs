@@ -29,10 +29,10 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
   search indexing, eventual consistency.
 
 ## B. Build-a-product (mini case studies)
-- ⬜ [URL shortener, end to end](./project-url-shortener.md)
+- ✅ [URL shortener, end to end](./project-url-shortener.md)
   — write API + key-gen + cache + redirect + async analytics. *Connects:* KV store,
   caching, rate limiting, streaming analytics.
-- ⬜ [News feed](./project-news-feed.md)
+- ✅ [News feed](./project-news-feed.md)
   — post service → fan-out workers → feed cache → feed API. *Connects:* fan-out push/pull,
   caching, queues, ranking.
 - ⬜ [Real-time chat](./project-chat.md)

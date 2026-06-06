@@ -15,7 +15,7 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
 > Legend: ✅ written · 🚧 in progress · ⬜ not started
 
 ## A. Streaming & event-driven (start here)
-- ⬜ [Event-driven order processing](./project-event-driven-orders.md)
+- ✅ [Event-driven order processing](./project-event-driven-orders.md)
   — API → queue → workers → DB → notifications. *Connects:* API gateway, message queue,
   async workers, idempotency, DLQ, eventual consistency.
 - ⬜ [Real-time streaming data pipeline](./project-streaming-data.md)

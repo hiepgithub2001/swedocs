@@ -30,8 +30,7 @@
 **Scale assumptions** — 300M DAU, ~10 feed opens/user/day, ~2 posts/user/day, avg ~200
 followers, some accounts with 10–100M followers.
 
-**Out of scope** — the recommendation/ranking *model* internals, ads insertion,
-moderation (mention as hooks).
+**Out of scope** — the ranking *model* internals, ads insertion, moderation (hooks).
 
 **🎯 The dominant requirement:** **low read latency at massive read volume.** You cannot
 build each feed on demand at 100K+ reads/s — the design is organized around
@@ -68,67 +67,156 @@ flowchart LR
 
 ## 5. Deep analysis — biggest problems & solutions
 
+Each problem follows the same walkthrough: **scenario → why it's hard → naive approach &
+why it fails → solution → how it works → trade-offs → rule of thumb.**
+
 ### 🔴 Problem 1 — Building feeds fast enough at read time
-**Why it's hard:** at 100K+ feed reads/s, querying "recent posts from everyone this user
-follows" and merge-sorting on every load is far too expensive and slow.
 
-**Solution — fan-out on write (precompute).** When a user posts, **push** the post_id
-into each follower's precomputed feed list (in Redis). A feed read becomes a trivial
-cache lookup.
+**Scenario.** 100K+ users per second open their feed. Each follows ~200 accounts. The feed
+must render in < 200 ms.
 
-**How it works:** the Post Service drops a fan-out task on a queue; workers look up the
-author's followers and append the post_id to each follower's capped Redis list. Reads hit
-Redis directly → sub-millisecond.
+**Why it's hard.** Read volume is ~100× write volume and latency-critical. Doing the work
+*when the user asks* means a big query + sort on every one of 100K/s requests.
 
-**Trade-off:** moves work from read time to write time (write amplification) — which
-creates Problem 2.
+**Naive approach & why it fails.** *On feed open, query recent posts from all 200 followees
+and merge-sort* (fan-out on read) → that's 200 lookups + a sort per request, ×100K/s. The
+database and latency budget both collapse, and users following thousands are far worse.
+
+**Solution — fan-out on write (precompute the feed).** Do the expensive merge **once at
+write time**, not on every read. When a user posts, push the post into each follower's
+precomputed feed list.
+
+**How it works (step by step).**
+1. Post Service stores the post and drops a fan-out task on a queue.
+2. Fan-out workers look up the author's followers.
+3. For each follower, append the `post_id` to their capped **Redis** feed list.
+4. A feed read is now a single Redis lookup → sub-millisecond.
+
+**Trade-offs.** Moves cost from read → write (write amplification), trading more storage and
+write work for fast reads — which is the right trade for 100:1 read-heavy, but creates the
+celebrity problem (Problem 2).
+
+**💡 Rule of thumb:** in heavily read-skewed systems, precompute the read on write so reads
+are O(1) lookups.
 
 ### 🔴 Problem 2 — The celebrity problem (fan-out explosion)
-**Why it's hard:** fan-out on write means a post by someone with **50M followers = 50M
-cache writes**, a massive spike that also wastes effort on inactive followers.
 
-**Solution — a hybrid push/pull model.** Push for normal accounts; for **celebrities**,
-**skip fan-out** and store the post once. At read time, **pull** the small set of
-celebrities a user follows and **merge** their recent posts into the precomputed feed.
+**Scenario.** A celebrity with **50M followers** posts. Pure fan-out-on-write means **50M
+feed writes** for that single post — a huge spike — and many go to followers who'll never
+log in soon.
 
-**How it works:** classify authors by follower count; a "celebrity" flag routes posts to
-pull-handling. Feed read = `cached_feed ∪ recent_posts(celebrities_followed)`, merged and
-ranked. This bounds write amplification while keeping reads fast.
+**Why it's hard.** Write amplification scales with follower count; a few accounts have
+orders of magnitude more followers than everyone else, so they alone can dominate write
+load and cause latency spikes.
+
+**Naive approach & why it fails.** *Fan out every post to every follower* → works for normal
+users, but celebrity posts create write storms, hot partitions, and wasted work on inactive
+followers.
+
+**Solution — a hybrid model: push for normal users, pull for celebrities.** Don't fan out
+celebrity posts. Store them once; **merge them in at read time** for the small number of
+celebrities a user follows.
+
+**How it works (step by step).**
+1. Classify authors by follower count (flag "celebrities").
+2. Normal author posts → fan-out-on-write to followers' caches (Problem 1).
+3. Celebrity posts → stored once, **not** fanned out.
+4. On feed read: take the user's precomputed feed **and** pull recent posts from the few
+   celebrities they follow, then merge + rank.
 
 ```mermaid
 flowchart LR
     Post[New post] --> Q{author a celebrity?}
-    Q -->|no| Push[push to followers' feed caches]
+    Q -->|no| Push[push to followers' caches]
     Q -->|yes| Store[store once; pull at read]
     Read[Feed read] --> Merge[cached feed + celebrity posts] --> Rank[rank]
 ```
 
-### 🔴 Problem 3 — Ranking by relevance (not just time)
-**Why it's hard:** chronological feeds bury good content; users engage more with a
-**relevance-ranked** feed, but scoring must happen within the latency budget.
+**Trade-offs.** Adds read-time merge work for celebrity-followers (small, bounded set), but
+eliminates the 50M-write spike. This hybrid is what Twitter/Instagram actually do.
 
-**Solution — an ML ranking pipeline over a candidate set.**
-**How it works:** **candidate generation** (the merged push+pull post set) →
-**feature fetch** (author affinity, recency, media type, past engagement) → **scoring**
-with a trained model → **re-rank/diversify** (avoid 5 posts from one author). Scores can
-be precomputed periodically or computed at read over a bounded candidate set to hold
-latency.
+**💡 Rule of thumb:** when one strategy blows up for outliers, special-case the outliers
+(pull for the few huge accounts) rather than penalizing everyone.
+
+### 🔴 Problem 3 — Ranking by relevance, within the latency budget
+
+**Scenario.** A user follows 500 accounts; hundreds of candidate posts exist. Showing them
+purely newest-first buries the posts they'd most engage with — but scoring must finish
+inside ~200 ms.
+
+**Why it's hard.** Relevance ranking needs features and a model evaluation per candidate
+post, multiplied by every feed load — expensive if done naively on the hot path.
+
+**Naive approach & why it fails.** *Sort the merged feed strictly by timestamp* → simple and
+fast, but engagement drops because the most relevant content isn't surfaced; *or* score
+everything synchronously with a heavy model → blows the latency budget.
+
+**Solution — an ML ranking pipeline over a bounded candidate set.**
+
+**How it works (step by step).**
+1. **Candidate generation** — the merged push+pull post set (already bounded).
+2. **Feature fetch** — author affinity, recency, media type, past engagement, etc.
+3. **Scoring** — a trained model assigns each candidate a relevance score.
+4. **Re-rank / diversify** — avoid 5 posts from one author; blend in freshness.
+Scores can be **precomputed** periodically and/or computed at read over the small candidate
+set to stay within latency.
+
+**Trade-offs.** Much better engagement at the cost of compute + infra complexity + harder
+debugging ("why did I see this?"). Bounding the candidate set keeps latency in check.
+
+**💡 Rule of thumb:** rank a small candidate set, not the whole corpus; precompute features
+where you can.
 
 ### 🔴 Problem 4 — Pagination over a constantly changing feed
-**Why it's hard:** with `OFFSET`-based paging, new posts arriving between page loads
-shift everything → users see duplicates or skips.
 
-**Solution — cursor-based pagination.** The cursor encodes a stable position
-(`(score, post_id)` or timestamp+id). The next page is "items after this cursor,"
-unaffected by new inserts at the top.
+**Scenario.** A user scrolls. Between loading page 1 and page 2, new posts arrive at the
+top. With `OFFSET 20`, page 2 now re-shows items that shifted down — duplicates and skips.
+
+**Why it's hard.** Offset-based paging assumes a stable list, but feeds change at the head
+continuously.
+
+**Naive approach & why it fails.** *`LIMIT 20 OFFSET 20`* → as new posts push items down,
+offsets point at shifted positions → users see repeats or miss posts; deep offsets are also
+slow.
+
+**Solution — cursor-based (keyset) pagination.** The cursor encodes a **stable position**
+(e.g. `(score, post_id)` or `created_at`+id); the next page is "items after this cursor."
+
+**How it works.** Page 1 returns items plus a `next_cursor` (the last item's key). Page 2
+requests `?cursor=<that key>`, fetching items strictly after it — unaffected by new inserts
+at the head.
+
+**Trade-offs.** Cursors are stable and efficient but don't support "jump to page N" (rarely
+needed in a feed). Worth it for correctness.
+
+**💡 Rule of thumb:** never paginate a live, head-changing list with OFFSET — use a cursor
+on a stable sort key.
 
 ### 🔴 Problem 5 — Feed storage & inactive users
-**Why it's hard:** precomputing and storing feeds for **all** users (including those who
-never log in) wastes huge amounts of memory and fan-out work.
 
-**Solution:** **cap** each feed (~800 entries, LRU), and **don't fan out to inactive
-users** — lazily rebuild their feed (pull) on next login. Store **post_ids**, not copies;
-hydrate to full posts from a posts cache at read time.
+**Scenario.** Hundreds of millions of accounts exist, but a large fraction rarely log in.
+Precomputing and storing a feed for **every** account — and fanning out to them — wastes
+enormous memory and write work.
+
+**Why it's hard.** Fan-out cost and feed-cache memory scale with *all* followers, but value
+is only delivered to *active* ones.
+
+**Naive approach & why it fails.** *Maintain an unbounded precomputed feed for every user* →
+memory explodes and you do millions of writes for users who never read them.
+
+**Solution — cap feeds + skip inactive users (lazy build).** Bound each feed (e.g. last
+~800 entries, LRU) and **don't fan out to inactive users**; rebuild their feed by pull on
+next login.
+
+**How it works.** Track last-active timestamps; fan-out workers skip users inactive beyond a
+threshold. On their next login, build the feed on demand (pull) and resume push afterward.
+Store **post_ids** only; hydrate to full posts from a posts cache at read time.
+
+**Trade-offs.** Inactive users pay a one-time slower first load; everyone else gets cheap
+fast feeds and you save massive fan-out/memory.
+
+**💡 Rule of thumb:** don't precompute for users who won't read it — build lazily for the
+inactive tail.
 
 ---
 

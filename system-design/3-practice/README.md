@@ -18,10 +18,10 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
 - ✅ [Event-driven order processing](./project-event-driven-orders.md)
   — API → queue → workers → DB → notifications. *Connects:* API gateway, message queue,
   async workers, idempotency, DLQ, eventual consistency.
-- ⬜ [Real-time streaming data pipeline](./project-streaming-data.md)
+- ✅ [Real-time streaming data pipeline](./project-streaming-data.md)
   — events → Kafka → stream processor → store → live dashboard. *Connects:* ingestion,
   stream processing, windowing, OLAP store, real-time analytics.
-- ⬜ [Video streaming (VOD)](./project-video-streaming.md)
+- ✅ [Video streaming (VOD)](./project-video-streaming.md)
   — upload → object storage → transcode workers → HLS segments → CDN → adaptive player.
   *Connects:* object storage, async pipeline, CDN, adaptive bitrate.
 - ⬜ [CDC → search index sync](./project-cdc-search.md)

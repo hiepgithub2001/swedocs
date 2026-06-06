@@ -41,15 +41,15 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
 - ✅ [Multi-channel notification service](./project-notification-service.md)
   — API → per-channel queues → workers → providers, with prefs + dedup. *Connects:*
   fan-out, retries/DLQ, idempotency, priority lanes.
-- ⬜ [Image upload & processing](./project-image-processing.md)
+- ✅ [Image upload & processing](./project-image-processing.md)
   — presigned upload → object storage → event → thumbnail workers → CDN. *Connects:*
   object storage, event-driven, CDN.
 
 ## C. Scale & resilience (built on the projects above)
-- ⬜ [Scalable web service](./project-scalable-web-service.md)
+- ✅ [Scalable web service](./project-scalable-web-service.md)
   — load balancer → stateless app → cache → replicated DB. *Connects:* load balancing,
   caching, read replicas, health checks, statelessness.
-- ⬜ [Saga / distributed transaction](./project-saga.md)
+- ✅ [Saga / distributed transaction](./project-saga.md)
   — order + payment + inventory with orchestration + compensation. *Connects:*
   microservices, saga, events, idempotency.
 - ⬜ [Make a service resilient](./project-resilience.md)

@@ -1,0 +1,7 @@
+flowchart LR
+    User --> DNS --> LB[Load Balancer]
+    LB --> S1[Service A]
+    LB --> S2[Service A]
+    S1 --> Cache[(Cache)]
+    S1 --> DB[(Database)]
+    S1 --> Q[Message Queue] --> W[Worker]

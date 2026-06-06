@@ -6,20 +6,36 @@
 ## 1. Requirements
 
 **Clarifying questions to ask first** (always scope the problem):
-- Custom aliases allowed? Link expiration? Analytics on clicks? Edit/delete links?
-- One-to-one (each long URL → one code) or always generate a new code per request?
+- Custom aliases allowed? Link expiration (default TTL)? Analytics on clicks? Edit/delete?
+- One-to-one (each long URL → one code) or a new code per request?
 - Who can create links — authenticated users only, or anonymous too?
+- Expected scale (links/day, read:write ratio)? Retention period?
 
-**Functional**
-- Create a short URL from a long URL; optional custom alias and expiry.
-- Redirect a short URL to the original long URL.
-- (Optional) per-link click analytics.
+**Functional requirements**
+1. Create a short URL from a long URL.
+2. Optional **custom alias** and **expiration**.
+3. **Redirect** a short URL to the original long URL.
+4. (Optional) per-link **click analytics**.
+5. (Optional) user can **delete/disable** a link.
 
-**Non-functional**
-- **High availability** — a broken redirect breaks every link ever shared; top priority.
-- **Low latency** redirects (< ~50 ms) — they sit in the user's critical path.
-- **Read-heavy**: redirects ≫ creations, roughly **100:1**.
-- Short codes should not be easily enumerable.
+**Non-functional requirements** (with concrete targets)
+| Requirement | Target | Why |
+| --- | --- | --- |
+| Availability | **99.99%** | a broken redirect breaks every link ever shared |
+| Redirect latency | **< 50 ms p99** | it's on the user's critical path |
+| Read:write ratio | **~100:1** | shapes caching + read-replica strategy |
+| Durability | no lost mappings | a lost row = a dead link forever |
+| Consistency | redirect can be **eventually consistent** | a new link being readable a few ms later is fine |
+| Security | codes **not enumerable** | prevent scraping/guessing all links |
+
+**Scale assumptions** — 100M new links/day, 5-year retention, 100:1 reads.
+
+**Out of scope** — user accounts/billing UI, abuse/malware scanning (mention as an
+extension), full analytics product.
+
+**🎯 The dominant requirement:** **availability + read latency** on the redirect path.
+Every major decision (caching, replication, KGS) optimizes for "redirects always work,
+instantly." Link *creation* can be slower and is far lower volume.
 
 ## 2. Capacity estimation
 

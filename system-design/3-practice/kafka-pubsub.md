@@ -1,18 +1,31 @@
-# Practice Lab: Message Queue with Kafka (Producer/Consumer)
+# Practice Lab: Message Queue with Kafka
 
-> Publish messages to a Kafka topic and consume them, observing decoupling and consumer
-> groups.
+> Publish messages to a Kafka topic and consume them, observing decoupling, log
+> retention, and consumer groups — the backbone of event-driven systems.
 
-## Goal
-Run a single-node Kafka, produce messages to a topic, consume them, and see how two
-consumers in the **same group** split partitions while a consumer in a **different
-group** gets all messages.
+## What you'll learn
+- How a **producer** and **consumer** communicate **asynchronously** through a topic.
+- Why Kafka is **log-based** (messages persist after being read → replayable).
+- How **consumer groups** split partitions to scale out, vs separate groups each getting
+  a full copy (pub/sub).
+- The hands-on version of [Message queues & pub/sub](../1-knowledge/building-blocks/message-queues.md).
+
+⏱️ ~15 minutes · 💰 free · 🐳 Docker only
+
+## Lab architecture
+```mermaid
+flowchart LR
+    P[Producer] --> T[(Topic: orders - 3 partitions)]
+    T --> C1[Consumer - group A]
+    T --> C2[Consumer - group B - full copy]
+```
 
 ## Prerequisites
-- Docker + Docker Compose.
+- Docker + Docker Compose. Port `9092` free. ~1 GB free RAM for the broker.
 
 ## Setup
-Create `docker-compose.yml` (KRaft mode, no ZooKeeper):
+
+**`docker-compose.yml`** — single-node Kafka in **KRaft** mode (no ZooKeeper):
 ```yaml
 services:
   kafka:
@@ -31,13 +44,14 @@ services:
 ```bash
 docker compose up -d
 sleep 10
-KAFKA="docker compose exec kafka kafka-topics.sh --bootstrap-server localhost:9092"
-$KAFKA --create --topic orders --partitions 3 --replication-factor 1
+# create a topic with 3 partitions
+docker compose exec kafka kafka-topics.sh --bootstrap-server localhost:9092 \
+  --create --topic orders --partitions 3 --replication-factor 1
 ```
 
-## Steps
+## Run it
 ```bash
-# Producer: type a few lines, then Ctrl-D
+# Produce 3 messages
 docker compose exec -T kafka kafka-console-producer.sh \
   --bootstrap-server localhost:9092 --topic orders <<EOF
 order-1
@@ -45,23 +59,72 @@ order-2
 order-3
 EOF
 
-# Consumer: read from the beginning
+# Consume from the beginning
 docker compose exec kafka kafka-console-consumer.sh \
   --bootstrap-server localhost:9092 --topic orders --from-beginning --timeout-ms 5000
 ```
 
-## Expected result
-- The consumer prints `order-1/2/3` — messages persisted in the topic and were
-  delivered.
-- Because Kafka is **log-based**, run the consumer again with `--from-beginning` and the
-  messages are **still there** (not deleted on consume) — unlike a traditional queue.
+## What to observe & why
+- The consumer prints `order-1/2/3` — the producer and consumer never talked directly;
+  the **topic decoupled them** (the producer could've finished before the consumer
+  started).
+- **Run the consumer again** with `--from-beginning` — the messages are **still there**.
+  Kafka is a **durable log**: consuming doesn't delete data (unlike a traditional queue).
+  This is what enables replay, multiple independent consumers, and reprocessing.
+
+## Sample expected output
+```
+order-1
+order-2
+order-3
+[2026-... Processed a total of 3 messages]
+```
+
+## Experiments to try
+1. **Consumer group scaling:** open two terminals, both consuming with the **same**
+   group: `--group app --topic orders`. Produce more messages — each message goes to
+   **only one** consumer in the group (the 3 partitions are split between them). That's
+   horizontal scaling of processing.
+2. **Pub/sub:** run two consumers with **different** groups (`--group a` and `--group b`).
+   Each group receives **every** message — independent fan-out (e.g. one for emails, one
+   for analytics).
+3. **Ordering:** produce with keys (`key1:order-1`) — messages with the same key always go
+   to the same partition, giving per-key ordering.
+4. **Offsets/replay:** note that a consumer group tracks its **offset**; reset it to
+   reprocess history.
+
+## Common pitfalls
+- **`advertised.listeners`** must match how clients connect, or you'll get connection
+  errors — the classic Kafka-in-Docker gotcha.
+- **Ordering is per-partition, not per-topic** — only messages sharing a key/partition are
+  ordered.
+- **At-least-once by default** — consumers can see duplicates on retry, so make processing
+  **idempotent** (the [notification system](../2-case-studies/notification-system.md)
+  pattern).
 
 ## Teardown
 ```bash
 docker compose down -v
 ```
 
-## Notes
-- Consumers in the **same** `--group` split the 3 partitions (scale-out); consumers in
-  **different** groups each get a full copy (pub/sub).
-- Related knowledge: [Message queues & pub/sub](../1-knowledge/building-blocks/message-queues.md).
+## In the real world (common production pattern)
+- **Kafka is the de facto event backbone** at scale — Uber, LinkedIn (its birthplace),
+  Netflix run huge clusters for trip events, metrics, logs, and stream processing.
+- **Common uses:** decoupling microservices (event-driven architecture), buffering spikes
+  (load leveling), log/metrics pipelines, CDC (change data capture), and feeding stream
+  processors (**Flink**, **Kafka Streams**).
+- **Managed options:** **Confluent Cloud**, **AWS MSK**; lighter needs use **AWS SQS/SNS**
+  (see the [SQS+SNS lab](./aws/queue-sqs-sns.md)) or **RabbitMQ**; newer alternatives
+  include **Apache Pulsar**, **Redpanda**.
+- **Queue vs log:** pick a traditional broker (RabbitMQ/SQS) for simple task queues;
+  pick a **log** (Kafka) when you need replay, multiple consumers, and high throughput.
+- **Reliability patterns:** dead-letter queues/topics, idempotent consumers, and
+  exactly-once semantics via idempotent producers + transactions.
+
+## Connect to theory
+- Concept: [Message queues & pub/sub](../1-knowledge/building-blocks/message-queues.md) ·
+  [Event-driven architecture](../1-knowledge/patterns/event-driven.md)
+- Managed equivalent: [SQS + SNS lab](./aws/queue-sqs-sns.md)
+- Used in: [notification system](../2-case-studies/notification-system.md),
+  [news feed](../2-case-studies/news-feed.md) fan-out, [ride-sharing](../2-case-studies/ride-sharing.md)
+  location/event streams.

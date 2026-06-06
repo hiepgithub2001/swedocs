@@ -35,10 +35,10 @@ a real-world pattern or a [Part 2 case study](../2-case-studies/), built **local
 - ✅ [News feed](./project-news-feed.md)
   — post service → fan-out workers → feed cache → feed API. *Connects:* fan-out push/pull,
   caching, queues, ranking.
-- ⬜ [Real-time chat](./project-chat.md)
+- ✅ [Real-time chat](./project-chat.md)
   — WebSocket gateway → presence → message store → fan-out. *Connects:* persistent
   connections, pub/sub, presence, session routing.
-- ⬜ [Multi-channel notification service](./project-notification-service.md)
+- ✅ [Multi-channel notification service](./project-notification-service.md)
   — API → per-channel queues → workers → providers, with prefs + dedup. *Connects:*
   fan-out, retries/DLQ, idempotency, priority lanes.
 - ⬜ [Image upload & processing](./project-image-processing.md)

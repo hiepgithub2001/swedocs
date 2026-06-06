@@ -4,6 +4,14 @@ A living knowledge base where we write and share documentation about software
 engineering knowledge. Each top-level folder is a **knowledge area**; inside each
 area a `README.md` acts as the **catalog** (index) for that area.
 
+## Structure — 3 parts per area
+
+Every knowledge area is organized into the same three parts:
+
+1. **Knowledge** (`1-knowledge/`) — academic docs: concepts, theory, definitions
+2. **Case Study** (`2-case-studies/`) — real-world application designs in detail
+3. **Practice** (`3-practice/`) — hands-on labs: full steps to test a concept with a simple setup
+
 ## Knowledge areas
 
 | Area | Status | Description |

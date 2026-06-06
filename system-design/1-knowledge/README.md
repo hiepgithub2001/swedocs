@@ -6,14 +6,14 @@ Academic docs: concepts, theory, and definitions. Each topic follows the
 > Legend: ✅ written · 🚧 in progress · ⬜ not started
 
 ## Fundamentals
-- ⬜ [What is system design](./fundamentals/what-is-system-design.md)
-- ⬜ [Scalability: vertical vs horizontal](./fundamentals/scalability.md)
-- ⬜ [Latency, throughput & response time](./fundamentals/latency-throughput.md)
-- ⬜ [Availability, reliability & fault tolerance](./fundamentals/availability-reliability.md)
-- ⬜ [CAP theorem](./fundamentals/cap-theorem.md)
-- ⬜ [Consistency models (strong, eventual, causal)](./fundamentals/consistency-models.md)
-- ⬜ [Back-of-the-envelope estimation](./fundamentals/estimation.md)
-- ⬜ [SLA, SLO, SLI](./fundamentals/sla-slo-sli.md)
+- ✅ [What is system design](./fundamentals/what-is-system-design.md)
+- ✅ [Scalability: vertical vs horizontal](./fundamentals/scalability.md)
+- ✅ [Latency, throughput & response time](./fundamentals/latency-throughput.md)
+- ✅ [Availability, reliability & fault tolerance](./fundamentals/availability-reliability.md)
+- ✅ [CAP theorem](./fundamentals/cap-theorem.md)
+- ✅ [Consistency models (strong, eventual, causal)](./fundamentals/consistency-models.md)
+- ✅ [Back-of-the-envelope estimation](./fundamentals/estimation.md)
+- ✅ [SLA, SLO, SLI](./fundamentals/sla-slo-sli.md)
 
 ## Building Blocks
 - ⬜ [DNS & the lifecycle of a request](./building-blocks/dns-request-lifecycle.md)

@@ -1,66 +1,80 @@
 # System Design · Part 3 — Practice
 
-Hands-on labs. **Each lab is one concept** taught with a **simple setup**, and — where it
-makes sense — covers **both how to run it locally (Docker) and how it's done on AWS**, so
-you learn the concept *and* both the self-hosted and managed-cloud ways to operate it.
+**Practice = build small working systems that connect the pieces together.**
 
-> 🔀 **Mixed by design:** we don't prove the same concept twice (once local, once cloud).
-> A lab uses whatever best teaches it — usually a quick **local** setup to see the
-> mechanism, plus the **AWS** managed equivalent and when you'd choose it.
+Instead of isolated single-concept labs, each project builds a scaled-down but *complete*
+system — a streaming pipeline, a video service, an event-driven workflow — so you see how
+load balancers, queues, caches, stores, and workers **fit together**. Every project mirrors
+a real-world pattern or a [Part 2 case study](../2-case-studies/), built **locally first
+(🐳 Docker Compose)** and then **deployed/scaled on AWS (☁️)** where it adds value.
 
+> 🧩 The goal is **connection**, not isolated proofs. You'll wire multiple building blocks
+> into one running system and watch data flow end-to-end.
 > ☁️ Before any AWS steps, read [AWS setup, cost safety & teardown](./aws/setup-and-costs.md).
 
-> Legend: ✅ written · 🚧 in progress · ⬜ not started · 🐳 has local setup · ☁️ has AWS setup
+> Legend: ✅ written · 🚧 in progress · ⬜ not started
 
-## A. Core building blocks
-- ⬜ [Load balancing & health checks](./load-balancing.md) 🐳 Nginx/HAProxy · ☁️ ALB/NLB
-- ⬜ [Caching (cache-aside, TTL, eviction, stampede)](./caching.md) 🐳 Redis · ☁️ ElastiCache
-- ⬜ [Rate limiting (token bucket, sliding window)](./rate-limiting.md) 🐳 Redis · ☁️ API Gateway/WAF
-- ⬜ [API gateway (routing, auth, throttling)](./api-gateway.md) 🐳 Nginx/Kong · ☁️ API Gateway
-- ⬜ [CDN & static assets](./cdn-static-assets.md) 🐳 MinIO+Nginx · ☁️ S3 + CloudFront
-- ⬜ [Message queues & pub/sub](./messaging.md) 🐳 Kafka/RabbitMQ · ☁️ SQS/SNS/MSK
+## A. Streaming & event-driven (start here)
+- ⬜ [Event-driven order processing](./project-event-driven-orders.md)
+  — API → queue → workers → DB → notifications. *Connects:* API gateway, message queue,
+  async workers, idempotency, DLQ, eventual consistency.
+- ⬜ [Real-time streaming data pipeline](./project-streaming-data.md)
+  — events → Kafka → stream processor → store → live dashboard. *Connects:* ingestion,
+  stream processing, windowing, OLAP store, real-time analytics.
+- ⬜ [Video streaming (VOD)](./project-video-streaming.md)
+  — upload → object storage → transcode workers → HLS segments → CDN → adaptive player.
+  *Connects:* object storage, async pipeline, CDN, adaptive bitrate.
+- ⬜ [CDC → search index sync](./project-cdc-search.md)
+  — Postgres → Debezium → Kafka → OpenSearch. *Connects:* change data capture, streaming,
+  search indexing, eventual consistency.
 
-## B. Data & storage
-- ⬜ [SQL replication & failover](./sql-replication.md) 🐳 Postgres primary/replica · ☁️ RDS Multi-AZ
-- ⬜ [Sharding & partitioning](./sharding.md) 🐳 Postgres router/Citus · ☁️ DynamoDB/Vitess
-- ⬜ [Key-value / NoSQL modeling](./key-value-nosql.md) 🐳 Cassandra/ScyllaDB · ☁️ DynamoDB
-- ⬜ [Consistent hashing](./consistent-hashing.md) 🐳 Python sim · ☁️ how Cassandra/DynamoDB use it
-- ⬜ [Object storage](./object-storage.md) 🐳 MinIO (S3-compatible) · ☁️ S3
-- ⬜ [Indexing & query performance](./indexing.md) 🐳 Postgres `EXPLAIN` · ☁️ RDS Performance Insights
-- ⬜ [Full-text search](./search.md) 🐳 OpenSearch · ☁️ OpenSearch Service
-- ⬜ [Change data capture (CDC)](./cdc.md) 🐳 Debezium + Kafka · ☁️ DMS / DynamoDB Streams
+## B. Build-a-product (mini case studies)
+- ⬜ [URL shortener, end to end](./project-url-shortener.md)
+  — write API + key-gen + cache + redirect + async analytics. *Connects:* KV store,
+  caching, rate limiting, streaming analytics.
+- ⬜ [News feed](./project-news-feed.md)
+  — post service → fan-out workers → feed cache → feed API. *Connects:* fan-out push/pull,
+  caching, queues, ranking.
+- ⬜ [Real-time chat](./project-chat.md)
+  — WebSocket gateway → presence → message store → fan-out. *Connects:* persistent
+  connections, pub/sub, presence, session routing.
+- ⬜ [Multi-channel notification service](./project-notification-service.md)
+  — API → per-channel queues → workers → providers, with prefs + dedup. *Connects:*
+  fan-out, retries/DLQ, idempotency, priority lanes.
+- ⬜ [Image upload & processing](./project-image-processing.md)
+  — presigned upload → object storage → event → thumbnail workers → CDN. *Connects:*
+  object storage, event-driven, CDN.
 
-## C. Reliability & operations
-- ⬜ [Observability: metrics, logs, traces](./observability.md) 🐳 Prometheus+Grafana+Jaeger (OTel) · ☁️ CloudWatch/X-Ray
-- ⬜ [Autoscaling](./autoscaling.md) 🐳 k8s HPA / compose scale · ☁️ ASG / ECS autoscaling
-- ⬜ [Health checks, failover & Multi-AZ](./failover.md) 🐳 keepalived · ☁️ Route 53 health checks / Multi-AZ
-- ⬜ [Deployment strategies (blue-green, canary)](./deployments.md) 🐳 Nginx weighted · ☁️ CodeDeploy / ALB weighted
-- ⬜ [Containers & orchestration](./containers-orchestration.md) 🐳 Docker → kind/k8s · ☁️ ECS/EKS
+## C. Scale & resilience (built on the projects above)
+- ⬜ [Scalable web service](./project-scalable-web-service.md)
+  — load balancer → stateless app → cache → replicated DB. *Connects:* load balancing,
+  caching, read replicas, health checks, statelessness.
+- ⬜ [Saga / distributed transaction](./project-saga.md)
+  — order + payment + inventory with orchestration + compensation. *Connects:*
+  microservices, saga, events, idempotency.
+- ⬜ [Make a service resilient](./project-resilience.md)
+  — add circuit breaker, retries, rate limiting, graceful degradation to a project.
+  *Connects:* resilience patterns, load shedding.
 
-## D. Patterns
-- ⬜ [Event-driven async processing](./event-driven.md) 🐳 queue + workers · ☁️ SQS + Lambda
-- ⬜ [Saga / distributed transactions](./saga.md) 🐳 orchestrator + services · ☁️ Step Functions
-- ⬜ [Resilience: circuit breaker, retries, bulkhead](./resilience.md) 🐳 resilience4j/Envoy · ☁️ App Mesh
-- ⬜ [Idempotency & exactly-once handling](./idempotency.md) 🐳 dedup store · ☁️ SQS FIFO
-
-## E. End-to-end mini-projects
-- ⬜ [Build & deploy a URL shortener](./project-url-shortener.md) 🐳 full stack → ☁️ deploy on AWS
-- ⬜ [Build a notification service](./project-notification-service.md) 🐳 local → ☁️ SNS/SQS
+## D. Cross-cutting (apply to any project above)
+- ⬜ [Observability: metrics, logs, traces](./cross-observability.md)
+  — instrument a project with Prometheus + Grafana + Jaeger (OTel) → CloudWatch / X-Ray.
+- ⬜ [Autoscaling & load testing](./cross-autoscaling.md)
+  — drive a project with k6, then scale it (compose/k8s HPA → ASG / ECS).
 
 ---
 
-## What each lab contains
-1. **What you'll learn** + ⏱️ time / 💰 cost / tooling badges
-2. **Lab architecture** — a diagram
-3. **Local setup** — copy-paste Docker setup to see the mechanism (free)
-4. **AWS setup** — the managed equivalent + when to choose it (cost + teardown notes)
-5. **Run it** — steps to send traffic / trigger behavior
-6. **What to observe & why** — the mechanism under the hood
-7. **Experiments to try** + **common pitfalls**
-8. **In the real world** — the common production pattern (who uses what, at scale)
-9. **Connect to theory** — links to the [Knowledge](../1-knowledge/) and
-   [Case Study](../2-case-studies/) docs
+## What each project contains
+1. **What you'll build** — the mini-system + an architecture diagram of the wired pieces
+2. **Concepts you connect** — links to the [Knowledge](../1-knowledge/) and
+   [Case Study](../2-case-studies/) docs each piece comes from
+3. **Build it locally (🐳)** — a Docker Compose stack wiring the components together
+4. **Run the end-to-end flow** — push data in one end, watch it move through every component
+5. **Deploy / scale on AWS (☁️)** — the managed equivalent of each component + when to use it
+6. **Observe & break it** — see the data flow, then kill a component and watch the system cope
+7. **Extend it** — concrete next features that add another building block
+8. **Mirrors** — the real-world system / case study this scales down
 
-> Not every lab has both tracks — some concepts are best shown locally (e.g. consistent
-> hashing), others only make sense managed (e.g. CloudFront). The badges show which
-> apply.
+> Philosophy: a building block only makes sense in context. You'll *set up* Redis, Kafka,
+> Postgres, object storage, etc. — but always **as part of a working system**, both locally
+> and on AWS.

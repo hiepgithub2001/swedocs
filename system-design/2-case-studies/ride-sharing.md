@@ -6,26 +6,39 @@
 ## 1. Requirements
 
 **Clarifying questions**
-- City-scale or global? How fresh must driver locations be? ETA accuracy?
-- Pooling/shared rides? Surge pricing? Scheduled rides?
-- One match per request, or offer to multiple drivers?
+- City-scale or global? Location freshness? ETA accuracy?
+- Pooling/shared rides? Surge? Scheduled rides?
+- Offer to one driver or broadcast to several?
 
-**Functional**
-- Rider requests a ride; system **matches the nearest suitable driver**.
-- **Real-time location** of drivers and live trip tracking.
-- Trip lifecycle: request → match → en-route → pickup → drop-off → payment.
-- Fare calculation, ETAs, surge pricing.
+**Functional requirements**
+1. Rider requests a ride; system **matches the nearest suitable driver**.
+2. **Real-time driver location** + live trip tracking.
+3. Trip lifecycle: request → match → en-route → pickup → drop-off → payment.
+4. **Fare calculation, ETAs, surge pricing**.
 
-**Non-functional**
-- **Low-latency matching** (seconds), real-time updates, **high availability**.
-- Handle **geospatial scale**: millions of drivers reporting location every few seconds.
-- Strong correctness on assignment (never double-book a driver).
+**Non-functional requirements** (with concrete targets)
+| Requirement | Target | Why |
+| --- | --- | --- |
+| Matching latency | **a few seconds** | riders won't wait |
+| Location write volume | **~250K writes/s** | millions of drivers, ping every ~4 s |
+| Correctness | **never double-assign a driver** | hard invariant |
+| Real-time updates | **< 1–2 s** | live map tracking |
+| Availability | **99.99%**, region-isolated | outages strand riders |
+
+**Scale assumptions** — 1M active drivers, location every ~4 s, dense urban hotspots,
+global multi-region.
+
+**Out of scope (or note)** — payments processing internals, maps/routing engine,
+fraud/driver onboarding.
+
+**🎯 The dominant requirement:** **low-latency geospatial matching over a firehose of
+ephemeral location data, with correct assignment.** The design centers on a fast spatial
+index + an in-memory location store + a locked matching state machine.
 
 ## 2. Capacity estimation
-- **1M active drivers**, location every ~4 s → **250K location writes/s** — high-volume,
-  **ephemeral** data (latest wins; history less critical).
-- Ride requests far fewer than location updates, but matching must query a dense geo
-  index fast.
+- **1M drivers × (1 ping / 4 s)** ≈ **250K location writes/s** — high-volume, **ephemeral**
+  (latest wins).
+- Ride requests far fewer, but each must query a dense geo index quickly.
 
 ## 3. High-level architecture
 ```mermaid
@@ -36,73 +49,88 @@ flowchart LR
     MS --> TS[Trip Service] --> TDB[(Trips DB)]
     TS <-->|real-time push| D
     TS <-->|real-time push| R
-    TS --> Pricing[Pricing/Surge] --> Pay[Payments]
+    TS --> Pricing[Pricing / Surge] --> Pay[Payments]
     LS --> Kafka[(Kafka: location/trip events)] --> Analytics
 ```
 
 ## 4. Data model & API
-- `drivers`: `driver_id, status (available/on_trip/offline), vehicle, rating, cell_id`
+- `drivers`: `driver_id, status, vehicle, rating, cell_id`
 - `trips`: `trip_id, rider_id, driver_id, status, pickup_geo, dropoff_geo, fare,
   timestamps`
-- **Live driver location** in an **in-memory geospatial index** (Redis GEO / quadtree /
-  H3 cells), not a disk DB.
+- **Live location** in an **in-memory geo index** (Redis GEO / quadtree / H3).
 
-**API**
-```
-PATCH /v1/drivers/location   { lat, lng }      # high-frequency
-POST  /v1/rides              { pickup, dropoff } -> { trip_id, status }
-WS    /v1/trips/{id}         # live driver position + status
-```
+**API** — `PATCH /v1/drivers/location`, `POST /v1/rides -> { trip_id }`, `WS
+/v1/trips/{id}`.
 
-## 5. Deep dives
+---
 
-**Geospatial indexing — the heart of matching.** "Find available drivers near me" can't
-scan all drivers. Partition the map:
-- **Geohash** — encode lat/lng into a string; nearby points share prefixes → prefix
-  query finds neighbors (works with Redis GEO).
-- **Quadtree** — recursively subdivide dense areas into cells.
-- **H3 (Uber's hexagonal grid)** — uniform neighbor distances; great for "nearby",
-  supply/demand, and surge zones. (See [Uber case study](./companies/uber.md).)
+## 5. Deep analysis — biggest problems & solutions
 
-Matching queries the rider's cell + adjacent cells for available drivers, then ranks by
-ETA/rating.
+### 🔴 Problem 1 — Finding nearby drivers fast (geospatial search)
+**Why it's hard:** "available drivers within 2 km of this rider" can't scan millions of
+drivers per request; lat/long range scans on a normal DB are slow at this rate.
+
+**Solution — a spatial index that buckets the map into cells.**
+- **Geohash** — encode lat/long into a string; nearby points share prefixes → prefix
+  query finds neighbors (Redis GEO).
+- **Quadtree** — recursively subdivide dense areas.
+- **H3 (Uber's hex grid)** — uniform neighbor distances; great for "nearby" + surge
+  zoning (see [Uber](./companies/uber.md)).
+
+**How it works:** the matcher computes the rider's cell, queries that cell + adjacent
+cells for available drivers, and ranks candidates by ETA/rating — bounded work regardless
+of fleet size.
 
 ```mermaid
 flowchart LR
-    Rider --> Cell[rider's H3 cell + neighbors]
-    Cell --> Cand[candidate available drivers]
-    Cand --> Rank[rank by ETA, rating]
-    Rank --> Offer[offer to best driver]
-    Offer -->|accept| Assign[assign + lock driver]
-    Offer -->|decline/timeout| Next[offer next]
+    Rider --> Cell[rider's cell + neighbors]
+    Cell --> Cand[available drivers]
+    Cand --> Rank[rank by ETA/rating] --> Offer[offer to best]
 ```
 
-**High-volume location ingestion** — 250K writes/s of short-lived data → keep current
-position in **in-memory stores** (sharded/replicated by region), stream raw updates to
-**Kafka** for analytics and ETA models. Don't durably persist every ping.
+### 🔴 Problem 2 — Ingesting 250K location writes/sec
+**Why it's hard:** durably persisting every GPS ping to a disk DB at 250K/s is wasteful —
+the data is short-lived (only the latest matters for matching).
 
-**Matching correctness** — a driver must not be offered/assigned to two riders at once.
-Use a **state machine** per driver with locking (e.g. compare-and-set on `status`), and
-an offer→accept→assign protocol with timeouts and fallback to the next candidate.
+**Solution — in-memory store for current location + Kafka for the stream.** Keep current
+positions in an **in-memory geo store** (sharded/replicated by region); stream raw pings
+to **Kafka** for ETA models, analytics, and surge — without durably writing each ping.
+Trips (durable) are stored separately.
 
-**Real-time tracking** — driver and rider hold push channels (WebSocket) for live
-position and status; the Trip Service coordinates state transitions.
+### 🔴 Problem 3 — Never assigning one driver to two riders
+**Why it's hard:** two riders' matches could both pick the same nearby available driver
+concurrently → double-booking.
 
-**Pricing & surge** — base fare + distance/time; **surge** multiplies fares per geo-cell
-when demand ≫ supply (computed from real-time supply/demand per cell). ETAs from a
-routing/traffic service.
+**Solution — a per-driver state machine with locking.** Driver status transitions
+(`available → offered → assigned`) use a **compare-and-set** (optimistic lock) so only one
+match can move a driver out of `available`. The offer protocol is **offer → accept within
+timeout → assign**; on decline/timeout, fall back to the next candidate.
 
-**Geo-partitioning & resilience** — partition services/data by city/region; failover
-across data centers; regional isolation contains outages.
+### 🔴 Problem 4 — Live trip tracking
+**Why it's hard:** rider and driver need each other's live position and trip-state changes
+in near real time.
 
-## 6. Trade-offs & bottlenecks
-- In-memory geo index = fast matching but must be **sharded + replicated** by region;
-  rebuild on failover.
-- High-frequency location writes → **ephemeral store** (trade durability for
+**Solution — persistent push channels (WebSocket).** Both apps hold a WebSocket to the
+Trip Service, which streams position updates and coordinates state transitions. Same
+connection-routing concerns as the [chat system](./chat-system.md).
+
+### 🔴 Problem 5 — Surge pricing
+**Why it's hard:** prices must rise where demand outstrips supply, computed continuously
+per area from live data.
+
+**Solution — real-time supply/demand aggregation per geo-cell.** Stream-process requests
+vs available drivers per **H3 cell** (Kafka + Flink); when demand ≫ supply, apply a surge
+multiplier to fares in that cell. Naturally fits the hex-cell spatial model.
+
+---
+
+## 6. Trade-offs & bottlenecks (summary)
+- In-memory geo index = fast matching but must be **sharded + replicated** by region.
+- High-frequency location writes → **ephemeral store** (durability traded for
   throughput); persist trips separately.
-- Matching consistency (no double-assignment) needs coordination/locks → adds latency;
-  balance speed vs correctness.
-- Surge computation is a hot, real-time aggregation per cell.
+- Matching correctness needs locks → adds latency; balance speed vs the no-double-assign
+  invariant.
+- Surge is a hot real-time aggregation per cell.
 
 ## 7. References
 - [Uber H3 geospatial index](https://www.uber.com/blog/h3/)

@@ -6,96 +6,129 @@
 ## 1. Requirements
 
 **Clarifying questions**
-- User-generated uploads (YouTube) or curated catalog (Netflix)? Live or VOD?
-- Devices/resolutions to support? Global audience? DRM needed?
-- Features in scope — just upload + playback, or also search/recs/comments?
+- User uploads (YouTube) or curated catalog (Netflix)? Live or VOD?
+- Devices/resolutions? Global audience? DRM required?
+- Scope — just upload + playback, or also search/recs/comments?
 
-**Functional**
-- **Upload** videos; **process/transcode** them; **stream** with adaptive quality.
-- Playback across devices and networks with minimal buffering; resume, seek.
+**Functional requirements**
+1. **Upload** videos (large, resumable).
+2. **Process/transcode** into multiple qualities.
+3. **Stream** with adaptive quality; seek, resume.
+4. Store metadata; serve thumbnails.
+5. (Optional) view counts, search, recommendations.
 
-**Non-functional**
-- **Massive read scale**, **low startup latency** (< ~1–2 s to first frame), smooth
-  playback worldwide.
-- Very **storage- and bandwidth-heavy**; highly available and durable.
+**Non-functional requirements** (with concrete targets)
+| Requirement | Target | Why |
+| --- | --- | --- |
+| Read scale | **millions of concurrent streams** | one upload → millions of views |
+| Startup latency | **< 1–2 s to first frame** | abandonment rises with delay |
+| Playback smoothness | **minimal rebuffering** | core quality metric |
+| Durability | **never lose a video** | 11 nines on storage |
+| Availability | **99.99%** | |
+
+**Scale assumptions** — reads ≫ writes by orders of magnitude; bandwidth dominates cost
+(e.g. 1M streams × 5 Mbps = **5 Tbps**); each source encoded into 5–10× renditions.
+
+**Out of scope (or note)** — recommendation model internals, live-streaming transport,
+content moderation.
+
+**🎯 The dominant requirement:** **serving enormous read bandwidth with low startup
+latency and smooth playback.** This forces a CDN-first delivery design plus adaptive
+bitrate streaming; the origin never serves video bytes directly at scale.
 
 ## 2. Capacity estimation
-- Reads ≫ writes by orders of magnitude (one upload → millions of views).
-- One source video is encoded into **many renditions** (e.g. 240p→4K × codecs), each
-  split into segments → **storage multiplies ~5–10×** the raw size.
-- Bandwidth dominates cost: e.g. 1M concurrent streams × 5 Mbps = **5 Tbps** → only a
-  **CDN** can serve this; origin would melt.
+- Encoding multiplies storage **~5–10×** raw (renditions × codecs × segments).
+- 1M concurrent × 5 Mbps = **5 Tbps** → only a **CDN** can serve this.
+- Uploads are comparatively rare but large (GB-scale) → resumable transfer.
 
 ## 3. High-level architecture
 ```mermaid
 flowchart LR
     Up[Uploader] -->|chunked / presigned| US[Upload Service] --> Raw[(Object storage: raw)]
-    Raw --> TQ[(Transcode jobs)]
-    TQ --> TW[Transcoding workers]
+    Raw --> TQ[(Transcode jobs)] --> TW[Transcoding workers]
     TW --> Enc[(Object storage: renditions + segments)]
     Enc --> CDN[CDN edge PoPs]
     Viewer --> CDN
     Viewer --> Meta[Metadata API] --> MetaDB[(Metadata DB)]
-    Viewer --> Rec[Recommendations]
 ```
 
 ## 4. Data model & API
-- `videos`: `video_id, uploader_id, title, description, status, duration, created_at`
+- `videos`: `video_id, uploader_id, title, status, duration, created_at`
 - `renditions`: `video_id, resolution, codec, bitrate, manifest_url`
-- `views`: aggregated asynchronously (approximate counts)
-- Metadata in relational/NoSQL; **video bytes in object storage**; delivered via **CDN**.
+- Metadata in relational/NoSQL; **bytes in object storage**; delivered via **CDN**.
 
-**API**
-```
-POST /v1/videos                 -> { video_id, upload_url (presigned) }
-POST /v1/videos/{id}/complete   -> triggers transcoding
-GET  /v1/videos/{id}            -> { metadata, manifest_url }
-```
+**API** — `POST /v1/videos -> { video_id, upload_url }`, `POST
+/v1/videos/{id}/complete`, `GET /v1/videos/{id} -> { metadata, manifest_url }`.
 
-## 5. Deep dives
+---
 
-**Upload & resumable transfer** — large files upload via **chunked/resumable** uploads
-to object storage using **presigned URLs** (client → storage directly, bypassing your
-servers). On completion, enqueue a transcoding job.
+## 5. Deep analysis — biggest problems & solutions
 
-**Transcoding pipeline** — a **DAG of jobs** on a worker fleet converts the raw upload
-into many **renditions**: multiple resolutions/bitrates and codecs (H.264/H.265/AV1),
-each chopped into small (2–10 s) **segments**, plus thumbnails. This is CPU-heavy and
-embarrassingly parallel → autoscaled worker pool; jobs are idempotent and retried.
+### 🔴 Problem 1 — Serving terabits/sec of read bandwidth
+**Why it's hard:** millions of concurrent streams = multiple Tbps; no origin (or AWS
+egress bill) can serve that, and far-away users would suffer high latency.
+
+**Solution — CDN-first delivery.** Video segments are cached at **edge PoPs** near users;
+the origin is hit only on a cache miss. **Netflix Open Connect** goes further, placing
+caching appliances **inside ISPs**, and **pre-positions** popular titles at the edge
+before demand.
+
+**How it works:** the player fetches segments from the nearest edge; popularity skew
+means edge hit ratios are very high, so the origin/storage sees a tiny fraction of
+traffic.
+
+### 🔴 Problem 2 — Smooth playback on unpredictable networks
+**Why it's hard:** a user's bandwidth fluctuates (mobile, congestion); a fixed quality
+either rebuffers (too high) or looks bad (too low).
+
+**Solution — Adaptive Bitrate Streaming (HLS/DASH).** Each title is pre-encoded into
+multiple bitrates, each split into 2–10 s **segments**, described by a **manifest**. The
+**player** measures bandwidth/buffer and picks the quality **per segment**, switching up
+or down seamlessly.
 
 ```mermaid
 flowchart LR
-    Raw[(Raw upload)] --> Split[Segment]
-    Split --> E1[Encode 240p]
-    Split --> E2[Encode 720p]
-    Split --> E3[Encode 1080p/4K]
-    E1 & E2 & E3 --> Pack[Package HLS/DASH + manifest] --> Store[(Storage)]
+    Player -->|reads| Manifest
+    Manifest --> S240[240p segments]
+    Manifest --> S720[720p segments]
+    Manifest --> S1080[1080p/4K segments]
+    Player -. picks per-segment by bandwidth .-> S720
 ```
 
-**Adaptive Bitrate Streaming (ABR)** — using **HLS** or **MPEG-DASH**, a **manifest**
-lists each quality's segments. The **player** measures bandwidth/buffer and picks the
-quality **per segment**, switching up/down to avoid rebuffering on changing networks.
-This is why video "starts blurry then sharpens."
+### 🔴 Problem 3 — Turning one upload into many renditions, fast
+**Why it's hard:** every upload must become many resolution/codec combinations split into
+segments — CPU-heavy work that can't block the uploader and must scale with upload
+volume.
 
-**Delivery via CDN** — segments are cached at edge PoPs near users; the origin is hit
-only on cache miss. **Netflix Open Connect** goes further, placing caching appliances
-**inside ISPs**. Pre-position popular titles at the edge ahead of demand.
+**Solution — a parallel transcoding pipeline.** On upload completion, enqueue a job; a
+**DAG of tasks** on an autoscaled worker fleet segments the video and encodes each
+quality **in parallel**, then packages HLS/DASH + manifest. Jobs are **idempotent** and
+retried, so worker failures don't corrupt output.
 
-**Metadata, views & recommendations** — metadata served from a fast store; **view
-counts** updated **asynchronously** and approximately (batched/streamed) to avoid write
-hotspots; recommendations from offline ML pipelines.
+### 🔴 Problem 4 — Uploading huge files reliably
+**Why it's hard:** GB-scale uploads over flaky connections fail and shouldn't restart
+from zero, and shouldn't stream through your app servers.
 
-**DRM & licensing** — premium content uses DRM (Widevine/FairPlay/PlayReady) and signed,
-expiring URLs so segments can't be freely downloaded/hotlinked.
+**Solution — chunked, resumable uploads via presigned URLs.** The client uploads
+**directly to object storage** in chunks using **presigned URLs** (bypassing app
+servers); failed chunks retry individually; on completion the service is notified to start
+transcoding.
 
-## 6. Trade-offs & bottlenecks
-- Pre-encoding many renditions costs **storage + compute** but enables ABR + device
-  reach (vs encoding on the fly = cheaper storage, worse latency/scale).
-- **CDN cost** vs origin load — CDN is non-negotiable for video economics.
-- View counts: exact (expensive, hot keys) vs eventually-consistent/approximate
-  (scalable).
-- Startup latency vs quality: smaller initial segments / lower start quality reduce
-  time-to-first-frame.
+### 🔴 Problem 5 — View counts at scale
+**Why it's hard:** incrementing a counter on every view of a viral video creates a write
+hotspot; exact real-time counts are expensive.
+
+**Solution — async, approximate aggregation.** Emit view events to a stream (Kafka);
+aggregate counts in batches/windows and update displayed counts periodically. Slight
+staleness is fine for a view counter.
+
+---
+
+## 6. Trade-offs & bottlenecks (summary)
+- Pre-encoding renditions costs storage+compute but enables ABR + reach (vs on-the-fly).
+- **CDN** cost vs origin load — non-negotiable for video economics.
+- Exact vs approximate view counts.
+- Startup latency vs initial quality (smaller/low-quality first segments start faster).
 
 ## 7. References
 - [Netflix Open Connect](https://openconnect.netflix.com/)

@@ -6,91 +6,127 @@
 ## 1. Requirements
 
 **Clarifying questions**
-- Consistency needs — strong, eventual, or tunable? Read/write ratio?
-- Value size limits? Single-DC or multi-region? Durability target?
+- Consistency — strong, eventual, or **tunable**? Read/write ratio?
+- Value size limits? Single-DC or **multi-region**? Durability target?
 
-**Functional**
-- `put(key, value)` and `get(key)`.
-- Scale to huge data and throughput across many nodes; values are opaque blobs.
+**Functional requirements**
+1. `put(key, value)` and `get(key)`.
+2. Scale to huge data + throughput across many nodes.
+3. Values are opaque blobs.
 
-**Non-functional**
-- **Highly available** (always writable, even during failures), **partition tolerant**.
-- **Low latency**, **tunable consistency**, **no single point of failure**,
-  incremental scalability.
+**Non-functional requirements** (with concrete targets)
+| Requirement | Target | Why |
+| --- | --- | --- |
+| Availability | **always writable** (even during failures) | the core selling point |
+| Partition tolerance | **mandatory** | networks fail at scale |
+| Consistency | **tunable** (eventual default) | AP system per CAP |
+| Latency | **single-digit ms** | predictable performance |
+| Scalability | **incremental**, no downtime | add nodes seamlessly |
+| SPOF | **none** | no leader to lose |
 
-## 2. Design goals & CAP stance
-A single node can't hold all data or survive failures, so we **partition** + **replicate**.
-To stay available during the network partitions that *will* happen, we favor
-**availability + eventual consistency** — an **AP** system (the Dynamo lineage). Strong
-consistency is offered as a tunable option, not the default.
+**Scale assumptions** — petabytes of data, millions of ops/s, commodity nodes that fail
+routinely, possibly multi-region.
+
+**Out of scope** — rich queries/joins/transactions (it's a KV store), secondary-index
+internals (mention).
+
+**🎯 The dominant requirement:** **high availability + partition tolerance with no SPOF.**
+Per CAP, that means favoring **availability + eventual consistency** (an **AP** system),
+with strong consistency offered as a tunable option. Every technique below serves "stay
+up and writable while spread across failing nodes."
+
+## 2. Design stance (CAP)
+A single node can't hold all data or survive failures → **partition + replicate**. To
+stay available during inevitable partitions, choose **AP** (Dynamo lineage). Strong
+consistency is a per-request opt-in, not the default.
 
 ## 3. High-level architecture
 ```mermaid
 flowchart LR
-    Client --> Coord[Any node = coordinator for the request]
+    Client --> Coord[Any node = coordinator]
     Coord -->|consistent hashing -> N replicas| N1[(Node)]
     Coord --> N2[(Node)]
     Coord --> N3[(Node)]
-    N1 <-->|gossip membership/health| N2 <--> N3
+    N1 <-->|gossip| N2 <--> N3
 ```
-**Leaderless**: any node can coordinate any read/write — no primary to fail.
+**Leaderless**: any node coordinates any read/write — no primary to fail.
 
-## 4. Core techniques (the Dynamo toolkit)
+## 4. Core model
+- Keys+nodes on a **consistent-hash ring**; each key replicated to the next **N** nodes.
+- Tunable consistency via **W** (write acks) and **R** (read responses); **W + R > N** →
+  overlapping → read-your-writes.
 
-**Partitioning — consistent hashing.** Keys and nodes map onto a ring; a key is owned by
-the next node clockwise, replicated to the next **N** nodes. Adding/removing a node moves
-only ~**K/N** keys. **Virtual nodes** smooth load imbalance and let heterogeneous
-machines carry proportional load.
+---
+
+## 5. Deep analysis — biggest problems & solutions
+
+### 🔴 Problem 1 — Partitioning with minimal reshuffling on membership change
+**Why it's hard:** `hash(key) % N` remaps almost **all** keys when a node is added or
+removed (failures are routine at scale) → massive data movement / cache-miss storms.
+
+**Solution — consistent hashing with virtual nodes.** Keys and nodes map onto a ring; a
+key is owned by the next node clockwise. Adding/removing a node moves only ~**K/N** keys.
+**Virtual nodes** (many ring positions per physical node) smooth load imbalance and let
+heterogeneous machines carry proportional load.
 (See [consistent hashing](../1-knowledge/building-blocks/consistent-hashing.md).)
 
-**Replication & quorums.** Each key lives on **N** replicas. Tunable consistency via:
-- **W** = replicas that must ack a write, **R** = replicas that must respond to a read.
-- If **W + R > N** → read and write sets overlap → you read the latest write
-  (strong-ish). Lower W/R → faster, more available, more eventual.
-- Common: N=3, W=2, R=2.
+### 🔴 Problem 2 — Staying writable when nodes/replicas are down
+**Why it's hard:** if a write must reach a specific node and that node is down, a strict
+system rejects the write — violating "always available."
+
+**Solution — replication + quorums + hinted handoff.** Each key lives on **N** replicas;
+a write succeeds once **W** of them ack (don't need all). If a target replica is down,
+another node accepts the write as a **hint** and **hands it off** when the replica
+recovers → the system stays writable through failures.
 
 ```mermaid
 flowchart LR
-    W[Write] --> NWrite[ack from W of N replicas] --> OkW[success]
-    Rd[Read] --> NRead[gather from R of N] --> Reconcile[reconcile versions] --> OkR[return]
+    W[put] --> Wq[ack from W of N replicas] --> OK[success]
+    Down[(replica down)] --> Hint[neighbor stores hint] -. recovers .-> Replay[hand off]
 ```
 
-## 5. Deep dives
+### 🔴 Problem 3 — Tunable consistency
+**Why it's hard:** different workloads want different points on the consistency/latency
+curve; one fixed setting can't serve all.
 
-**Conflict resolution** — concurrent writes to the same key on different replicas
-diverge:
-- **Last-Write-Wins (LWW)** via timestamps — simple, but can silently drop a write
-  (and depends on synced clocks).
-- **Vector clocks** — track causal history; detect concurrent writes and surface
-  conflicting versions for the client/app to merge (Dynamo's approach).
-- **CRDTs** — data types that merge deterministically without coordination (counters,
-  sets).
+**Solution — quorum knobs W and R.** With **W + R > N**, read and write sets overlap, so
+a read sees the latest write (strong-ish). Lower W/R → faster + more available + more
+eventual. Common N=3, W=2, R=2. Callers tune per operation (e.g. strong for a balance
+read, eventual for a feed).
 
-**Failure handling**
-- **Hinted handoff** — if a target replica is down, another node temporarily accepts the
-  write and **hands it off** when the replica recovers → stays writable during failures.
-- **Read repair** — on a read, if replicas disagree, push the newest value to stale ones.
-- **Anti-entropy with Merkle trees** — replicas periodically compare hash trees to find
-  and sync only the differing key ranges efficiently.
-- **Gossip protocol** — nodes exchange membership/health peer-to-peer (no central
-  registry), enabling decentralized failure detection and ring updates.
+### 🔴 Problem 4 — Resolving concurrent conflicting writes
+**Why it's hard:** leaderless + replicas means two clients can write the same key on
+different replicas concurrently → divergent versions.
 
-**Storage engine** — writes go to a **commit log** + in-memory **memtable**, flushed to
-immutable sorted **SSTables** (an **LSM-tree**); background **compaction** merges them.
-This gives high write throughput (sequential I/O). Bloom filters per SSTable speed up
-"key not here" checks.
+**Solution — version with vector clocks (or LWW/CRDTs).**
+- **Last-Write-Wins** (timestamps) — simple but can silently drop a write; needs synced
+  clocks.
+- **Vector clocks** — track causal history; detect concurrency and surface conflicting
+  versions for the app to merge (Dynamo's approach).
+- **CRDTs** — types that merge deterministically (counters, sets) with no coordination.
 
-**Membership & scaling** — adding a node: it claims ring ranges (virtual nodes), streams
-its share of data from neighbors, and starts serving — **incremental** scaling with no
-downtime.
+### 🔴 Problem 5 — Detecting failures & repairing replicas
+**Why it's hard:** with no central coordinator, nodes must learn who's alive and keep
+replicas in sync despite dropped messages.
 
-## 6. Trade-offs & bottlenecks
-- **AP design**: always available, but the app must tolerate eventual consistency and
-  possibly resolve conflicts.
-- **Quorum tuning** trades latency/availability vs consistency **per operation**.
+**Solution — gossip + read-repair + Merkle anti-entropy.**
+- **Gossip** spreads membership/health peer-to-peer (decentralized failure detection).
+- **Read repair** updates stale replicas detected during a read.
+- **Anti-entropy with Merkle trees** lets replicas compare hash trees and sync only the
+  differing key ranges efficiently.
+
+> **Storage engine note:** writes go to a commit log + in-memory memtable, flushed to
+> immutable **SSTables** (an **LSM-tree**), merged by compaction → high write throughput
+> (sequential I/O); per-SSTable Bloom filters speed "key absent" checks.
+
+---
+
+## 6. Trade-offs & bottlenecks (summary)
+- **AP**: always available, but app handles eventual consistency / conflicts.
+- **Quorum tuning** trades latency/availability vs consistency per op.
 - **LWW** (simple, lossy) vs **vector clocks/CRDTs** (correct, complex).
-- LSM-trees give fast writes but **read/space amplification** and compaction overhead.
-- Hot keys still concentrate load on a key's replicas → caching / key-splitting.
+- LSM-trees: fast writes but read/space amplification + compaction cost.
+- Hot keys still load a key's replicas → caching / key-splitting.
 
 ## 7. References
 - [Amazon Dynamo paper (2007)](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf)

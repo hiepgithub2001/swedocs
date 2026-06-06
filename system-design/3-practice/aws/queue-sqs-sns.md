@@ -1,14 +1,26 @@
 # AWS Lab: Queues & Pub/Sub with SQS + SNS
 
-> Use SQS for a point-to-point work queue and SNS for fan-out pub/sub — the managed
-> version of the [Kafka lab](../kafka-pubsub.md), entirely Free-Tier-friendly.
+> Use SQS for a point-to-point work queue and SNS for fan-out pub/sub — the managed,
+> serverless version of the [Kafka lab](../kafka-pubsub.md), and effectively free.
 
-> ⚠️ Costs: SQS/SNS have generous always-free tiers; this lab is effectively free. Still
-> delete the resources.
+> ⚠️ **Costs:** SQS/SNS have generous always-free tiers; this lab is effectively free.
+> Delete the resources anyway.
 
-## Goal
-1. Send/receive a message through an SQS queue (work queue).
-2. Publish to an SNS topic that **fans out** to two SQS queues (pub/sub).
+## What you'll learn
+- **SQS** as a work queue: one message consumed by **one** worker (point-to-point).
+- **SNS → multiple SQS** as **fan-out**: one message copied to **every** subscriber.
+- **Visibility timeout** and at-least-once delivery in practice.
+
+⏱️ ~20 minutes · 💰 free · ☁️ AWS account
+
+## Lab architecture
+```mermaid
+flowchart LR
+    Pub[Publisher] --> SNS[SNS topic]
+    SNS --> Q1[(SQS sub1)]
+    SNS --> Q2[(SQS sub2)]
+    Prod[Producer] --> WQ[(SQS work queue)] --> Worker[one consumer]
+```
 
 ## Prerequisites
 - AWS CLI configured.
@@ -17,37 +29,42 @@
 ```bash
 QURL=$(aws sqs create-queue --queue-name lab-queue --query QueueUrl --output text)
 
-# Producer
-aws sqs send-message --queue-url $QURL --message-body "order-1"
-
-# Consumer
-aws sqs receive-message --queue-url $QURL --query "Messages[0].Body" --output text
+aws sqs send-message --queue-url $QURL --message-body "order-1"      # producer
+aws sqs receive-message --queue-url $QURL --query "Messages[0].Body" --output text  # consumer
 ```
-**Expected:** the consumer receives `order-1`. (Delete it with `delete-message` using
-its receipt handle; until then it's invisible for the *visibility timeout*, then
-redelivered — that's at-least-once delivery.)
+**Observe:** the consumer receives `order-1`. After `receive`, the message is **invisible**
+for the *visibility timeout* (default 30s) instead of being deleted — you must
+`delete-message` (using its receipt handle) to remove it. If you don't, it **reappears** —
+that's **at-least-once** delivery (a crashed worker won't lose the message).
 
 ## Part B — SNS fan-out to two queues
 ```bash
 TOPIC=$(aws sns create-topic --name lab-topic --query TopicArn --output text)
 Q1=$(aws sqs create-queue --queue-name sub1 --query QueueUrl --output text)
 Q2=$(aws sqs create-queue --queue-name sub2 --query QueueUrl --output text)
-# (grab each queue's ARN via get-queue-attributes, allow SNS to send, then:)
+# (fetch each queue ARN via get-queue-attributes, add a policy allowing SNS to send, then:)
 aws sns subscribe --topic-arn $TOPIC --protocol sqs --notification-endpoint <q1-arn>
 aws sns subscribe --topic-arn $TOPIC --protocol sqs --notification-endpoint <q2-arn>
 
-# Publish ONE message
-aws sns publish --topic-arn $TOPIC --message "OrderPlaced:42"
-
-# Both queues receive a copy
+aws sns publish --topic-arn $TOPIC --message "OrderPlaced:42"        # publish ONCE
 aws sqs receive-message --queue-url $Q1 --query "Messages[0].Body"
 aws sqs receive-message --queue-url $Q2 --query "Messages[0].Body"
 ```
 
-## Expected result
-- Part A: one consumer gets the message (point-to-point).
-- Part B: **both** sub1 and sub2 receive the single published message — SNS fanned it
-  out to every subscriber (pub/sub), just like Kafka consumer groups vs separate groups.
+## What to observe & why
+- **Part A:** one consumer gets the message (point-to-point work distribution). The
+  visibility-timeout + explicit delete is how SQS guarantees a message isn't lost if a
+  worker dies mid-processing.
+- **Part B:** **both** `sub1` and `sub2` receive the single published message — SNS
+  **fanned it out** to every subscriber. This is the SNS+SQS fan-out pattern: one event,
+  many independent consumers (e.g. email service + analytics + inventory), each with its
+  own durable queue.
+
+## Common pitfalls
+- **SNS→SQS needs a queue access policy** allowing SNS to `SendMessage`, or the queues stay
+  empty. Easy to forget.
+- **Duplicates:** standard queues are at-least-once → make consumers **idempotent**.
+- **Forgetting to delete-message** makes messages reappear (looks like a bug, is a feature).
 
 ## Teardown
 ```bash
@@ -57,8 +74,19 @@ aws sqs delete-queue --queue-url $Q2
 aws sns delete-topic --topic-arn $TOPIC
 ```
 
-## Notes
-- Add a **Dead-Letter Queue** + redrive policy to see failed-message handling.
-- SQS FIFO queues give ordering + exactly-once; standard queues are at-least-once.
-- This is the [notification-system](../../2-case-studies/notification-system.md) fan-out
-  pattern. Related: [Message queues](../../1-knowledge/building-blocks/message-queues.md).
+## In the real world (common production pattern)
+- **SQS + SNS (or EventBridge)** is the default AWS messaging stack for decoupling
+  services, buffering spikes, and fan-out — the
+  [notification system](../../2-case-studies/notification-system.md) pattern.
+- **Dead-letter queues** capture messages that repeatedly fail; **FIFO queues** add
+  ordering + exactly-once where needed.
+- **SQS vs Kafka:** SQS is a simple managed task queue (no replay, message deleted on ack);
+  **Kafka/Kinesis** are durable logs for replay, multiple consumers, and high-throughput
+  streaming (see the [Kafka lab](../kafka-pubsub.md)). Pick by whether you need replay.
+- **EventBridge** adds routing/filtering on events for event-driven architectures.
+
+## Connect to theory
+- Concepts: [Message queues & pub/sub](../../1-knowledge/building-blocks/message-queues.md) ·
+  [Event-driven architecture](../../1-knowledge/patterns/event-driven.md)
+- Local version: [Kafka lab](../kafka-pubsub.md)
+- Used in: [notification system](../../2-case-studies/notification-system.md).

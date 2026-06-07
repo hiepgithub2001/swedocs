@@ -43,15 +43,52 @@ LFU, FIFO, TTL-based expiry.
   hit the DB at once → mitigate with locks, request coalescing, or staggered TTLs.
 - **Hot keys** — one key gets disproportionate traffic → replicate or shard it.
 
+## Example — cache-aside in practice
+A product page reads `product:42`. With **cache-aside** (the most common pattern):
+
+```python
+def get_product(pid):
+    key = f"product:{pid}"
+    cached = redis.get(key)
+    if cached:                       # HIT — ~0.5 ms
+        return json.loads(cached)
+    row = db.query("SELECT ... WHERE id=%s", pid)   # MISS — ~20 ms
+    redis.setex(key, 300, json.dumps(row))          # populate, TTL 300 s
+    return row
+```
+With a 95% hit rate, average read latency ≈ `0.95 × 0.5ms + 0.05 × 20ms ≈ 1.5 ms`
+(vs 20 ms uncached) **and** ~95% fewer DB queries. On update, invalidate:
+`db.update(...); redis.delete("product:42")`.
+
+Hands-on: [caching practice project](../../3-practice/project-scalable-web-service.md).
+
+## Common tools
+| Tool | Type | Use it for |
+| --- | --- | --- |
+| **Redis** | In-memory data store (rich types, persistence, pub/sub) | the default distributed cache; sessions, leaderboards, rate-limit counters |
+| **Memcached** | In-memory KV (simple, multithreaded) | pure, huge-scale string/object caching with minimal features |
+| **Caffeine** (Java) / **`functools.lru_cache`** (Python) | In-process cache | per-instance hot data, microcaching |
+| **Varnish** / **Nginx `proxy_cache`** | Reverse-proxy HTTP cache | caching rendered pages / API responses at the edge of your app |
+| **CDN** (CloudFront, Cloudflare, Fastly) | Edge cache | static assets, media, cacheable API responses (see [CDN](./cdn.md)) |
+| **AWS ElastiCache** / GCP **Memorystore** | Managed Redis/Memcached | production cache tier without ops |
+| **DynamoDB DAX** | In-memory cache for DynamoDB | microsecond reads in front of DynamoDB |
+
+> Rule of thumb: **Redis** unless you have a specific reason. Reach for Memcached for the
+> simplest, largest pure-cache workloads; an in-process cache for per-instance hot data.
+
 ## Trade-offs
 - More caching = faster + cheaper reads, but more **staleness** and **invalidation
   complexity** ("there are only two hard things… cache invalidation").
 - Write-back is fastest but least durable; write-through is safest but slower.
 
 ## Real-world examples
-- **Redis / Memcached** as a shared cache tier in front of databases.
+- **Reddit** caches rendered listings/comment trees in Memcached to absorb read spikes.
+- **Facebook** runs one of the largest Memcached deployments (with leases to fight
+  stampedes).
+- **Netflix EVCache** (Memcached-based) caches viewing data at massive scale.
 - **CDNs** cache static assets at the edge (see [CDN](./cdn.md)).
 
 ## References
 - [Redis caching patterns](https://redis.io/docs/manual/patterns/)
-- *Designing Data-Intensive Applications*
+- [Facebook — Scaling Memcache (NSDI '13)](https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170_update.pdf)
+- *Designing Data-Intensive Applications* — Kleppmann

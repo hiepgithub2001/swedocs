@@ -41,6 +41,23 @@ requests can hit any node.
 usually the real bottleneck and needs its own strategies (replication, sharding,
 caching — see later topics).
 
+## Example — scaling a read-heavy API
+One server handles ~2k req/s, then CPU saturates. **Vertical:** move to a bigger box →
+buys you to ~8k req/s, but you hit a ceiling and a single point of failure. **Horizontal:**
+make the app **stateless** (push sessions to Redis), run 5 replicas behind a load balancer
+→ ~10k req/s and any node can die. The database then becomes the bottleneck → add read
+replicas + cache. Built end-to-end in the
+[scalable web service project](../../3-practice/project-scalable-web-service.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Nginx / HAProxy / AWS ALB** | spreading load across horizontal replicas |
+| **Kubernetes HPA**, **EC2 Auto Scaling Groups** | adding/removing instances automatically |
+| **Redis** | shared session/state store so app servers stay stateless |
+| **Docker / Kubernetes** | packaging stateless services that scale out |
+| **k6 / Locust** | load-testing to find the per-instance ceiling |
+
 ## Trade-offs
 - Start **vertical** — it's cheaper and simpler until you hit a real limit.
 - Go **horizontal** when you need fault tolerance or exceed one machine's capacity.

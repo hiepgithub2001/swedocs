@@ -34,6 +34,22 @@ flowchart LR
 2. **Non-functional requirements** — how *well*? (scale, latency, availability)
 3. **Constraints** — budget, team, existing tech, regulations.
 
+## Example — sketching an HLD
+Asked to "design a link shortener," you start at the **high level**: a client hits a load
+balancer → an API service writes `code → url` to a datastore; reads go through a cache;
+clicks are redirected. Only *then* do you zoom into **low-level** details (the code-gen
+algorithm, the table schema). The skill is starting with the boxes and arrows, stating
+requirements + trade-offs, before any code. See it built in the
+[URL shortener project](../../3-practice/project-url-shortener.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Excalidraw**, **draw.io**, **Mermaid** | sketching architecture diagrams (HLD/LLD) |
+| **C4 model** | a structured way to diagram systems at 4 zoom levels |
+| The standard "building blocks" | load balancer, cache, queue, database, CDN, object store — the vocabulary every design is assembled from |
+| **System Design Primer**, *DDIA* | the canonical learning references |
+
 ## Trade-offs
 There is no "correct" design — only trade-offs. Every choice trades one property for
 another (e.g. consistency vs availability, cost vs performance, simplicity vs

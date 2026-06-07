@@ -35,6 +35,22 @@ flowchart LR
     R[Read from Node B] --> StaleV1[Returns v1 - stale]
 ```
 
+## Example — the stale-read trap
+A user updates their profile photo (write goes to the **primary**), then the app reloads and
+reads from a **replica** that hasn't caught up yet → they see the **old** photo and think it
+failed. This is a missing **read-your-own-writes** guarantee. Fixes: route the immediate
+read to the primary, pin the user to one replica (sticky), or wait for the write to
+replicate. Watch the lag in the
+[replication project](../../3-practice/project-scalable-web-service.md).
+
+## Common tools
+| Tool | Consistency it offers |
+| --- | --- |
+| **Google Spanner**, **CockroachDB**, **etcd** | strong / linearizable |
+| **DynamoDB**, **Cassandra** | tunable per request (eventual ↔ strong via quorums) |
+| **PostgreSQL/MySQL read replicas** | strong on primary, eventually-consistent replica reads |
+| **Jepsen** | testing/verifying what a datastore *actually* guarantees |
+
 ## Trade-offs
 - **Stronger consistency → more coordination → more latency and less availability.**
 - **Weaker consistency → faster and more available → more complexity in the app** to

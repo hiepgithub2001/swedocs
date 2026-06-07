@@ -48,6 +48,17 @@ flowchart LR
 3. **Bandwidth** — QPS × payload size.
 4. **Memory** — what fits in cache (e.g. 20% of daily reads → cache size).
 
+## Common tools & reference numbers
+| Resource | What it gives you |
+| --- | --- |
+| **[Latency Numbers Every Programmer Should Know](https://gist.github.com/jboner/2841832)** | memory ~100 ns, SSD ~100 µs, same-DC RTT ~0.5 ms, cross-region ~100 ms |
+| **Powers of two** | 2¹⁰≈1K, 2²⁰≈1M, 2³⁰≈1B, 2⁴⁰≈1T → KB/MB/GB/TB sizing |
+| **"1 day ≈ 100K seconds"** | QPS = events-per-day ÷ 100,000 (then ×2–3 for peak) |
+| Pen + paper / a spreadsheet | the only "tool" you actually need — aim for orders of magnitude |
+
+> In interviews and design docs, **state your assumptions** (DAU, ratio, payload size) so
+> the numbers are checkable.
+
 ## Trade-offs
 - Goal is the **right order of magnitude**, not precision. 6K vs 6.3K QPS doesn't
   change the design; 6K vs 600K does.

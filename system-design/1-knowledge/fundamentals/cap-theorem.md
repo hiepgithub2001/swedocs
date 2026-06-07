@@ -38,6 +38,23 @@ flowchart TB
 **When there's no partition** you get both C and A — CAP only forces a choice
 *during* a partition.
 
+## Example — a partition forces the choice
+Two replicas, A and B, normally in sync. The network link between them drops (a partition).
+A client writes `x=5` to A. Another client reads `x` from B:
+- A **CP** store (e.g. etcd) makes B **refuse** the read (or error) — it won't risk
+  returning stale data. Consistent, but unavailable during the partition.
+- An **AP** store (e.g. Cassandra) lets B return the **old** `x` — available, but stale
+  until the partition heals and the replicas reconcile.
+Same scenario, opposite choice. You pick per workload: a bank balance wants CP; a "likes"
+counter is fine AP.
+
+## Common tools
+| Stance | Systems | Typical use |
+| --- | --- | --- |
+| **CP** (consistency over availability) | **etcd**, **ZooKeeper**, **Consul**, **HBase**, **Spanner** | config, leader election, locks, ledgers |
+| **AP** (availability over consistency) | **Cassandra**, **DynamoDB**, **Riak**, **CouchDB** | carts, feeds, metrics, high-write data |
+| **Tunable** | **DynamoDB**, **Cassandra** (per-request quorums) | choose C vs A per operation |
+
 ## Trade-offs
 - CAP is a **simplification**. In practice it's a spectrum, not a binary — see
   **PACELC**: *if Partition, choose A or C; Else (normal operation), choose Latency

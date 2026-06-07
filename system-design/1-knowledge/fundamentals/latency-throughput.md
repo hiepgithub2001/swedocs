@@ -38,6 +38,23 @@ flowchart LR
 **Little's Law** — `concurrency = throughput × latency`. If each request takes 100ms
 and you need 1,000 req/s, you must serve ~100 requests concurrently.
 
+## Example — Little's Law in practice
+You need to serve **1,000 req/s** and each request takes **200 ms**. By Little's Law,
+`concurrency = throughput × latency = 1000 × 0.2 = 200` in-flight requests. So you must size
+the system for ~200 concurrent requests (threads/connections/workers). If you cut latency to
+50 ms, you only need ~50 concurrent for the same throughput. And watch **p99**: a page making
+100 backend calls almost always hits a slow tail, so p99 (not the mean) drives user-perceived
+latency. Measure it in the [autoscaling/load-test project](../../3-practice/cross-autoscaling.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **k6 / JMeter / Locust / wrk / Gatling** | load testing; report p50/p95/p99 |
+| **Prometheus histograms + Grafana** | tracking latency percentiles in production |
+| **OpenTelemetry / Jaeger** | tracing *where* the latency goes across services |
+| **Caches / CDNs** | the primary levers to cut latency |
+| **Batching / async queues** | the primary levers to raise throughput |
+
 ## Trade-offs
 - **Batching** raises throughput but adds latency (you wait to fill the batch).
 - **Caching** lowers latency and raises throughput — at the cost of staleness.

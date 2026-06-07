@@ -41,6 +41,23 @@ flowchart LR
 how fast you recover (Mean Time To Recovery). Lowering MTTR (fast recovery) is often
 cheaper than raising MTBF (never failing).
 
+## Example — what "three nines" costs you
+A service promises **99.9%** availability. That's an error budget of `0.1% × 30 days ≈ 43
+minutes` of downtime per month. One bad deploy that takes you down for an hour **blows the
+whole month's budget**. To do better you add redundancy: 2 load balancers (no single LB
+SPOF), app replicas across **3 availability zones**, and a standby database — so losing any
+one AZ or node doesn't take the service down. Prove it in the
+[resilience project](../../3-practice/project-resilience.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Load balancer health checks** (ALB, Nginx) | auto-removing sick instances |
+| **Multi-AZ / multi-region** deploys | surviving datacenter/region failures |
+| **Chaos Monkey / Gremlin / LitmusChaos** | injecting failure to prove fault tolerance |
+| **Pingdom / UptimeRobot / Datadog Synthetics** | measuring real availability (the nines) |
+| **PagerDuty / Opsgenie** | fast incident response (lowers MTTR) |
+
 ## Trade-offs
 - More nines = more redundancy = more cost and complexity. Pick a target that matches
   the product (a bank ≠ a hobby blog).

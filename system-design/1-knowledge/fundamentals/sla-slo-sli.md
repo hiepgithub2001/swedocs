@@ -39,6 +39,21 @@ flowchart LR
 it and you freeze risky changes to recover reliability. This balances velocity vs
 stability with a number instead of an argument.
 
+## Example — an error budget in numbers
+**SLI:** successful requests / total. **SLO:** 99.9% success over 30 days. That allows
+`0.1% × 30 days ≈ 43.2 minutes` of "failure" per month — your **error budget**. If a deploy
+burns 30 minutes of it in one incident, you've spent most of the month's budget and should
+**freeze risky changes** until reliability recovers. The **SLA** you sell customers is looser
+(say 99.5%) so you catch problems internally before breaching the contract.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Prometheus + Grafana** | computing SLIs and graphing SLO burn-down |
+| **Sloth**, **Nobl9**, **Google Cloud SLO**, **Datadog SLOs** | defining/tracking SLOs + error budgets |
+| **PagerDuty / Opsgenie** | alerting on burn-rate, not every blip |
+| **Synthetic monitors** (Pingdom, Datadog) | measuring availability from the outside |
+
 ## Trade-offs
 - **Stricter SLO → higher cost** (more redundancy, slower releases). Don't promise
   five nines for a feature that doesn't need it.

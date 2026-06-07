@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" font-family="DejaVu Sans, sans-serif">
+  <rect width="1200" height="660" fill="#ffffff"/>
+  <text x="600" y="44" font-size="27" font-weight="700" text-anchor="middle" fill="#1f2937">Cassandra write path (LSM-tree storage engine)</text>
+
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#475569"/>
+    </marker>
+    <marker id="ab" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="ag" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- RAM region -->
+  <rect x="300" y="115" width="430" height="150" rx="14" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+  <text x="318" y="142" font-size="15" font-weight="700" fill="#3b82f6">RAM (fast, volatile)</text>
+  <rect x="360" y="158" width="310" height="85" rx="10" fill="#2563eb" stroke="#1e40af" stroke-width="2"/>
+  <text x="515" y="192" font-size="18" font-weight="700" text-anchor="middle" fill="#fff">Memtable</text>
+  <text x="515" y="216" font-size="13" text-anchor="middle" fill="#dbeafe">sorted by key, in memory</text>
+
+  <!-- DISK region -->
+  <rect x="300" y="315" width="860" height="300" rx="14" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="318" y="342" font-size="15" font-weight="700" fill="#64748b">DISK (sequential / append-only)</text>
+
+  <!-- commit log -->
+  <rect x="360" y="360" width="310" height="70" rx="10" fill="#0f766e" stroke="#115e59" stroke-width="2"/>
+  <text x="515" y="389" font-size="16" font-weight="700" text-anchor="middle" fill="#fff">Commit log</text>
+  <text x="515" y="411" font-size="12" text-anchor="middle" fill="#ccfbf1">sequential append → durability</text>
+
+  <!-- SSTables -->
+  <rect x="360" y="490" width="110" height="80" rx="9" fill="#475569" stroke="#334155" stroke-width="2"/>
+  <text x="415" y="525" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">SSTable</text>
+  <text x="415" y="544" font-size="11" text-anchor="middle" fill="#cbd5e1">immutable</text>
+  <rect x="485" y="490" width="110" height="80" rx="9" fill="#475569" stroke="#334155" stroke-width="2"/>
+  <text x="540" y="525" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">SSTable</text>
+  <text x="540" y="544" font-size="11" text-anchor="middle" fill="#cbd5e1">immutable</text>
+  <rect x="610" y="490" width="110" height="80" rx="9" fill="#475569" stroke="#334155" stroke-width="2"/>
+  <text x="665" y="525" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">SSTable</text>
+  <text x="665" y="544" font-size="11" text-anchor="middle" fill="#cbd5e1">immutable</text>
+
+  <!-- merged -->
+  <rect x="880" y="485" width="250" height="90" rx="10" fill="#16a34a" stroke="#15803d" stroke-width="2"/>
+  <text x="1005" y="518" font-size="16" font-weight="700" text-anchor="middle" fill="#fff">Merged SSTable</text>
+  <text x="1005" y="540" font-size="11.5" text-anchor="middle" fill="#dcfce7">old versions + tombstones</text>
+  <text x="1005" y="557" font-size="11.5" text-anchor="middle" fill="#dcfce7">dropped</text>
+
+  <!-- Client -->
+  <rect x="50" y="180" width="150" height="95" rx="12" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+  <text x="125" y="222" font-size="17" font-weight="700" text-anchor="middle" fill="#fff">Client</text>
+  <text x="125" y="246" font-size="13" text-anchor="middle" fill="#dbeafe">write</text>
+
+  <!-- arrows -->
+  <!-- 2 write to memtable -->
+  <path d="M 200 212 L 360 200" fill="none" stroke="#1d4ed8" stroke-width="3" marker-end="url(#ab)"/>
+  <text x="218" y="186" font-size="13" font-weight="700" fill="#1d4ed8">② write to memtable</text>
+
+  <!-- 3 ack dashed back -->
+  <path d="M 360 232 L 205 258" fill="none" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#ab)"/>
+  <text x="214" y="296" font-size="12.5" font-weight="700" fill="#1d4ed8">③ ack — no read, no in-place update</text>
+
+  <!-- 1 append to commit log -->
+  <path d="M 150 275 Q 150 395 360 395" fill="none" stroke="#0f766e" stroke-width="3" marker-end="url(#a)"/>
+  <text x="60" y="360" font-size="13" font-weight="700" fill="#0f766e">① append</text>
+  <text x="56" y="378" font-size="11.5" fill="#0f766e">(durability)</text>
+
+  <!-- 4 flush memtable -> sstable (routed right of the commit log) -->
+  <path d="M 640 243 C 760 300, 760 430, 690 488" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#a)"/>
+  <text x="775" y="360" font-size="13" font-weight="700" fill="#334155">④ flush when full</text>
+  <text x="775" y="378" font-size="13" font-weight="700" fill="#334155">→ new immutable</text>
+  <text x="775" y="396" font-size="13" font-weight="700" fill="#334155">SSTable</text>
+
+  <!-- 5 compaction -->
+  <path d="M 720 530 L 880 530" fill="none" stroke="#16a34a" stroke-width="3" marker-end="url(#ag)"/>
+  <text x="735" y="515" font-size="13" font-weight="700" fill="#15803d">⑤ compaction</text>
+  <text x="735" y="497" font-size="11.5" fill="#15803d">(background merge)</text>
+
+  <!-- footer -->
+  <text x="600" y="635" font-size="14.5" text-anchor="middle" fill="#475569">Every write = sequential append (commit log) + in-memory insert (memtable). No read-before-write, no random-I/O update → very high write throughput.</text>
+</svg>

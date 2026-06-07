@@ -27,6 +27,7 @@ Academic docs: concepts, theory, and definitions. Each topic follows the
 
 ## Data & Storage
 - ✅ [SQL vs NoSQL](./data-storage/sql-vs-nosql.md)
+  - ✅ [Apache Cassandra — deep-dive](./data-storage/cassandra.md) *(wide-column NoSQL example)*
 - ✅ [Database replication](./data-storage/replication.md)
 - ✅ [Sharding & partitioning](./data-storage/sharding.md)
 - ✅ [Indexing & query performance](./data-storage/indexing.md)

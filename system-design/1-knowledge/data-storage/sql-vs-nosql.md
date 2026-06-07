@@ -93,6 +93,9 @@ access pattern + scale-out across data centers → wide-column*, and the right d
 matters more than the product. Orders and payments at the same company would still
 belong in SQL.
 
+> 📄 **Deep-dive:** [How Cassandra works & how it handles heavy writes](./cassandra.md) —
+> the masterless ring, the LSM write path, and the techniques for write-heavy workloads.
+
 ## Common tools
 | Tool | Family | Sweet spot |
 | --- | --- | --- |

@@ -95,6 +95,47 @@ belong in SQL.
 | **Redis** | Key-value (in-mem) | cache, sessions, counters, queues |
 | **Neo4j** | Graph | relationship-heavy queries |
 
+## Common real-world patterns
+You rarely use one database alone. These are the combinations teams actually run:
+
+**1. SQL as system of record + Redis cache-aside.** The default web-app stack.
+Postgres/MySQL holds the truth; Redis caches hot reads. On a read, check Redis → miss →
+read SQL → write it back to Redis. On write, update SQL and invalidate/update the cache.
+Takes read load off the primary and cuts latency. → see [caching](../building-blocks/caching.md).
+
+**2. SQL primary + read replicas.** Scale *reads* by streaming the primary's changes to
+N read-only replicas; send writes to the primary, reads to replicas. Buys a lot of
+headroom before you ever need NoSQL — but introduces **replication lag** (a read right
+after a write may be stale), so route read-your-own-writes back to the primary.
+
+**3. SQL system of record + search/analytics engine.** Transactions live in SQL;
+full-text search and faceted queries go to **Elasticsearch/OpenSearch**, and heavy
+analytics to a column store / warehouse (**ClickHouse, BigQuery, Snowflake**). You sync
+SQL → engine via **CDC** (change data capture, e.g. Debezium). SQL stays the source of
+truth; the engine is a derived, rebuildable index.
+
+**4. Polyglot persistence.** Pick a store per workload (the e-commerce example above):
+SQL for orders, document for catalog, KV for cart/sessions, graph for recommendations.
+Each service owns its store.
+
+**5. Write-heavy / time-series → wide-column or TSDB.** Metrics, logs, feeds, IoT,
+chat go to **Cassandra/ScyllaDB** or a time-series DB (**InfluxDB, TimescaleDB** — the
+latter is Postgres with a time-series extension, a nice "stay in SQL" option).
+
+**6. CQRS — write one shape, read another.** Write to a normalized SQL model, then
+project the data into a denormalized read store (Redis, a document DB, or a wide-column
+table) shaped exactly for your queries. Common for feeds/timelines: fan-out a post into
+each follower's precomputed list so the read is a single lookup.
+
+**7. Outbox / event-driven sync.** To keep two stores consistent without distributed
+transactions, write the row **and** an "event" row in the *same* SQL transaction, then a
+relay publishes those events (to Kafka, another DB, the cache). Avoids the dual-write
+problem where one store updates and the other silently doesn't.
+
+**8. SQL with JSON columns — the hybrid.** Postgres `jsonb` (and MySQL JSON) let you keep
+relational integrity for the structured parts and a flexible schemaless column for the
+rest. Often removes the *need* for a separate document DB until you truly need scale-out.
+
 ## Trade-offs
 - **SQL** — consistency, joins, mature tooling; harder horizontal scaling, rigid
   schema.

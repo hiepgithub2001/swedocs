@@ -75,8 +75,16 @@ clustering key = message_id   (time-ordered, so "recent N" is a fast range read)
 ```
 
 That's the core NoSQL move: **pick the partition/clustering keys so your main query is a
-single-partition lookup**, and accept denormalization instead of joins. This scaled to
-trillions of messages. (Later they swapped Cassandra for **ScyllaDB** — same data model,
+single-partition lookup**, and accept denormalization instead of joins.
+
+```mermaid
+flowchart LR
+    Q["Query: recent msgs<br/>in channel 42"] --> P["Partition<br/>(channel 42, bucket 2026-06)"]
+    P --> M["sorted by message_id ▼<br/>m_103 · m_102 · m_101 …"]
+    M --> R["read top N = one<br/>contiguous range, one node"]
+```
+
+This scaled to trillions of messages. (Later they swapped Cassandra for **ScyllaDB** — same data model,
 a faster C++ reimplementation — to cut tail latency and node count. Same *family*, so no
 remodeling.)
 
@@ -96,12 +104,33 @@ belong in SQL.
 | **Neo4j** | Graph | relationship-heavy queries |
 
 ## Common real-world patterns
-You rarely use one database alone. These are the combinations teams actually run:
+You rarely use one database alone. These are the combinations teams actually run. Most
+of them fit one picture — **SQL as the source of truth, with derived stores hanging off
+it**:
+
+![Reference architecture: SQL primary as source of truth with Redis cache, read replicas, search/analytics via CDC, and an outbox to an event bus](images/sql-nosql-architecture.png)
 
 **1. SQL as system of record + Redis cache-aside.** The default web-app stack.
 Postgres/MySQL holds the truth; Redis caches hot reads. On a read, check Redis → miss →
 read SQL → write it back to Redis. On write, update SQL and invalidate/update the cache.
 Takes read load off the primary and cuts latency. → see [caching](../building-blocks/caching.md).
+
+```mermaid
+sequenceDiagram
+    participant A as App
+    participant R as Redis (cache)
+    participant D as SQL primary
+    A->>R: GET key
+    alt cache hit
+        R-->>A: value
+    else cache miss
+        R-->>A: nil
+        A->>D: SELECT …
+        D-->>A: row
+        A->>R: SET key (write-back, with TTL)
+    end
+    Note over A,D: on write: UPDATE SQL, then invalidate/update key
+```
 
 **2. SQL primary + read replicas.** Scale *reads* by streaming the primary's changes to
 N read-only replicas; send writes to the primary, reads to replicas. Buys a lot of
@@ -126,6 +155,13 @@ latter is Postgres with a time-series extension, a nice "stay in SQL" option).
 project the data into a denormalized read store (Redis, a document DB, or a wide-column
 table) shaped exactly for your queries. Common for feeds/timelines: fan-out a post into
 each follower's precomputed list so the read is a single lookup.
+
+```mermaid
+flowchart LR
+    W[Write: create post] --> S[(SQL: normalized<br/>source of truth)]
+    S -->|project / fan-out| RS[(Read store:<br/>per-user timeline)]
+    RS --> Q[Read: GET my feed<br/>single lookup]
+```
 
 **7. Outbox / event-driven sync.** To keep two stores consistent without distributed
 transactions, write the row **and** an "event" row in the *same* SQL transaction, then a

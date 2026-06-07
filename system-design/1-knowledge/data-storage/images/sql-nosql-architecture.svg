@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="700" viewBox="0 0 1180 700" font-family="DejaVu Sans, sans-serif">
+  <rect width="1180" height="700" fill="#ffffff"/>
+  <text x="590" y="44" font-size="27" font-weight="700" text-anchor="middle" fill="#1f2937">Real-world SQL + NoSQL: one source of truth, many derived stores</text>
+
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#475569"/>
+    </marker>
+    <marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 z" fill="#16a34a"/>
+    </marker>
+  </defs>
+
+  <!-- ===== App ===== -->
+  <rect x="40" y="305" width="160" height="80" rx="12" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+  <text x="120" y="340" font-size="18" font-weight="700" text-anchor="middle" fill="#fff">App /</text>
+  <text x="120" y="364" font-size="18" font-weight="700" text-anchor="middle" fill="#fff">Service</text>
+
+  <!-- ===== Redis cache ===== -->
+  <rect x="330" y="120" width="190" height="70" rx="12" fill="#dc2626" stroke="#991b1b" stroke-width="2"/>
+  <text x="425" y="150" font-size="17" font-weight="700" text-anchor="middle" fill="#fff">Redis (cache)</text>
+  <text x="425" y="172" font-size="13" text-anchor="middle" fill="#fee2e2">hot reads, sessions</text>
+
+  <!-- ===== SQL primary ===== -->
+  <rect x="330" y="300" width="210" height="90" rx="12" fill="#0f766e" stroke="#115e59" stroke-width="2"/>
+  <text x="435" y="333" font-size="18" font-weight="700" text-anchor="middle" fill="#fff">SQL primary</text>
+  <text x="435" y="356" font-size="13" text-anchor="middle" fill="#ccfbf1">PostgreSQL / MySQL</text>
+  <text x="435" y="376" font-size="13" font-style="italic" text-anchor="middle" fill="#ccfbf1">system of record (ACID)</text>
+
+  <!-- ===== Read replicas ===== -->
+  <rect x="330" y="470" width="160" height="60" rx="12" fill="#14b8a6" stroke="#0f766e" stroke-width="2"/>
+  <text x="410" y="497" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">Read replica</text>
+  <text x="410" y="516" font-size="12" text-anchor="middle" fill="#ccfbf1">read-only</text>
+  <rect x="510" y="470" width="160" height="60" rx="12" fill="#14b8a6" stroke="#0f766e" stroke-width="2"/>
+  <text x="590" y="497" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">Read replica</text>
+  <text x="590" y="516" font-size="12" text-anchor="middle" fill="#ccfbf1">read-only</text>
+
+  <!-- ===== Derived: search ===== -->
+  <rect x="760" y="150" width="220" height="70" rx="12" fill="#7c3aed" stroke="#5b21b6" stroke-width="2"/>
+  <text x="870" y="180" font-size="16" font-weight="700" text-anchor="middle" fill="#fff">Search engine</text>
+  <text x="870" y="201" font-size="12" text-anchor="middle" fill="#ede9fe">Elasticsearch / OpenSearch</text>
+
+  <!-- ===== Derived: analytics ===== -->
+  <rect x="760" y="310" width="220" height="70" rx="12" fill="#7c3aed" stroke="#5b21b6" stroke-width="2"/>
+  <text x="870" y="340" font-size="16" font-weight="700" text-anchor="middle" fill="#fff">Analytics / warehouse</text>
+  <text x="870" y="361" font-size="12" text-anchor="middle" fill="#ede9fe">ClickHouse / BigQuery</text>
+
+  <!-- ===== Kafka / events ===== -->
+  <rect x="760" y="470" width="220" height="70" rx="12" fill="#ea580c" stroke="#9a3412" stroke-width="2"/>
+  <text x="870" y="500" font-size="16" font-weight="700" text-anchor="middle" fill="#fff">Event bus (Kafka)</text>
+  <text x="870" y="521" font-size="12" text-anchor="middle" fill="#ffedd5">downstream consumers</text>
+
+  <!-- ===== Arrows ===== -->
+  <!-- App <-> Redis : cache-aside -->
+  <path d="M 150 305 Q 210 200 330 168" fill="none" stroke="#dc2626" stroke-width="2.5" marker-end="url(#ah)"/>
+  <path d="M 330 150 Q 215 150 168 305" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+  <text x="205" y="232" font-size="13" font-weight="700" fill="#b91c1c">① cache-aside</text>
+  <text x="195" y="250" font-size="11" fill="#b91c1c">miss → fill / write-back</text>
+
+  <!-- App -> SQL primary : writes -->
+  <path d="M 200 348 L 330 348" fill="none" stroke="#475569" stroke-width="3" marker-end="url(#ah)"/>
+  <text x="232" y="338" font-size="13" font-weight="700" fill="#334155">writes</text>
+
+  <!-- App -> replicas : reads -->
+  <path d="M 130 385 Q 150 500 330 500" fill="none" stroke="#0d9488" stroke-width="2.5" marker-end="url(#ahg)"/>
+  <text x="150" y="470" font-size="13" font-weight="700" fill="#0f766e">② reads</text>
+
+  <!-- SQL primary -> replicas : replication -->
+  <path d="M 410 390 L 410 470" fill="none" stroke="#0d9488" stroke-width="2.5" marker-end="url(#ahg)"/>
+  <path d="M 470 390 Q 560 430 580 470" fill="none" stroke="#0d9488" stroke-width="2.5" marker-end="url(#ahg)"/>
+  <text x="420" y="432" font-size="12" font-weight="700" fill="#0f766e">③ replication</text>
+  <text x="420" y="449" font-size="11" font-style="italic" fill="#0f766e">async → lag</text>
+
+  <!-- SQL primary -> search : CDC -->
+  <path d="M 540 330 Q 660 250 760 195" fill="none" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="600" y="270" font-size="13" font-weight="700" fill="#6d28d9">④ CDC (Debezium)</text>
+
+  <!-- SQL primary -> analytics -->
+  <path d="M 540 345 L 760 345" fill="none" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="600" y="335" font-size="12" font-weight="700" fill="#6d28d9">CDC / ETL</text>
+
+  <!-- SQL primary -> kafka : outbox -->
+  <path d="M 540 372 Q 660 460 760 500" fill="none" stroke="#ea580c" stroke-width="2.5" marker-end="url(#ah)"/>
+  <text x="585" y="445" font-size="13" font-weight="700" fill="#c2410c">⑤ outbox → events</text>
+
+  <!-- footer note -->
+  <text x="590" y="600" font-size="14" text-anchor="middle" fill="#475569">SQL stays the source of truth; cache, replicas, search, analytics and the event bus are derived &amp; rebuildable.</text>
+  <text x="590" y="624" font-size="13" text-anchor="middle" fill="#94a3b8">① cache-aside · ② read replicas · ③ replication (lag) · ④ CDC to search/analytics · ⑤ transactional outbox</text>
+</svg>

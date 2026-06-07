@@ -17,6 +17,7 @@ Every knowledge area is organized into the same three parts:
 | Area | Status | Description |
 | --- | --- | --- |
 | [System Design](./system-design/) | 🚧 In progress | Designing scalable, reliable distributed systems |
+| [Operating Systems](./operating-systems/) | 🚧 In progress | Kernels, processes, memory, concurrency, file systems |
 | Languages & Frameworks | 🔜 Planned | Language-specific knowledge and idioms |
 | Architecture & Patterns | 🔜 Planned | Design patterns and architectural styles |
 | DevOps & Infrastructure | 🔜 Planned | CI/CD, containers, cloud, networking |

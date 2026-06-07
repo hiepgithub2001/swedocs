@@ -10,8 +10,8 @@ Every section in this knowledge base is organized into **3 parts**:
 
 Open each part's `README.md` for its catalog.
 
-> **Status:** 1️⃣ Knowledge is written (24 topics ✅). 2️⃣ Case Studies and 3️⃣ Practice are
-> scaffolded with catalogs and templates — topics are listed but not yet written (⬜).
+> **Status:** all three parts are written ✅ — 1️⃣ Knowledge (24 topics), 2️⃣ Case Studies
+> (5), 3️⃣ Practice (7 labs).
 
 ---
 

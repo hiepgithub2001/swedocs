@@ -7,10 +7,10 @@ structures, the algorithm, the deep dives, and the trade-offs. Each follows the
 > Legend: ✅ written · 🚧 in progress · ⬜ not started
 
 ## Linux subsystems
-- ⬜ [The Linux CPU scheduler (CFS → EEVDF)](./linux-cfs-scheduler.md)
-- ⬜ [Linux virtual memory & the page cache](./linux-virtual-memory.md)
-- ⬜ [ext4 & journaling file systems](./ext4-journaling.md)
+- ✅ [The Linux CPU scheduler (CFS → EEVDF)](./linux-cfs-scheduler.md)
+- ✅ [Linux virtual memory & the page cache](./linux-virtual-memory.md)
+- ✅ [ext4 & journaling file systems](./ext4-journaling.md)
 
 ## Isolation & teaching kernels
-- ⬜ [Container internals — namespaces + cgroups](./container-internals.md)
-- ⬜ [xv6 — a clean teaching Unix](./xv6-unix.md)
+- ✅ [Container internals — namespaces + cgroups](./container-internals.md)
+- ✅ [xv6 — a clean teaching Unix](./xv6-unix.md)

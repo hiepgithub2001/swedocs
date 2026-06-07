@@ -13,30 +13,30 @@ can run it, break it, and watch the behavior. Mostly 🐧 **Linux + C** (with a 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started
 
 ## A. Processes & the shell (start here)
-- ⬜ [Write a Unix shell](./project-shell.md)
+- ✅ [Write a Unix shell](./project-shell.md)
   — `fork` + `exec` + `wait`, pipes, redirection. *Builds:* process creation, file
   descriptors, the parent/child model. Mirrors [process lifecycle](../1-knowledge/processes-scheduling/process-lifecycle.md).
-- ⬜ [Observe syscalls with strace](./project-strace-syscalls.md)
+- ✅ [Observe syscalls with strace](./project-strace-syscalls.md)
   — watch a real program's conversation with the kernel. *Builds:* the syscall boundary,
   user↔kernel transitions.
 
 ## B. Concurrency
-- ⬜ [Build a thread pool](./project-thread-pool.md)
+- ✅ [Build a thread pool](./project-thread-pool.md)
   — N worker threads pull from a shared queue. *Builds:* mutexes, condition variables,
   the producer-consumer pattern.
-- ⬜ [The dining philosophers](./project-dining-philosophers.md)
+- ✅ [The dining philosophers](./project-dining-philosophers.md)
   — reproduce a deadlock, then fix it. *Builds:* lock ordering, deadlock prevention.
 
 ## C. Memory
-- ⬜ [Write a `malloc` allocator](./project-allocator.md)
+- ✅ [Write a `malloc` allocator](./project-allocator.md)
   — a free-list heap allocator over `sbrk`/`mmap`. *Builds:* fragmentation, splitting &
   coalescing, alignment.
-- ⬜ [Page-replacement simulator](./project-page-replacement-sim.md)
+- ✅ [Page-replacement simulator](./project-page-replacement-sim.md)
   — feed a reference string to FIFO / LRU / Optimal, count faults, see Belady's anomaly.
   *Builds:* paging, locality, replacement policy.
 
 ## D. Isolation
-- ⬜ [A container from scratch](./project-container-from-scratch.md)
+- ✅ [A container from scratch](./project-container-from-scratch.md)
   — `clone()` with namespaces + a cgroup + `pivot_root`. *Builds:* exactly what Docker
   does under the hood. Mirrors [container internals](../2-case-studies/container-internals.md).
 

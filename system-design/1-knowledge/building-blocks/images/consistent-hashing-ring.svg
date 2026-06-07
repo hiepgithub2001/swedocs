@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect width="1000" height="560" fill="#ffffff"/>
+  <text x="500" y="40" font-size="26" font-weight="700" text-anchor="middle" fill="#1f2937">Consistent Hashing Ring (hash space 0 … 2³²−1)</text>
+
+  <!-- ======================= LEFT: the ring ======================= -->
+  <g transform="translate(300,310)">
+    <text x="0" y="-235" font-size="17" font-weight="600" text-anchor="middle" fill="#374151">A key walks clockwise to the first node</text>
+    <!-- ring -->
+    <circle cx="0" cy="0" r="180" fill="none" stroke="#cbd5e1" stroke-width="14"/>
+    <!-- clockwise arrow hint -->
+    <path d="M 150 -100 A 180 180 0 0 1 175 -40" fill="none" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+    <!-- 0 marker at top -->
+    <text x="0" y="-198" font-size="13" text-anchor="middle" fill="#64748b">0 / 2³²</text>
+
+    <!-- Nodes on ring (green) at angles -->
+    <!-- Node A at top (angle -90) -->
+    <g>
+      <circle cx="0" cy="-180" r="20" fill="#16a34a" stroke="#15803d" stroke-width="3"/>
+      <text x="0" y="-175" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">A</text>
+    </g>
+    <!-- Node B at angle 30 (right-lower) -->
+    <g>
+      <circle cx="155.9" cy="90" r="20" fill="#16a34a" stroke="#15803d" stroke-width="3"/>
+      <text x="155.9" y="95" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">B</text>
+    </g>
+    <!-- Node C at angle 150 (left-lower) -->
+    <g>
+      <circle cx="-155.9" cy="90" r="20" fill="#16a34a" stroke="#15803d" stroke-width="3"/>
+      <text x="-155.9" y="95" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">C</text>
+    </g>
+
+    <!-- Keys (blue dots) sitting on the ring -->
+    <!-- k1 just past A clockwise (angle -50) -> owned by B -->
+    <circle cx="115.7" cy="-137.9" r="8" fill="#2563eb"/>
+    <text x="138" y="-150" font-size="13" fill="#2563eb">k1</text>
+    <!-- k2 angle 80 -> owned by B too -->
+    <circle cx="31.3" cy="177.3" r="8" fill="#2563eb"/>
+    <text x="40" y="200" font-size="13" fill="#2563eb">k2</text>
+    <!-- k3 angle 110 -> owned by C -->
+    <circle cx="-61.6" cy="169.1" r="8" fill="#2563eb"/>
+    <text x="-86" y="190" font-size="13" fill="#2563eb">k3</text>
+    <!-- k4 angle 200 -> owned by A -->
+    <circle cx="-169.1" cy="-61.6" r="8" fill="#2563eb"/>
+    <text x="-200" y="-66" font-size="13" fill="#2563eb">k4</text>
+
+    <!-- ownership arcs label -->
+    <text x="0" y="240" font-size="13" text-anchor="middle" fill="#64748b">k1,k2 → B   ·   k3 → C   ·   k4 → A</text>
+  </g>
+
+  <!-- ======================= RIGHT: add node D ======================= -->
+  <g transform="translate(720,310)">
+    <text x="0" y="-235" font-size="17" font-weight="600" text-anchor="middle" fill="#374151">Add node D: only keys in D's arc move</text>
+    <circle cx="0" cy="0" r="180" fill="none" stroke="#cbd5e1" stroke-width="14"/>
+    <text x="0" y="-198" font-size="13" text-anchor="middle" fill="#64748b">0 / 2³²</text>
+
+    <!-- existing nodes same positions -->
+    <circle cx="0" cy="-180" r="20" fill="#16a34a" stroke="#15803d" stroke-width="3"/>
+    <text x="0" y="-175" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">A</text>
+    <circle cx="155.9" cy="90" r="20" fill="#16a34a" stroke="#15803d" stroke-width="3"/>
+    <text x="155.9" y="95" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">B</text>
+    <circle cx="-155.9" cy="90" r="20" fill="#16a34a" stroke="#15803d" stroke-width="3"/>
+    <text x="-155.9" y="95" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">C</text>
+
+    <!-- new node D at angle -20 (between A and B, before k1? place D at angle -25) -->
+    <g>
+      <circle cx="163.1" cy="-76.1" r="20" fill="#ea580c" stroke="#c2410c" stroke-width="3"/>
+      <text x="163.1" y="-71" font-size="15" font-weight="700" text-anchor="middle" fill="#fff">D</text>
+    </g>
+    <text x="225" y="-76" font-size="13" fill="#ea580c" font-weight="600">new</text>
+
+    <!-- keys same spots; k1 now falls before D? D at -25, k1 at -50 (further clockwise from A). A=-90, going clockwise -50 then -25(D) then B=30. k1(-50) reaches D first now -> k1 moves to D -->
+    <circle cx="115.7" cy="-137.9" r="8" fill="#dc2626"/>
+    <text x="138" y="-150" font-size="13" fill="#dc2626" font-weight="700">k1*</text>
+    <circle cx="31.3" cy="177.3" r="8" fill="#2563eb"/>
+    <text x="40" y="200" font-size="13" fill="#2563eb">k2</text>
+    <circle cx="-61.6" cy="169.1" r="8" fill="#2563eb"/>
+    <text x="-86" y="190" font-size="13" fill="#2563eb">k3</text>
+    <circle cx="-169.1" cy="-61.6" r="8" fill="#2563eb"/>
+    <text x="-200" y="-66" font-size="13" fill="#2563eb">k4</text>
+
+    <text x="0" y="240" font-size="13" text-anchor="middle" fill="#64748b">only k1 moves (B→D) · k2,k3,k4 unchanged</text>
+  </g>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L6,3 L0,6 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- legend -->
+  <g transform="translate(40,520)">
+    <circle cx="0" cy="-4" r="9" fill="#16a34a"/><text x="16" y="0" font-size="14" fill="#374151">node</text>
+    <circle cx="90" cy="-4" r="7" fill="#2563eb"/><text x="104" y="0" font-size="14" fill="#374151">key</text>
+    <circle cx="160" cy="-4" r="9" fill="#ea580c"/><text x="176" y="0" font-size="14" fill="#374151">new node</text>
+    <circle cx="290" cy="-4" r="7" fill="#dc2626"/><text x="304" y="0" font-size="14" fill="#374151">key that moved</text>
+  </g>
+</svg>

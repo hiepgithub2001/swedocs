@@ -202,8 +202,9 @@ Each local component maps to a managed service:
 | dead-letter queue | **SQS DLQ** + redrive policy | poison-message handling |
 
 Pattern: `API Gateway → Lambda (writes RDS + publishes SNS) → SNS fans out to SQS queues →
-Lambda consumers`. Throughput scales automatically; SQS absorbs spikes. See the
-[SQS+SNS lab](./aws/queue-sqs-sns.md) for the messaging primitives.
+Lambda consumers`. Throughput scales automatically; SQS absorbs spikes. The
+[notification service project](./project-notification-service.md) drills into queue
+fan-out, retries, and DLQs in more depth.
 
 ## Observe & break it
 1. **Scale the workers:** `docker compose up -d --scale worker=3`, fire 20 orders in a loop,

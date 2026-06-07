@@ -1,6 +1,7 @@
-# AWS Track: Setup, Cost Safety & Teardown
+# AWS Prerequisites: Setup, Cost Safety & Teardown
 
-> Read this before any AWS lab. It keeps you from accidentally running up a bill.
+> Read this before the **"Deploy / scale on AWS"** section of any
+> [practice project](../README.md). It keeps you from accidentally running up a bill.
 
 ## Goal
 Have a working AWS CLI, sane guardrails (budget alarm, least privilege), and the
@@ -31,8 +32,8 @@ Also:
 
 ## The golden rule: tear down
 The expensive mistakes are **always-on** resources: EC2 instances, RDS/ElastiCache
-clusters, NAT gateways, load balancers, and idle Elastic IPs. Each lab ends with a
-**Teardown** section — run it. Then sanity-check:
+clusters, NAT gateways, load balancers, and idle Elastic IPs. Each project's AWS section
+ends with a **Teardown** — run it. Then sanity-check:
 ```bash
 aws ec2 describe-instances --query "Reservations[].Instances[].InstanceId"
 aws elbv2 describe-load-balancers --query "LoadBalancers[].LoadBalancerArn"
@@ -46,6 +47,7 @@ If a list isn't empty and you're done, delete it.
 know how to list and delete resources.
 
 ## Notes
-- Many labs can run **entirely in Free Tier** if you tear down promptly.
+- Many project AWS sections run **entirely in Free Tier** if you tear down promptly.
 - Consider a separate **sandbox account** (via AWS Organizations) for experiments.
-- Related: this whole track maps to the [Knowledge](../../1-knowledge/) building blocks.
+- Related: the [practice projects](../README.md) map back to the
+  [Knowledge](../../1-knowledge/) building blocks and [case studies](../../2-case-studies/).

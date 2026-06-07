@@ -36,6 +36,22 @@ leaks over time. Tools: k6, JMeter, Locust, Gatling.
 **Plan for growth** — track utilization trends and lead times (some resources take days
 to provision); plan headroom for the next N months.
 
+## Example — find the knee, then autoscale
+You load-test one instance with **k6**: it holds p95 < 200 ms up to ~2,000 req/s, then
+latency spikes (saturation). Expected peak is 8,000 req/s, so you need ~4 instances + headroom
+→ run 5–6 and let an autoscaler add more on the CloudWatch latency/CPU alarm. Watch out: once
+the app tier scales, the **single database** often becomes the next bottleneck (autoscaling
+can't fix a write limit — you'd need replicas/sharding). Built in the
+[autoscaling & load-testing project](../../3-practice/cross-autoscaling.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **k6 / JMeter / Locust / Gatling** | load, stress, and soak testing to find limits |
+| **Kubernetes HPA**, **EC2 Auto Scaling**, **ECS autoscaling** | adding/removing capacity automatically |
+| **CloudWatch alarms / Prometheus rules** | the scale-out/in signals |
+| **Scheduled / predictive scaling** | pre-warming for known peaks (Black Friday) |
+
 ## Trade-offs
 - Over-provision = reliability + cost; under-provision = savings + risk. Autoscaling
   balances this but has limits (cold starts, scaling lag, downstream bottlenecks like a

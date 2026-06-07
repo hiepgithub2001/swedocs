@@ -38,6 +38,27 @@ flowchart LR
 **Levels of redundancy** — instance → availability zone → region. Multi-AZ survives a
 datacenter outage; multi-region survives a regional one.
 
+## Example — database failover
+A primary database has a synchronous **standby** in another availability zone. A health
+check/heartbeat monitors the primary. When it dies:
+```
+primary (AZ-a) ──sync replication──► standby (AZ-b)
+        ✗ fails
+        → standby is PROMOTED to primary, DNS/endpoint repointed (~60–120s)
+```
+Clients reconnect to the new primary; no data is lost (sync). The key risks to design
+around: **split-brain** (two primaries) — prevented with quorum/consensus — and testing that
+failover *actually* works.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **AWS RDS Multi-AZ / Aurora** | managed synchronous standby + auto-failover |
+| **Patroni + etcd**, **repmgr** | Postgres leader election / failover |
+| **keepalived (VRRP)** | floating/virtual IP failover for LBs |
+| **Route 53 health checks** | DNS failover across regions |
+| **Kubernetes** | reschedules pods off dead nodes automatically |
+
 ## Trade-offs
 - More redundancy = higher availability but more **cost** and **complexity**.
 - Active-active uses resources efficiently but needs state coordination; active-passive

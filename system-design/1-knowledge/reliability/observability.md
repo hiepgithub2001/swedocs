@@ -36,6 +36,26 @@ Saturation, Errors.)
 **Alerting** — alert on **symptoms users feel** (high error rate, slow p99), not every
 internal blip. Avoid alert fatigue; page only on actionable, urgent issues.
 
+## Example — debugging a latency spike
+Pager fires: p99 latency is up. You use all three pillars:
+1. **Metrics** (Grafana): the spike is on the `/checkout` endpoint, error rate normal →
+   it's *slow*, not failing.
+2. **Traces** (Jaeger): one checkout trace shows 800 ms spent in the **payment** service's DB
+   call — you've localized *where*.
+3. **Logs** (filtered by that request's `trace_id`): "connection pool exhausted" → the
+   *why*.
+Metrics found it, traces localized it, logs explained it. Built in the
+[observability project](../../3-practice/cross-observability.md).
+
+## Common tools
+| Pillar | Tools |
+| --- | --- |
+| **Metrics** | **Prometheus + Grafana**, **Datadog**, CloudWatch, AWS Managed Prometheus |
+| **Logs** | **ELK / OpenSearch**, **Loki**, CloudWatch Logs, Splunk |
+| **Traces** | **Jaeger**, **Tempo**, **AWS X-Ray** |
+| **Instrumentation** | **OpenTelemetry** (vendor-neutral, instrument once) |
+| **Alerting** | **Alertmanager**, **PagerDuty**, **Opsgenie** |
+
 ## Trade-offs
 - More telemetry = better insight but more **cost and noise**; sample high-volume
   traces/logs.

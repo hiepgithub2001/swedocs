@@ -36,6 +36,23 @@ flowchart LR
 - **Hot standby / multi-site active-active** — full live copy, near-zero RTO/RPO, most
   expensive.
 
+## Example — RPO/RTO with backups
+You back up the database every hour and can restore in ~30 minutes. So your **RPO ≈ 1 hour**
+(worst case you lose the last hour of writes) and **RTO ≈ 30 minutes** (time to be back up).
+If the business needs RPO = 5 minutes, hourly backups aren't enough → add **continuous
+point-in-time recovery (PITR)** so you can roll back to any moment, which also saves you from
+a bad `DELETE` that replication would have faithfully copied to every replica. Always **test
+the restore** — an untested backup isn't a backup.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **RDS snapshots + PITR**, **`pg_dump` / WAL archiving** | database backups & point-in-time recovery |
+| **AWS Backup** | centralized, scheduled backups across services |
+| **Velero** | backup/restore of Kubernetes clusters |
+| **Cross-region replication** (S3, RDS) | regional disaster recovery |
+| **Game days / DR drills** | proving the runbook actually works |
+
 ## Trade-offs
 - Lower RPO/RTO = more cost and complexity. Set them per business need (a bank's ledger
   ≠ a marketing blog).

@@ -36,6 +36,27 @@ the PoP).
 cached and for how long. **Cache busting** (versioned filenames like `app.a1b2.js`)
 forces refresh on deploy.
 
+## Example — first miss, then edge hits
+A user in Singapore requests `/logo.png`. The nearest CDN PoP has no copy → **MISS**: it
+fetches once from your origin (in Virginia) and caches it. Every subsequent request from
+that region is an edge **HIT** served in a few ms, and your origin never sees them:
+```bash
+curl -sI https://dxxxx.cloudfront.net/logo.png | grep -i x-cache
+# X-Cache: Miss from cloudfront   (first)
+# X-Cache: Hit from cloudfront    (after)
+```
+Built in the [video streaming](../../3-practice/project-video-streaming.md) and
+[image processing](../../3-practice/project-image-processing.md) projects.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **AWS CloudFront** | CDN tightly integrated with S3/ALB |
+| **Cloudflare** | CDN + DNS + WAF + edge compute (Workers) |
+| **Fastly** | real-time purge, programmable edge (VCL) |
+| **Akamai** | the largest legacy CDN footprint |
+| **Netflix Open Connect** | example of a company building its *own* CDN in ISPs |
+
 ## Trade-offs
 - Massive latency + origin-load reduction, but: **stale content** until TTL/expiry or
   explicit **purge**; extra cost; harder to cache personalized/dynamic responses.

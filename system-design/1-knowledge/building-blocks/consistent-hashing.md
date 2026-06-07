@@ -28,6 +28,24 @@ instead of nearly all of them.
 - Spreads a failed node's load across *many* remaining nodes, not just its neighbor.
 - Lets you weight bigger machines (give them more virtual nodes).
 
+## Example — adding a node moves few keys
+Distribute 10,000 keys over 3 nodes, then add a 4th:
+- **`hash(key) % N`:** going from `%3` to `%4` changes the result for **~75%** of keys → a
+  near-total reshuffle (cache-miss storm).
+- **Consistent hashing:** only the keys that now fall to the new node's ring segment move —
+  **~25% (≈ K/N)**. Everyone else stays put.
+
+Virtual nodes keep each node's share even (~25% each). You can measure both in a few lines of
+Python — it underpins the [key-value store case study](../../2-case-studies/key-value-store.md).
+
+## Common tools
+| Tool | Uses consistent hashing for |
+| --- | --- |
+| **Apache Cassandra**, **DynamoDB** | partitioning data across nodes (with virtual nodes) |
+| **libketama / libmemcached** | spreading keys across Memcached servers |
+| **Envoy** (`ring_hash`), **HAProxy** | sticky/affinity load balancing |
+| **Google Maglev**, **"consistent hashing with bounded loads"** | LB variants that also cap per-node overload |
+
 ## Trade-offs
 - Adds implementation complexity vs simple modulo, but is essential for systems where
   membership changes often (caches, distributed DBs).

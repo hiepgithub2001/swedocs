@@ -35,6 +35,22 @@ Cross-cutting features it centralizes:
 - **Request routing & aggregation** (fan out to several services, combine results).
 - **Protocol translation** (e.g. REST ↔ gRPC), logging, metrics.
 
+## Example — one front door, many services
+A single gateway endpoint routes by path: `/users/*` → User service, `/orders/*` → Order
+service, `/pay/*` → Payment service. The gateway validates the auth token **once**, applies
+a rate limit, logs the request, terminates TLS — then forwards to the right backend. Each
+service no longer re-implements auth/rate-limiting. Built in the
+[event-driven orders project](../../3-practice/project-event-driven-orders.md) (API tier).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Kong**, **Apigee**, **Tyk** | full-featured API gateways (auth, quotas, plugins) |
+| **AWS API Gateway** | managed/serverless gateway (authorizers, usage plans, Lambda) |
+| **Nginx**, **Traefik**, **HAProxy** | reverse proxy + lightweight gateway |
+| **Envoy** | gateway + service-mesh data plane |
+| **Netflix Zuul** | the pattern's origin (JVM) |
+
 ## Trade-offs
 - A gateway removes duplicated logic from services — but becomes a **critical
   dependency and potential bottleneck/SPOF**; make it redundant.

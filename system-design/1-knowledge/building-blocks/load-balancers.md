@@ -37,6 +37,22 @@ rotation and re-added when they recover.
 **Don't make the LB a SPOF** — run load balancers in a redundant pair (active-passive
 or active-active), often fronted by DNS or a floating/virtual IP.
 
+## Example — round-robin + health check
+Three app instances sit behind one LB. Requests rotate `web1 → web2 → web3 → web1…`
+(round-robin). You stop `web2`; the LB's health check fails for it within a couple of
+probes, so it's **ejected** and traffic flows only to `web1`/`web3` — **no client sees an
+error**. When `web2` recovers, it's added back. Built in the
+[scalable web service project](../../3-practice/project-scalable-web-service.md).
+
+## Common tools
+| Tool | Layer | Use it for |
+| --- | --- | --- |
+| **Nginx**, **HAProxy** | L7/L4 | software LB / reverse proxy on your own boxes |
+| **Envoy** | L7 | modern proxy; the data plane in service meshes |
+| **AWS ALB** | L7 | HTTP routing, TLS, WebSocket, target groups |
+| **AWS NLB** | L4 | raw TCP/UDP, ultra-low latency, static IPs |
+| **GCP/Azure LB**, **F5** | L4/L7 | cloud / hardware load balancing |
+
 ## Trade-offs
 - **Sticky sessions** simplify stateful apps but hurt even distribution and break when
   a node dies → prefer stateless servers + shared session store.

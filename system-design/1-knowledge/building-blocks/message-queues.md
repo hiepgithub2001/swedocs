@@ -39,6 +39,22 @@ flowchart LR
 queue** (DLQ) for messages that keep failing, ordering (often per-partition), and
 backpressure.
 
+## Example — decouple checkout from email
+At checkout, the API publishes an `OrderPlaced` event and returns immediately — it does
+**not** wait to send the confirmation email. A worker consumes the event and sends the email
+later. If email is slow or down, checkout is unaffected; the message waits in the queue.
+Add more workers to the same **consumer group** and they split the partitions to process
+faster. Built in the [event-driven orders project](../../3-practice/project-event-driven-orders.md).
+
+## Common tools
+| Tool | Type | Use it for |
+| --- | --- | --- |
+| **Apache Kafka** | log | high-throughput streaming, replay, many consumers |
+| **RabbitMQ** | broker | flexible routing, classic task queues |
+| **AWS SQS / SNS** | managed queue / pub-sub | serverless decoupling + fan-out |
+| **Redis Streams** | lightweight log | simple in-process-adjacent streaming |
+| **Apache Pulsar**, **NATS**, **Redpanda** | log/broker | modern Kafka-style alternatives |
+
 ## Trade-offs
 - Async adds **eventual consistency** and **complexity** (retries, ordering, dedup,
   monitoring) — don't use a queue where a simple sync call suffices.

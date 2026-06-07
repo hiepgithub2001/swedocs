@@ -33,6 +33,23 @@ repeating the lookup.
 **DNS as infrastructure** — DNS also enables load balancing (return different IPs),
 failover (drop a dead region), and geo-routing (return the nearest datacenter).
 
+## Example — watch a lookup happen
+```bash
+dig +trace example.com        # shows root -> .com TLD -> authoritative resolution
+dig example.com               # the answer + the TTL (how long it's cached)
+```
+The first lookup walks the hierarchy (~tens of ms); for the next `TTL` seconds, the answer
+is served from cache (browser/OS/resolver) with near-zero cost. Lowering the TTL before a
+migration lets you re-point traffic quickly; a high TTL means changes propagate slowly.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **dig / nslookup / host** | inspecting DNS resolution + TTLs |
+| **AWS Route 53**, **Cloudflare DNS**, **NS1** | authoritative DNS with health checks |
+| **GeoDNS / latency-based routing** (Route 53, Cloudflare) | returning the nearest region |
+| **BIND**, **CoreDNS** | running your own / in-cluster DNS (CoreDNS in Kubernetes) |
+
 ## Trade-offs
 - **High TTL** → better caching, fewer lookups, but slower to propagate changes
   (failover lag).

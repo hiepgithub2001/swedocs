@@ -38,6 +38,23 @@ get different limits.
 **Telling the client** — respond with `429 Too Many Requests` plus headers like
 `Retry-After` and `X-RateLimit-Remaining`.
 
+## Example — 5 requests/sec, shared counter
+A client is limited to 5 req/s. The gateway runs an atomic `INCR` on a Redis key `rl:<ip>`
+with a 1-second TTL: requests 1–5 return `200`, request 6 returns `429 Too Many Requests`
+with `Retry-After: 1`. Because the counter is in Redis, the limit holds **across all gateway
+instances** — not 5-per-instance. Built in the
+[notification service project](../../3-practice/project-notification-service.md) and
+detailed in the [rate limiter case study](../../2-case-studies/rate-limiter.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Redis** (+ Lua script) | the shared atomic counter / token bucket |
+| **Nginx `limit_req`** | edge rate limiting on your own proxy |
+| **Kong / Envoy / Apigee** | gateway-level rate limiting plugins |
+| **AWS API Gateway usage plans**, **AWS WAF rate rules** | managed throttling + abuse protection |
+| **Cloudflare Rate Limiting** | edge/DDoS-grade limiting before traffic hits you |
+
 ## Trade-offs
 - **Distributed accuracy vs latency** — a perfectly global counter needs coordination
   (slower); approximate per-node limits are faster but leak a bit.

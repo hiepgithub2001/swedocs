@@ -38,6 +38,23 @@ flowchart LR
     end
 ```
 
+## Example — chat: polling vs WebSocket
+With **short polling**, the client asks "any new messages?" every 2s — wasteful and laggy
+(most responses are empty, updates trail by up to 2s). With a **WebSocket**, the client opens
+one persistent connection and the server **pushes** each message the instant it arrives —
+real-time, low overhead, bidirectional. Built in the
+[chat project](../../3-practice/project-chat.md), which uses Redis pub/sub as the cross-server
+backplane.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **FastAPI / Socket.IO / `ws`** | WebSocket servers |
+| **Server-Sent Events (SSE)** | one-way server→client streams (tickers, feeds) |
+| **Redis pub/sub** | fan-out backplane so any server can reach any connection |
+| **Pusher / Ably / Centrifugo** | managed real-time messaging infrastructure |
+| **MQTT** | lightweight pub/sub for mobile/IoT (used by WhatsApp) |
+
 ## Trade-offs
 - Pick the **simplest** that meets the need: notifications/feeds → **SSE**; chat,
   gaming, collaborative editing → **WebSockets**; occasional updates → **long polling**.

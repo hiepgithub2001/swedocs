@@ -35,6 +35,27 @@ flowchart LR
 **Four call types** — unary, server-streaming, client-streaming, and
 **bidirectional streaming** (great for real-time pipelines).
 
+## Example — contract → generated stubs
+You define the service once in a `.proto`, then generate **client and server code** in any
+language — the client calls a remote method like a local function:
+```python
+# generated from user.proto
+stub = UserServiceStub(channel)
+user = stub.GetUser(GetUserRequest(id=123))   # binary protobuf over HTTP/2
+print(user.name)
+```
+No hand-written JSON parsing, a strict typed contract, and HTTP/2 multiplexing/streaming —
+ideal for **internal** microservice calls.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **gRPC** + **Protocol Buffers** | the framework + serialization |
+| **`protoc` / Buf** | compiling `.proto` files, linting, breaking-change checks |
+| **grpcurl** | calling gRPC services from the CLI (like curl) |
+| **Envoy / gRPC-Web** | proxying gRPC to browsers |
+| **grpc (Python)**, **grpc-go**, etc. | per-language libraries |
+
 ## Trade-offs
 - ✅ **Fast & compact** (binary), **strongly typed** contract, codegen, streaming,
   language-agnostic. Ideal for **internal microservices**.

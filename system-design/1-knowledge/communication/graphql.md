@@ -37,6 +37,25 @@ flowchart LR
     GQL -->|exact shape| Client
 ```
 
+## Example — one request, exact shape
+Instead of calling `/users/123` then `/users/123/orders`, the client asks for precisely what
+it needs in **one** round trip:
+```graphql
+query { user(id: 123) { name  orders(last: 3) { id total } } }
+```
+The response mirrors the query — just `name` and the last 3 orders, nothing more. Great for
+mobile (fewer round trips, fewer bytes); watch the **N+1** resolver problem (batch with
+DataLoader).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Apollo Server / Client** | the most common GraphQL stack (JS) |
+| **Strawberry / Ariadne / Graphene** | building GraphQL APIs in **Python** |
+| **Hasura / PostGraphile** | instant GraphQL over a Postgres schema |
+| **DataLoader** | batching to fix the N+1 query problem |
+| **GraphiQL / Apollo Studio** | exploring + testing the schema |
+
 ## Trade-offs
 - ✅ No over/under-fetching, single round trip, strongly typed, great for diverse
   clients and rapidly evolving frontends; introspectable.

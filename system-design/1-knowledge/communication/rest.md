@@ -41,6 +41,27 @@ limited), **5xx server error**.
 - **HATEOAS** (links in responses) — the purist level of REST; often skipped in
   practice.
 
+## Example — a resource as REST
+A `users` resource maps cleanly to verbs + status codes:
+```http
+POST /v1/users        {"name":"Ada"}      -> 201 Created   {"id":123,...}
+GET  /v1/users/123                          -> 200 OK
+GET  /v1/users?page=2&limit=20&sort=-created -> 200 OK   (pagination/filter/sort)
+PATCH /v1/users/123   {"name":"Ada L."}     -> 200 OK
+DELETE /v1/users/123                         -> 204 No Content
+GET  /v1/users/999                           -> 404 Not Found
+```
+Stateless: each request carries its own auth (e.g. `Authorization: Bearer …`). Built as the
+API tier in most [practice projects](../../3-practice/).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **OpenAPI / Swagger** | documenting + generating clients for REST APIs |
+| **Postman / curl / HTTPie** | calling and testing endpoints |
+| **FastAPI / Flask / Express / Spring** | building REST services |
+| **Stripe / GitHub APIs** | reference designs to imitate |
+
 ## Trade-offs
 - ✅ Simple, ubiquitous, cacheable (HTTP caching), great tooling, human-readable.
 - ⚠️ **Over-fetching / under-fetching** (fixed responses) → GraphQL addresses this.

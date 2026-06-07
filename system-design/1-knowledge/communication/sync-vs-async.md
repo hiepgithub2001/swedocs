@@ -30,6 +30,24 @@ flowchart LR
 - ⚠️ **Eventual consistency**, harder to trace/debug, ordering & idempotency concerns,
   no immediate result to return to a user.
 
+## Example — checkout mixes both
+A checkout request does the part that must be **synchronous** and immediate — charge the card
+and return success/failure to the user — then **enqueues** the rest as **asynchronous** events:
+```python
+charge_card(order)                          # sync: caller needs the result now
+queue.publish("OrderPlaced", order)         # async: receipt, inventory, shipping, analytics
+return {"status": "confirmed"}              # returns without waiting on the slow stuff
+```
+The email, inventory update, and analytics all happen off the request path. Built in the
+[event-driven orders project](../../3-practice/project-event-driven-orders.md).
+
+## Common tools
+| Style | Tools |
+| --- | --- |
+| **Synchronous** | REST (HTTP), **gRPC** — when you need the answer now |
+| **Asynchronous** | **Kafka**, **RabbitMQ**, **AWS SQS/SNS** — fire-and-forget / fan-out |
+| **Task queues** | **Celery** (Python), **Sidekiq**, **BullMQ** — background jobs |
+
 ## Trade-offs
 - Use **sync** when the caller needs the answer now (read a price, validate a login,
   fetch a profile).

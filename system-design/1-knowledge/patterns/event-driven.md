@@ -34,6 +34,27 @@ flowchart LR
 **Related ideas** — **event sourcing** (store the events as the source of truth) and
 **CQRS** often pair with this (see [CQRS & event sourcing](./cqrs-event-sourcing.md)).
 
+## Example — one event, many reactions
+The Order service publishes a single `OrderPlaced` event. It doesn't know or care who's
+listening. Three independent consumers each react:
+```
+OrderPlaced ──► Email service     (send confirmation)
+            ├─► Inventory service (reserve stock)
+            └─► Analytics         (update dashboards)
+```
+Adding a fourth consumer (e.g. fraud check) requires **zero changes** to the producer — that's
+the loose-coupling payoff. Built in the
+[event-driven orders project](../../3-practice/project-event-driven-orders.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Apache Kafka** | durable, replayable event log (the common backbone) |
+| **RabbitMQ** | flexible routing / event distribution |
+| **AWS EventBridge** | event bus with routing/filtering rules |
+| **AWS SNS + SQS** | pub/sub fan-out to per-consumer queues |
+| **Debezium** | turning DB changes into events (CDC) |
+
 ## Trade-offs
 - ✅ Loose coupling, easy to add consumers, natural buffering/scaling, resilience,
   audit trail of what happened.

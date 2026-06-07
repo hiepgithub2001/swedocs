@@ -34,6 +34,24 @@ flowchart LR
 - ⚠️ Distributed complexity: network failures, **eventual consistency**, distributed
   transactions (sagas), service discovery, observability, deployment overhead.
 
+## Example — one deploy becomes many
+A monolithic shop (`UI + orders + payments + inventory` in one codebase, one DB, one deploy)
+is split into **User**, **Order**, **Payment**, and **Inventory** services — each with its
+**own database**, deployed independently, talking over REST/gRPC/events behind an API
+gateway. Now the payments team ships without redeploying everything, and inventory can scale
+on its own. The cost: network calls, eventual consistency, and distributed-systems
+complexity. The [saga](../../3-practice/project-saga.md) and
+[event-driven](../../3-practice/project-event-driven-orders.md) projects show the glue.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Docker + Kubernetes** | packaging & running many services |
+| **FastAPI / Spring Boot / Go** | building individual services |
+| **gRPC / REST / Kafka** | inter-service communication |
+| **Istio / Linkerd (service mesh)** | traffic, retries, mTLS, observability between services |
+| **API gateway** (Kong, API Gateway) | the single front door |
+
 ## Trade-offs
 - **Start with a (well-structured / modular) monolith.** Most products never need
   microservices; premature splitting adds huge operational cost.

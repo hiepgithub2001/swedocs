@@ -30,6 +30,24 @@ events**.
 - Gives a complete **audit log**, time-travel ("state as of last Tuesday"), and easy
   rebuilding of new read models by replaying.
 
+## Example — a bank account as events
+Instead of storing only `balance = 100`, **event sourcing** stores the facts:
+```
+Deposited 50  ·  Deposited 70  ·  Withdrew 20      →  balance = replay() = 100
+```
+The current balance is **derived** by replaying events. With **CQRS**, the write side appends
+events while separate **read models** are built from them — one optimized for the account
+statement, another for a fraud dashboard — each updated as events flow. You get a full audit
+log and time-travel for free, at the cost of eventual consistency between write and read sides.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **EventStoreDB** | a database purpose-built for event sourcing |
+| **Apache Kafka** | event log + projections into read models |
+| **Axon Framework** (Java), **Marten** (.NET/Postgres) | CQRS/ES frameworks |
+| **Materialized views / read replicas** | the query-side read models |
+
 ## Trade-offs
 - ✅ Independently scalable/optimized reads and writes; full history & audit; natural
   fit with event-driven systems; rebuild projections anytime.

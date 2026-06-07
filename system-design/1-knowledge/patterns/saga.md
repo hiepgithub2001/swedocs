@@ -30,6 +30,26 @@ flowchart LR
   handles failures/compensation. Explicit and easier to monitor; the orchestrator is a
   dependency to manage.
 
+## Example — checkout with compensation
+"Place order" spans three services with three separate databases — no single ACID
+transaction is possible. A saga runs local steps and **undoes** earlier ones on failure:
+```
+1. Create order      ✓
+2. Charge payment    ✓
+3. Reserve stock     ✗  out of stock
+   → compensate: Refund payment, Cancel order   (semantic rollback)
+```
+The customer isn't charged for an order that didn't happen. Built (orchestrated) in the
+[saga project](../../3-practice/project-saga.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **AWS Step Functions** | managed orchestration with built-in catch/compensation |
+| **Temporal / Cadence** | durable, fault-tolerant workflow engines (Uber's Cadence) |
+| **Camunda / Zeebe** | BPMN-based orchestration |
+| **Kafka / SQS + EventBridge** | choreography (services react to events) |
+
 ## Trade-offs
 - ✅ Enables consistency across services without distributed locks; resilient.
 - ⚠️ **Eventual consistency** (intermediate states are visible — an order can be

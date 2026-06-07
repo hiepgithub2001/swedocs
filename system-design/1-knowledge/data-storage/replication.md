@@ -37,6 +37,27 @@ availability/locality, but introduces **write conflicts** that need resolution.
 **Leaderless (Dynamo-style)** — any replica accepts reads/writes; uses **quorums**
 (W + R > N) to stay consistent. Used by Cassandra, DynamoDB.
 
+## Example — read scaling with a replica
+Writes go to the **primary**; you add a **read replica** and send read-only queries there.
+A read-heavy app (say 90% reads) now offloads most traffic from the primary:
+```sql
+-- on primary
+INSERT INTO t VALUES (1),(2),(3);
+-- on replica (streamed via WAL)
+SELECT * FROM t;            -- 1,2,3
+INSERT INTO t VALUES (4);   -- ERROR: cannot execute INSERT in a read-only transaction
+```
+Watch replica lag and read-only behavior in the
+[scalable web service project](../../3-practice/project-scalable-web-service.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **PostgreSQL / MySQL** streaming replication | self-managed primary + read replicas |
+| **AWS RDS / Aurora** | managed read replicas + Multi-AZ auto-failover |
+| **Patroni + etcd**, **repmgr** | automated leader election / failover for Postgres |
+| **Cassandra / DynamoDB** | leaderless, quorum-based replication (multi-DC) |
+
 ## Trade-offs
 - **Replication lag** breaks read-your-own-writes (you write to leader, read a stale
   follower). Fixes: read from leader for recent writes, or track versions.

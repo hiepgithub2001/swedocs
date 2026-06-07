@@ -33,6 +33,26 @@ your database. Serve it to users through a **CDN**.
 server-side encryption, **presigned URLs** (time-limited direct upload/download
 without proxying through your servers), and event notifications.
 
+## Example — store the blob, keep the URL
+A user uploads an avatar. You **don't** put the bytes in your database — you `PUT` the file
+to object storage and store only its **key/URL** in the DB row:
+```python
+s3.put_object(Bucket="avatars", Key=f"{user_id}.jpg", Body=data)
+db.execute("UPDATE users SET avatar_url=%s WHERE id=%s",
+           (f"https://cdn.example.com/avatars/{user_id}.jpg", user_id))
+```
+Large files upload **directly** via a **presigned URL** (bypassing your servers) and are
+served through a CDN. Built in the [image processing](../../3-practice/project-image-processing.md)
+and [video streaming](../../3-practice/project-video-streaming.md) projects.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **AWS S3** | the de facto object store (11 nines durability) |
+| **Google Cloud Storage**, **Azure Blob** | cloud equivalents |
+| **MinIO** | self-hosted, S3-compatible (great for local dev) |
+| **Cloudflare R2**, **Backblaze B2** | S3-compatible with no/low egress fees |
+
 ## Trade-offs
 - Cheap, durable (S3 advertises **11 nines** of durability), effectively unlimited —
   but **higher latency**, eventually-consistent listings historically, and **no

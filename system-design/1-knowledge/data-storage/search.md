@@ -35,6 +35,26 @@ document vs the whole corpus, so the best matches rank first.
 approximate nearest neighbor) to match meaning, not just words, and combines both
 ("hybrid search").
 
+## Example — why an inverted index beats LIKE
+`SELECT * FROM articles WHERE body LIKE '%system design%'` scans every row, can't rank, and
+misses "designing systems." A search engine instead builds an **inverted index**:
+```
+"design" -> [doc1, doc7, doc42]
+"system" -> [doc7, doc9, doc42]
+```
+A query for `system design` **intersects** the posting lists → docs 7 and 42, ranked by
+relevance (BM25), with stemming/synonyms applied. You keep the DB as source of truth and
+sync changes into the index (see the [CDC→search project](../../3-practice/project-cdc-search.md)).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Elasticsearch / OpenSearch** | full-text search, logging (ELK), analytics |
+| **Apache Solr** | mature Lucene-based search |
+| **Typesense / Meilisearch** | lightweight, fast, developer-friendly search |
+| **Algolia** | hosted instant/typeahead search |
+| **pgvector / OpenSearch k-NN** | semantic/vector search (embeddings) |
+
 ## Trade-offs
 - Search engines are a **secondary store**: you index data from your primary DB, so
   there's **sync/lag** and eventual consistency to manage (via CDC, dual writes, or

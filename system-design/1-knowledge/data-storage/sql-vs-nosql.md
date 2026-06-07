@@ -37,6 +37,27 @@ flowchart TB
     Q -->|relationships| G[(Graph)]
 ```
 
+## Example — picking per workload (polyglot persistence)
+One e-commerce app uses several stores, each matched to its access pattern:
+- **Orders & payments** → **PostgreSQL** (need ACID transactions, joins).
+- **Product catalog** (varied, nested attributes) → **MongoDB** (flexible documents).
+- **Shopping cart / sessions** → **Redis** or **DynamoDB** (simple key lookups, huge scale).
+- **"Customers who bought…" recommendations** → a **graph DB** (relationships).
+
+There's no single "best" database — you choose per workload. Modeled in the
+[scalable web service](../../3-practice/project-scalable-web-service.md) (SQL) and
+[key-value store case study](../../2-case-studies/key-value-store.md) (NoSQL).
+
+## Common tools
+| Tool | Family | Sweet spot |
+| --- | --- | --- |
+| **PostgreSQL**, **MySQL** | Relational | transactions, joins, the default choice |
+| **MongoDB** | Document | flexible/nested data, fast iteration |
+| **Cassandra / ScyllaDB** | Wide-column | massive writes, time-series, multi-DC |
+| **DynamoDB** | Key-value/document | serverless scale, predictable latency |
+| **Redis** | Key-value (in-mem) | cache, sessions, counters, queues |
+| **Neo4j** | Graph | relationship-heavy queries |
+
 ## Trade-offs
 - **SQL** — consistency, joins, mature tooling; harder horizontal scaling, rigid
   schema.

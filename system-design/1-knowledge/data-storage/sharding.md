@@ -31,6 +31,24 @@ flowchart LR
 - Keeps related data that's queried together on the same shard.
 - A poor key (e.g. `country` when 80% are in one country) creates hot shards.
 
+## Example — split users across two shards
+Route each row by `shard = hash(user_id) % 2`: even ids land on shard 0, odd on shard 1, so
+each database holds half the data and serves half the writes. A single-user read uses the
+same function to hit exactly one shard. The catch: "list **all** users sorted by name" must
+query **both** shards and merge (scatter-gather), and adding a shard with `% N` reshuffles
+most keys (use consistent hashing instead). Built in the
+[news feed project](../../3-practice/project-news-feed.md) ideas and the
+[key-value store case study](../../2-case-studies/key-value-store.md).
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **Vitess** | sharding **MySQL** behind a router (YouTube, Slack) |
+| **Citus** | sharding **PostgreSQL** (distributed Postgres) |
+| **MongoDB sharding** | built-in auto-sharding by shard key |
+| **Cassandra / DynamoDB** | partition automatically by partition key |
+| **Consistent hashing libs** | minimal-movement resharding |
+
 ## Trade-offs
 - **Cross-shard queries and joins** become hard/expensive (scatter-gather).
 - **Cross-shard transactions** lose simple ACID → need distributed transactions/sagas.

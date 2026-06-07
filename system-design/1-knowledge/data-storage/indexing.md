@@ -36,6 +36,26 @@ flowchart TB
 - **Covering index** — includes all columns a query needs, so the DB never touches the
   table.
 
+## Example — turning a scan into a lookup
+A `users` table has 10M rows. `SELECT * FROM users WHERE email = ?` with **no index** does a
+**full table scan** (~10M row reads). Add an index and it becomes a B-tree lookup (~log n):
+```sql
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'x@y.com';
+-- before: Seq Scan ... rows=10000000   (seconds)
+CREATE INDEX idx_users_email ON users(email);
+-- after:  Index Scan using idx_users_email ... (milliseconds)
+```
+Always confirm the planner actually uses the index with `EXPLAIN`.
+
+## Common tools
+| Tool | Use it for |
+| --- | --- |
+| **`EXPLAIN` / `EXPLAIN ANALYZE`** | seeing whether a query uses an index |
+| **PostgreSQL / MySQL B-tree indexes** | the default for equality + range queries |
+| **Composite & covering indexes** | multi-column filters; serving a query from the index alone |
+| **pg_stat_statements**, **RDS Performance Insights** | finding slow queries to index |
+| **RocksDB / Cassandra (LSM-tree)** | write-optimized indexing at scale |
+
 ## Trade-offs
 - **Reads faster, writes slower** — every insert/update/delete must also update each
   index. Don't over-index write-heavy tables.

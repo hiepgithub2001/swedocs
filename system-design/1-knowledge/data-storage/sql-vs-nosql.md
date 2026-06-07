@@ -48,6 +48,43 @@ There's no single "best" database — you choose per workload. Modeled in the
 [scalable web service](../../3-practice/project-scalable-web-service.md) (SQL) and
 [key-value store case study](../../2-case-studies/key-value-store.md) (NoSQL).
 
+## A real problem — Discord's chat messages
+A concrete case where the *type* of database had to change as scale grew.
+
+**The workload.** Discord stores chat messages. The dominant query is dead simple:
+*"give me the most recent messages in this channel"* (and scroll back). By 2017 they
+were storing **billions** of messages, growing fast; by 2022, **trillions**. Writes are
+constant (every message), reads are heavy and bursty (everyone in a busy channel reads
+the same recent messages).
+
+**Attempt 1 — MongoDB (document).** It worked at first, but the working set stopped
+fitting in RAM. The read/write pattern thrashed the cache, latencies became spiky and
+unpredictable, and scaling it further was painful. The data shape was fine for a
+document store; the **access pattern at scale** was the problem.
+
+**Why not just PostgreSQL/MySQL?** The message table would be enormous and
+write-heavy, the query never needs joins or multi-row transactions, and they needed
+easy **scale-out across many nodes and data centers**. A single relational primary
+becomes the bottleneck; this is the textbook case to leave SQL.
+
+**Attempt 2 — Cassandra (wide-column).** They modeled the data *around the query*:
+
+```
+partition key  = channel_id  (+ a time "bucket" so partitions don't grow forever)
+clustering key = message_id   (time-ordered, so "recent N" is a fast range read)
+```
+
+That's the core NoSQL move: **pick the partition/clustering keys so your main query is a
+single-partition lookup**, and accept denormalization instead of joins. This scaled to
+trillions of messages. (Later they swapped Cassandra for **ScyllaDB** — same data model,
+a faster C++ reimplementation — to cut tail latency and node count. Same *family*, so no
+remodeling.)
+
+**The lesson.** It wasn't "SQL bad, NoSQL good." It was: *huge volume + a single simple
+access pattern + scale-out across data centers → wide-column*, and the right data model
+matters more than the product. Orders and payments at the same company would still
+belong in SQL.
+
 ## Common tools
 | Tool | Family | Sweet spot |
 | --- | --- | --- |

@@ -142,3 +142,4 @@ operational responsibility you want to keep*.
 - [AWS](https://aws.amazon.com/what-is-cloud-computing/) / [Google Cloud](https://cloud.google.com/learn/what-is-cloud-computing) — "what is cloud" intros
 - [The Twelve-Factor App](https://12factor.net/) — building for cloud platforms
 - Provisioned with [Infrastructure as Code](../fundamentals/infrastructure-as-code.md)
+- These concepts, concretely: [AWS — the services behind the concepts](./aws-core-services.md) · [AWS IAM](./aws-iam.md)

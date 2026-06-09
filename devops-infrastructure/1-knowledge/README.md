@@ -26,6 +26,8 @@ aids — a **top-down hook**, a **worked example**, and the **essential terminol
 
 ## Cloud — where the infrastructure lives
 - ✅ [Cloud computing — IaaS, PaaS, SaaS](./cloud/cloud-computing.md)
+- ✅ [AWS — the services behind the concepts](./cloud/aws-core-services.md)
+- ✅ [AWS IAM — identity & access management](./cloud/aws-iam.md)
 
 ## Observability & reliability — know it works, keep it working
 - ✅ [Observability — logs, metrics & traces](./observability/observability.md)

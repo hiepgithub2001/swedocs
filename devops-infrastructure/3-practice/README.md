@@ -30,3 +30,13 @@ cluster on your laptop, infrastructure described as code. Tools: Docker,
   — declare, plan, apply, destroy. Mirrors [IaC](../1-knowledge/fundamentals/infrastructure-as-code.md).
 - ✅ [Instrument an app with Prometheus metrics](./lab-prometheus-metrics.md)
   — expose, scrape, and graph metrics. Mirrors [observability](../1-knowledge/observability/observability.md).
+
+## E. On real AWS ☁️
+> ⚠️ Read [**AWS setup, cost safety & teardown**](../../system-design/3-practice/aws/setup-and-costs.md)
+> first — set a budget alarm and tear down. These touch a real account; most stay in Free Tier.
+- ✅ [Deploy a container to ECS/Fargate](./aws/lab-deploy-to-ecs-fargate.md)
+  — ECR → Fargate → ALB. Mirrors [AWS services](../1-knowledge/cloud/aws-core-services.md), [containers](../1-knowledge/containers/containers.md), [IAM](../1-knowledge/cloud/aws-iam.md).
+- ✅ [Host a static site on S3 + CloudFront](./aws/lab-s3-cloudfront-static-site.md)
+  — object storage + a real [CDN](../../computer-networks/2-case-studies/cdn.md) with cache hits. Mirrors [AWS services](../1-knowledge/cloud/aws-core-services.md).
+- ✅ [A serverless function with Lambda + API Gateway](./aws/lab-lambda-api.md)
+  — scale-to-zero FaaS + cold starts. Mirrors [serverless](../1-knowledge/cloud/cloud-computing.md), [IAM](../1-knowledge/cloud/aws-iam.md).

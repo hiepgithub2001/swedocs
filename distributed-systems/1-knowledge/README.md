@@ -1,7 +1,7 @@
 # Distributed Systems · Part 1 — Knowledge
 
 Academic docs: the **models, impossibility results, and algorithms** of distributed
-computing. Each topic follows the [knowledge template](../_TEMPLATE.md) and leads with a
+computing. Each topic follows the [shared doc template](../../_TEMPLATE.md) and leads with a
 top-down hook, a worked example, and the essential terminology.
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started

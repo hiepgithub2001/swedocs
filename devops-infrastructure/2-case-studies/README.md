@@ -2,7 +2,7 @@
 
 How real teams build and run software end-to-end: the pipeline, the rollout, the
 infrastructure, and what happens when it breaks. Each follows the
-[case-study template](./_TEMPLATE.md) and builds on the
+[shared doc template](../../_TEMPLATE.md) and builds on the
 [Part 1 knowledge docs](../1-knowledge/).
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started

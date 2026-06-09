@@ -2,7 +2,7 @@
 
 Academic docs, taught **top-down**: we start at the application layer (the part you
 already use) and descend one layer at a time to the wire. Each topic follows the
-[knowledge template](../_TEMPLATE.md) and leads with three beginner aids —
+[shared doc template](../../_TEMPLATE.md) and leads with three beginner aids —
 a **top-down hook**, a **worked example**, and the **essential terminology**.
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started

@@ -1,7 +1,7 @@
 # Distributed Systems · Part 2 — Case Studies
 
 The theory in famous real systems: where consensus, quorums, logical time, and CRDTs
-show up in production. Each follows the [case-study template](./_TEMPLATE.md) and builds
+show up in production. Each follows the [shared doc template](../../_TEMPLATE.md) and builds
 on the [Part 1 knowledge docs](../1-knowledge/).
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started

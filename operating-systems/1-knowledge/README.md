@@ -1,7 +1,7 @@
 # Operating Systems · Part 1 — Knowledge
 
 Academic docs: concepts, theory, and definitions. Each topic follows the
-[knowledge template](../_TEMPLATE.md).
+[shared doc template](../../_TEMPLATE.md).
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started
 

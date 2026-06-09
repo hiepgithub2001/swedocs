@@ -2,7 +2,7 @@
 
 Real-world application designs explained in detail: requirements, estimations,
 high-level architecture, data model, deep dives, and trade-offs. Each follows the
-[case-study template](./_TEMPLATE.md).
+[shared doc template](../../_TEMPLATE.md).
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started
 

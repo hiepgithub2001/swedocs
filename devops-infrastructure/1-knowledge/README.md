@@ -2,7 +2,7 @@
 
 Academic docs, taught **top-down**: we start from *why* DevOps exists and follow a single
 code change as it's built, tested, packaged, deployed, and watched in production. Each
-topic follows the [knowledge template](../_TEMPLATE.md) and leads with three beginner
+topic follows the [shared doc template](../../_TEMPLATE.md) and leads with three beginner
 aids — a **top-down hook**, a **worked example**, and the **essential terminology**.
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started

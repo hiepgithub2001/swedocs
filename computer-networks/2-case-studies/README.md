@@ -2,7 +2,7 @@
 
 How real networked systems work end-to-end: the requirements, the path a packet
 takes, the protocols in play, and the trade-offs. Each follows the
-[case-study template](./_TEMPLATE.md) and builds on the
+[shared doc template](../../_TEMPLATE.md) and builds on the
 [Part 1 knowledge docs](../1-knowledge/).
 
 > Legend: ✅ written · 🚧 in progress · ⬜ not started

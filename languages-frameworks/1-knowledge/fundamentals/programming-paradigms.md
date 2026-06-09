@@ -47,31 +47,51 @@ These connect to [composition over inheritance](../../../architecture-patterns/1
 functional code composes small functions the way OO composes objects.
 
 ## Essential terminology
-| Term | Meaning |
-| --- | --- |
-| **Side effect** | Anything a function does besides return a value (mutate, print, I/O) |
-| **Pure function** | Same input → same output, no side effects |
-| **Immutability** | Values can't be changed after creation; "modify" = create new |
-| **First-class functions** | Functions can be passed, returned, stored like any value (enables FP) |
-| **Multi-paradigm** | A language supporting several styles (Python, JS, Scala, Rust, C++) |
-| **Declarative** | You specify the result; the system decides the steps (SQL, HTML, regex, Prolog) |
+| Term | Meaning | Example |
+| --- | --- | --- |
+| **Side effect** | Anything a function does besides return a value (mutate, print, I/O) | `print(x)` · `items.append(3)` · writing a file — it changes the world outside |
+| **Pure function** | Same input → same output, no side effects | `def square(x): return x * x` — `square(3)` is *always* 9, touches nothing else |
+| **Immutability** | Values can't be changed after creation; "modify" = create new | `t = (1, 2); t[0] = 9` → `TypeError`; do `t2 = (9,) + t[1:]` instead |
+| **First-class functions** | Functions can be passed, returned, stored like any value (enables FP) | `f = str.upper; f("hi") → "HI"`; `sorted(words, key=len)` passes a function |
+| **Multi-paradigm** | A language supporting several styles | Python: a `for` loop, a `map()`, *and* a `class` all coexist in one file |
+| **Declarative** | You specify the result; the system decides the steps | `SELECT … WHERE` (SQL) · regex `\d+` · HTML `<table>` — no "how" |
 
 ## Example
-Sum the even numbers — imperative vs. functional, same language:
+**One task — "sum the even numbers 1–10" (answer: 30) — in all four paradigms.** The result is
+identical; what *changes* is how you express it.
 
+**Imperative** — spell out each step and mutate an accumulator (*how*):
 ```python
-# Imperative: mutate an accumulator, describe each step
 total = 0
 for n in range(1, 11):
     if n % 2 == 0:
-        total += n
-
-# Functional: compose transformations, no mutation
-total = sum(filter(lambda n: n % 2 == 0, range(1, 11)))
+        total += n            # step → test → update state
+# total == 30
 ```
 
-Both give `30`. The functional version has no mutable state and reads as *what* (sum of the evens)
-rather than *how*. Try all three styles on one problem in [lab: one problem, three paradigms](../../3-practice/lab-paradigms.md).
+**Object-oriented** — bundle the data with the behavior that acts on it; call a method:
+```python
+class Numbers:
+    def __init__(self, items):
+        self._items = list(items)
+    def sum_evens(self):                       # the rule lives *on* the object
+        return sum(n for n in self._items if n % 2 == 0)
+
+Numbers(range(1, 11)).sum_evens()              # 30
+```
+
+**Functional** — compose transformations, no mutation, no explicit loop (*what*):
+```python
+total = sum(filter(lambda n: n % 2 == 0, range(1, 11)))   # "sum of (the evens)" == 30
+```
+
+**Declarative** — state the desired result; the engine decides *how* to compute it (here, SQL):
+```sql
+SELECT SUM(n) FROM numbers WHERE n % 2 = 0;    -- you never write a loop or an accumulator
+```
+
+All four give 30. Imperative and OO describe **how**; functional and declarative describe **what**.
+Run the first three on one problem in [lab: one problem, three paradigms](../../3-practice/lab-paradigms.md).
 
 ## Trade-offs
 - ✅ **Imperative/procedural**: direct, fast, maps to hardware — great for low-level/performance.

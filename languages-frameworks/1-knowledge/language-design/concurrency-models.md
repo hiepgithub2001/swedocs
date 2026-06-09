@@ -21,6 +21,30 @@ I/O) and **throughput/parallelism** (use all CPU cores). The hard part is **shar
 when two flows touch the same data, you get race conditions, deadlocks, and Heisenbugs. Each model
 is a different strategy for managing — or avoiding — that shared state.
 
+**See the hard part.** Two threads each add 1 to the same counter 1,000 times. The answer should be
+2,000 — run it and it never is:
+
+```python
+import threading, time
+counter = 0
+def work():
+    global counter
+    for _ in range(1000):
+        tmp = counter         # 1. read
+        time.sleep(0)         # 2. yield — the other thread now reads the SAME tmp
+        counter = tmp + 1     # 3. write back, clobbering the other thread's update
+
+ts = [threading.Thread(target=work) for _ in range(2)]
+[t.start() for t in ts]; [t.join() for t in ts]
+print(counter)               # ~1050, NOT 2000 — a race condition
+```
+Both threads read the *same* old value, add 1, and write back — one update silently overwrites the
+other. (We split the read-modify-write with `sleep(0)` to *reliably* expose it; with a plain
+`counter += 1` Python's [GIL](#essential-terminology) often hides the race, but in Java/Go/C — and
+occasionally in Python — it bites for real.) This race is the single problem every model below
+solves: **threads** put a lock around the read-write; **async** never runs two tasks at once;
+**CSP/actors** never share `counter` at all.
+
 ## Core concepts
 | Model | Unit | How it handles shared state | Languages |
 | --- | --- | --- | --- |
@@ -44,7 +68,18 @@ flowchart TD
   *running* them simultaneously on multiple cores. An async event loop gives concurrency on **one**
   core (great for I/O-bound work); true parallelism needs threads/processes across cores.
 - **Threads & locks** are the most general and the most dangerous — *you* prevent races, and locks
-  bring deadlocks. Powerful, but error-prone at scale.
+  bring deadlocks. The fix for the counter above is a lock around the read-write:
+  ```python
+  lock = threading.Lock()
+  def work():
+      global counter
+      for _ in range(1000):
+          with lock:            # only one thread inside at a time → now always exactly 2000
+              tmp = counter
+              counter = tmp + 1
+  ```
+  Correct, but *you* must remember the lock everywhere — and two locks taken in the wrong order
+  deadlock. Powerful, but error-prone at scale.
 - **Async/event loop** sidesteps races by running tasks cooperatively on one thread: a task runs
   until it `await`s I/O, then yields. Brilliant for many concurrent I/O waits (web servers);
   useless for CPU-bound work (one task hogs the loop).

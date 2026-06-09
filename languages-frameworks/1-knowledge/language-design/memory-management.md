@@ -39,6 +39,29 @@ flowchart TD
     Q -->|Compiler at compile time| Own["Ownership/RAII — safe & fast"]
 ```
 
+**The same allocation, three worlds** — who writes the "free" step?
+```c
+// C (manual): YOU free it. Forget → leak. Use after free() → crash/exploit.
+int *p = malloc(sizeof(int) * 100);
+use(p);
+free(p);                  // your job; the compiler won't remind you
+```
+```python
+# Python (GC): you never free. The runtime reclaims it once nothing references it.
+p = [0] * 100
+use(p)
+# ...no free() — when `p` goes out of scope and is unreferenced, the GC collects it later
+```
+```rust
+// Rust (ownership): the COMPILER inserts the free at the end of scope. No GC, no manual free.
+{
+    let p = vec![0; 100];
+    use_it(&p);
+}                         // `p` is freed right here, automatically, decided at compile time
+```
+Same 100 integers; the only difference is *who is responsible for giving the memory back* — the
+whole axis in three snippets.
+
 ### Garbage collection, briefly
 GC automatically frees objects nothing references anymore. Two common mechanisms:
 - **Reference counting** (CPython): each object counts references; hits zero → freed immediately.

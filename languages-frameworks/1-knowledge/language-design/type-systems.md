@@ -18,7 +18,18 @@ of the most consequential axes when picking a language and a constant source of 
 debate.
 
 ## Core concepts — two independent dials
-**1. Static vs. dynamic — *when* are types checked?**
+**1. Static vs. dynamic — *when* are types checked?** Concretely, a typo like calling
+`.toUpperCase()` on a number:
+```java
+// Java (static): caught at COMPILE time — the program won't even build
+int n = 5;
+n.toUpperCase();          // ❌ compile error: int has no method toUpperCase
+```
+```python
+# Python (dynamic): builds & starts fine — blows up only WHEN that line runs
+n = 5
+n.upper()                 # 💥 AttributeError at runtime — and only if execution reaches here
+```
 - **Static** (C, Java, Rust, Go, TypeScript): types are known and checked **at compile time**.
   Type errors caught before running; enables tooling (autocomplete, refactoring) and speed.
 - **Dynamic** (Python, JavaScript, Ruby): types travel with *values* and are checked **at runtime**.

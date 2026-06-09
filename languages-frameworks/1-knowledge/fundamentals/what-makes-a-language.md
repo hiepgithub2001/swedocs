@@ -18,6 +18,29 @@ What actually transfers — and what decides whether a language fits a job — i
 **design dimensions** every language has to take a position on. Knowing them turns "learning a
 language" into "mapping a language onto axes I already understand."
 
+**Make it concrete.** "Sum a list of numbers" in three languages — almost identical *logic*, yet
+the axes leak through every line:
+
+```python
+# Python — types inferred & dynamic, garbage-collected, interpreted
+nums = [1, 2, 3]
+print(sum(nums))                            # no type declared, no memory freed by you, runs top-down
+```
+```rust
+// Rust — static types, ownership instead of a GC, compiled ahead of time
+let nums = vec![1, 2, 3];
+println!("{}", nums.iter().sum::<i32>());   // the type i32 is required; `nums` is freed at scope end
+```
+```go
+// Go — static types, garbage-collected, compiled to one native binary
+nums := []int{1, 2, 3}
+total := 0
+for _, n := range nums { total += n }       // explicit loop; the runtime frees memory; ships as a static binary
+```
+
+You didn't need to *know* these languages to feel the differences — typed or not, who frees memory,
+compiled or interpreted. **Those differences are exactly the axes below.**
+
 ## Core concepts — the axes a language is defined by
 | Axis | The question | Covered in |
 | --- | --- | --- |

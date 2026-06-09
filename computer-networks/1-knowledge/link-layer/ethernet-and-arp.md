@@ -9,9 +9,9 @@
 Your packet has an [IP destination](../network-layer/ip-addressing.md) thousands of km
 away — but IP delivery is built out of many small hops, and *each hop* is a single link:
 Wi-Fi to your router, a fibre to the ISP, and so on. The link layer is what gets a packet
-across *one* of those hops. It's the last layer in our top-down descent — below it is just
-[physics](#) (voltages, light, radio). Everything above has been riding inside these frames
-the whole time without knowing it.
+across *one* of those hops. It's the next-to-last layer in our top-down descent — below it is
+just the [physical layer](../physical-layer/signals-and-media.md) (voltages, light, radio).
+Everything above has been riding inside these frames the whole time without knowing it.
 
 ## Problem
 [IP routing](../network-layer/routing-and-forwarding.md) decides the *next hop* — "send this

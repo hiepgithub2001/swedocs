@@ -25,6 +25,14 @@ Mostly CLI tools (`dig`, `curl`, `traceroute`, `tcpdump`/Wireshark) + a little
 - ✅ [Watch an HTTPS request with `curl -v`](./lab-curl-https.md)
   — DNS → TCP → TLS → HTTP, all in one trace.
 
-## C. Write the code
+## C. Write the code & talk to services
 - ✅ [A TCP echo server & client (Python sockets)](./lab-tcp-sockets.md)
   — `socket`, `bind`, `listen`, `accept`. Mirrors [ports & sockets](../1-knowledge/transport-layer/ports-and-udp.md).
+- ✅ [Talk to any service by hand with `netcat`](./lab-netcat.md)
+  — speak HTTP raw, build a chat, scan a port. Mirrors [ports & UDP](../1-knowledge/transport-layer/ports-and-udp.md).
+
+## D. Measure & manipulate
+- ✅ [Measure throughput, latency & the cost of distance](./lab-iperf-throughput.md)
+  — `iperf3` + `tc`: watch latency/loss crush throughput. Mirrors [latency vs bandwidth](../1-knowledge/fundamentals/latency-bandwidth-throughput.md) & [congestion control](../1-knowledge/transport-layer/congestion-control.md).
+- ✅ [See NAT and a firewall in action](./lab-nat-firewall.md)
+  — your private vs public IP, DHCP leases, allow/deny rules. Mirrors [NAT & DHCP](../1-knowledge/network-layer/nat-and-dhcp.md) & [firewalls](../1-knowledge/security/network-attacks-and-defenses.md).

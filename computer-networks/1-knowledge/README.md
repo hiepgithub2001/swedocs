@@ -19,7 +19,7 @@ a **top-down hook**, a **worked example**, and the **essential terminology**.
 ## Application layer — what programs say to each other
 - ✅ [HTTP — the web's request/response protocol](./application-layer/http.md)
 - ✅ [DNS — turning names into addresses](./application-layer/dns.md)
-- ⬜ [Email, WebSockets & other app protocols](./application-layer/other-protocols.md)
+- ✅ [Email, WebSockets & other app protocols](./application-layer/other-protocols.md)
 
 ## Transport layer — process-to-process delivery
 - ✅ [Ports, sockets & multiplexing (and UDP)](./transport-layer/ports-and-udp.md)
@@ -34,5 +34,9 @@ a **top-down hook**, a **worked example**, and the **essential terminology**.
 ## Link layer — getting across one hop
 - ✅ [Ethernet, MAC addresses, switches & ARP](./link-layer/ethernet-and-arp.md)
 
+## Physical layer — bits on the wire
+- ✅ [The physical layer — signals & media](./physical-layer/signals-and-media.md)
+
 ## Network security
 - ✅ [TLS & HTTPS — how the web gets encrypted](./security/tls-https.md)
+- ✅ [Network attacks & defenses — firewalls, VPNs & threats](./security/network-attacks-and-defenses.md)

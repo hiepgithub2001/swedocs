@@ -19,6 +19,7 @@ top-down hook, a worked example, and the essential terminology.
 ## Fundamentals — what "good structure" means
 - ✅ [What is software architecture?](./fundamentals/what-is-software-architecture.md)
 - ✅ [Coupling & cohesion](./fundamentals/coupling-and-cohesion.md)
+- ✅ [Core design principles](./fundamentals/core-design-principles.md) — DRY · KISS · YAGNI · SoC · composition over inheritance
 - ✅ [SOLID principles](./fundamentals/solid-principles.md)
 
 ## Design patterns — named, reusable solutions (GoF)

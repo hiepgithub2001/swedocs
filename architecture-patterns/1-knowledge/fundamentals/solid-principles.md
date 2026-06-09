@@ -94,4 +94,4 @@ are just SOLID made concrete. Build it hands-on in [lab: Strategy & Factory](../
 
 ## References
 - Robert C. Martin — *Clean Architecture* and the original [SOLID papers](https://en.wikipedia.org/wiki/SOLID)
-- [Coupling & cohesion](./coupling-and-cohesion.md) · [Design patterns overview](../design-patterns/patterns-overview.md) · [Dependency injection](../architectural-styles/dependency-injection.md)
+- [Core design principles](./core-design-principles.md) (DRY/KISS/YAGNI) · [Coupling & cohesion](./coupling-and-cohesion.md) · [Design patterns overview](../design-patterns/patterns-overview.md) · [Dependency injection](../architectural-styles/dependency-injection.md)

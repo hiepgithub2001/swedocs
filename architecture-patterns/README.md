@@ -32,6 +32,7 @@ Open each part's `README.md` for its catalog.
 
 ## 1️⃣ Knowledge — [catalog »](./1-knowledge/)
 The foundations: **fundamentals** (what architecture is, [coupling & cohesion](./1-knowledge/fundamentals/coupling-and-cohesion.md),
+[core design principles](./1-knowledge/fundamentals/core-design-principles.md) — DRY/KISS/YAGNI,
 [SOLID](./1-knowledge/fundamentals/solid-principles.md)); the **GoF design patterns** grouped as
 [creational](./1-knowledge/design-patterns/creational-patterns.md),
 [structural](./1-knowledge/design-patterns/structural-patterns.md), and

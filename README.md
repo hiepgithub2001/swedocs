@@ -18,6 +18,7 @@ Every knowledge area is organized into the same three parts:
 | --- | --- | --- |
 | [System Design](./system-design/) | 🚧 In progress | Designing scalable, reliable distributed systems |
 | [Operating Systems](./operating-systems/) | 🚧 In progress | Kernels, processes, memory, concurrency, file systems |
+| [Computer Networks](./computer-networks/) | 🚧 In progress | The Internet top-down: HTTP, DNS, TCP/UDP, IP, routing, Ethernet, TLS |
 | Languages & Frameworks | 🔜 Planned | Language-specific knowledge and idioms |
 | Architecture & Patterns | 🔜 Planned | Design patterns and architectural styles |
 | DevOps & Infrastructure | 🔜 Planned | CI/CD, containers, cloud, networking |

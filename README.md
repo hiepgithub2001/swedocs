@@ -22,7 +22,7 @@ Every knowledge area is organized into the same three parts:
 | Distributed Systems | 🔜 Planned | Consensus, replication, consistency & fault tolerance (CAP, Raft, Paxos) |
 | Languages & Frameworks | 🔜 Planned | Language-specific knowledge and idioms |
 | Architecture & Patterns | 🔜 Planned | Design patterns and architectural styles |
-| DevOps & Infrastructure | 🔜 Planned | CI/CD, containers, cloud, networking |
+| [DevOps & Infrastructure](./devops-infrastructure/) | 🚧 In progress | CI/CD, containers, orchestration, IaC, cloud & observability |
 | Best Practices | 🔜 Planned | Coding standards, reviews, testing |
 
 ## How to use this repo

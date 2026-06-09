@@ -19,7 +19,7 @@ Every knowledge area is organized into the same three parts:
 | [System Design](./system-design/) | 🚧 In progress | Designing scalable, reliable distributed systems |
 | [Operating Systems](./operating-systems/) | 🚧 In progress | Kernels, processes, memory, concurrency, file systems |
 | [Computer Networks](./computer-networks/) | 🚧 In progress | The Internet top-down: HTTP, DNS, TCP/UDP, IP, routing, Ethernet, TLS |
-| Distributed Systems | 🔜 Planned | Consensus, replication, consistency & fault tolerance (CAP, Raft, Paxos) |
+| [Distributed Systems](./distributed-systems/) | 🚧 In progress | The theory beneath the design: partial failure, logical time, consensus (Raft/Paxos), quorums, CRDTs |
 | Languages & Frameworks | 🔜 Planned | Language-specific knowledge and idioms |
 | Architecture & Patterns | 🔜 Planned | Design patterns and architectural styles |
 | [DevOps & Infrastructure](./devops-infrastructure/) | 🚧 In progress | CI/CD, containers, orchestration, IaC, cloud & observability |

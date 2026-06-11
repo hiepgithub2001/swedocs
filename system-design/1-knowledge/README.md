@@ -24,6 +24,7 @@ Academic docs: concepts, theory, and definitions. Each topic follows the
 - ✅ [Message queues & pub/sub](./building-blocks/message-queues.md)
 - ✅ [Rate limiting](./building-blocks/rate-limiting.md)
 - ✅ [Consistent hashing](./building-blocks/consistent-hashing.md)
+- ✅ [Authentication & authorization](./building-blocks/authentication-authorization.md) — sessions vs JWT, OAuth2/OIDC, where auth lives, RBAC/ABAC
 
 ## Data & Storage
 - ✅ [SQL vs NoSQL](./data-storage/sql-vs-nosql.md)

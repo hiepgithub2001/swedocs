@@ -30,5 +30,6 @@ top-down hook, a worked example, and the essential terminology.
 
 ## Architectural styles — organizing a whole codebase
 - ✅ [Layered, Hexagonal & Clean architecture](./architectural-styles/layered-hexagonal-clean.md)
+- ✅ [MVC, MVP & MVVM — presentation patterns](./architectural-styles/mvc-mvp-mvvm.md) — separating UI from domain; controller vs presenter vs view-model
 - ✅ [Domain-Driven Design (DDD)](./architectural-styles/domain-driven-design.md)
 - ✅ [Dependency injection & Inversion of Control](./architectural-styles/dependency-injection.md)

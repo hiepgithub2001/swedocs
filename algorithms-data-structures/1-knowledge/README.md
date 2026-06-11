@@ -27,5 +27,6 @@ example, and the essential terminology.
 ## Algorithms — what to do with it
 - ✅ [Sorting & searching](./algorithms/sorting-and-searching.md) — binary search, O(n log n) sorts
 - ✅ [Recursion & divide and conquer](./algorithms/recursion-and-divide-and-conquer.md) — self-similar problems
+- ✅ [Greedy algorithms](./algorithms/greedy-algorithms.md) — locally-best choices, when they're optimal (and when they fail)
 - ✅ [Dynamic programming](./algorithms/dynamic-programming.md) — overlapping subproblems, memoization
 - ✅ [Graph algorithms](./algorithms/graph-algorithms.md) — BFS, DFS, Dijkstra, topological sort

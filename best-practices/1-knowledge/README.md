@@ -24,6 +24,7 @@ top-down hook, a worked example, and the essential terminology.
 ## Code quality — keeping it reviewable
 - ✅ [Code reviews](./code-quality/code-reviews.md) — what to look for, the human side
 - ✅ [Writing readable code](./code-quality/readable-code.md) — names, small functions, comments, linters
+- ✅ [Debugging](./code-quality/debugging.md) — the scientific method: reproduce, hypothesize, bisect, root-cause
 
 ## Security — the developer's share
 - ✅ [Secure coding](./security/secure-coding.md) — OWASP top bugs, injection, authz, secrets

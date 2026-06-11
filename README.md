@@ -14,17 +14,38 @@ Every knowledge area is organized into the same three parts:
 
 ## Knowledge areas
 
+The areas are ordered as a **beginner-first learning path** — each tier builds on
+the ones before it. Start at the top and work down; jump around once you have the
+foundations.
+
+### Tier 1 — Foundations (write & reason about code)
+
 | Area | Status | Description |
 | --- | --- | --- |
-| [System Design](./system-design/) | 🚧 In progress | Designing scalable, reliable distributed systems |
+| [Languages & Frameworks](./languages-frameworks/) | 🚧 In progress | The axes every language varies on: paradigms, type systems, memory, concurrency, frameworks |
+| [Algorithms & Data Structures](./algorithms-data-structures/) | 🚧 In progress | The CS bedrock: Big-O, arrays/lists/hash/trees/graphs, sorting, recursion, dynamic programming |
+| [Best Practices](./best-practices/) | 🚧 In progress | Craft & process: testing, version control, code review, secure coding, documentation |
+
+### Tier 2 — How the machine works underneath
+
+| Area | Status | Description |
+| --- | --- | --- |
 | [Operating Systems](./operating-systems/) | 🚧 In progress | Kernels, processes, memory, concurrency, file systems |
 | [Computer Networks](./computer-networks/) | 🚧 In progress | The Internet top-down: HTTP, DNS, TCP/UDP, IP, routing, Ethernet, TLS |
-| [Distributed Systems](./distributed-systems/) | 🚧 In progress | The theory beneath the design: partial failure, logical time, consensus (Raft/Paxos), quorums, CRDTs |
-| [Algorithms & Data Structures](./algorithms-data-structures/) | 🚧 In progress | The CS bedrock: Big-O, arrays/lists/hash/trees/graphs, sorting, recursion, dynamic programming |
-| [Languages & Frameworks](./languages-frameworks/) | 🚧 In progress | The axes every language varies on: paradigms, type systems, memory, concurrency, frameworks |
+
+### Tier 3 — Designing real applications
+
+| Area | Status | Description |
+| --- | --- | --- |
 | [Architecture & Patterns](./architecture-patterns/) | 🚧 In progress | Application-level design: SOLID, GoF patterns, hexagonal/clean architecture, DDD |
 | [DevOps & Infrastructure](./devops-infrastructure/) | 🚧 In progress | CI/CD, containers, orchestration, IaC, cloud & observability |
-| [Best Practices](./best-practices/) | 🚧 In progress | Craft & process: testing, version control, code review, secure coding, documentation |
+
+### Tier 4 — Building at scale (capstone)
+
+| Area | Status | Description |
+| --- | --- | --- |
+| [Distributed Systems](./distributed-systems/) | 🚧 In progress | The theory beneath the design: partial failure, logical time, consensus (Raft/Paxos), quorums, CRDTs |
+| [System Design](./system-design/) | 🚧 In progress | Designing scalable, reliable distributed systems |
 
 ## How to use this repo
 

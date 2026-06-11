@@ -27,6 +27,7 @@ Academic docs: concepts, theory, and definitions. Each topic follows the
 - ✅ [Classic synchronization problems](./concurrency/classic-problems.md)
 
 ## Memory Management
+- ✅ [The memory hierarchy & caching](./memory/memory-hierarchy-and-caching.md) — registers→L1/L2/L3→RAM→disk, cache lines, locality, false sharing
 - ✅ [Virtual memory & address spaces](./memory/virtual-memory.md)
 - ✅ [Paging & address translation](./memory/paging.md)
 - ✅ [Page replacement algorithms](./memory/page-replacement.md)

@@ -17,6 +17,7 @@ export function createReader({ settings, onRelocate, onExternalLink }) {
   let view = null;
   let current = null; // { book, manifest, entry, base }
   let restoring = false;
+  const warmed = new Set();
 
   const host = $('#view-host');
 
@@ -33,19 +34,30 @@ export function createReader({ settings, onRelocate, onExternalLink }) {
     const { readingOrder } = current.manifest;
     for (const step of [1, -1, 2]) {
       const link = readingOrder[index + step];
-      if (!link) continue;
-      idle(() => fetch(new URL(link.href, current.base), { priority: 'low' }).catch(() => {}));
+      // Relocation fires on every page turn, not only on every chapter, so
+      // without this the same three chapters are re-requested a few dozen
+      // times per chapter read — invisible on a warm cache, and painful on a
+      // phone that is paying for it.
+      if (!link || warmed.has(link.href)) continue;
+      warmed.add(link.href);
+      idle(() =>
+        fetch(new URL(link.href, current.base), { priority: 'low' }).catch(() => {
+          warmed.delete(link.href);
+        }),
+      );
     }
   };
 
   const applyStyles = () => {
     if (!view) return;
     view.renderer.setAttribute('flow', settings.value.flow);
-    // These land in calc() inside the paginator, so they are lengths, not
-    // numbers: a unitless gap collapses the whole column to nothing.
+    // These are read two ways inside the paginator: as CSS lengths in a
+    // calc(), and as bare numbers through parseFloat. So a unitless gap
+    // collapses the column to nothing, and anything but px or % is silently
+    // read as its own numeric prefix — `44rem` becomes a 44-pixel column.
     view.renderer.setAttribute('gap', '6%');
     view.renderer.setAttribute('margin', '24px');
-    view.renderer.setAttribute('max-inline-size', '44rem');
+    view.renderer.setAttribute('max-inline-size', '704px');
     view.renderer.setAttribute('max-block-size', '1400px');
     view.renderer.setStyles?.(settings.userCss());
     for (const { doc } of view.renderer.getContents?.() ?? []) settings.applyToDocument(doc);
@@ -56,6 +68,7 @@ export function createReader({ settings, onRelocate, onExternalLink }) {
     view?.remove();
     view = null;
     current = null;
+    warmed.clear();
   };
 
   /**

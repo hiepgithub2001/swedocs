@@ -170,8 +170,16 @@ window.addEventListener('popstate', () => {
 
 $('#save-offline').addEventListener('click', async () => {
   const { slug } = $('#save-offline').dataset;
-  if (!slug || !navigator.serviceWorker?.controller) return;
   const state = $('#offline-state');
+  if (!slug) {
+    state.textContent = 'Open a book first.';
+    return;
+  }
+  if (!navigator.serviceWorker?.controller) {
+    // First visit: the worker is installed but not yet controlling this page.
+    state.textContent = 'Reload once, then try again.';
+    return;
+  }
   state.textContent = 'Saving…';
 
   const urls = [

@@ -4,6 +4,7 @@ import { createReader } from './lib/reader.js';
 import { createPanel } from './lib/panel.js';
 import { renderShelf } from './lib/shelf.js';
 import { createLightbox } from './lib/lightbox.js';
+import { attachTables } from './lib/tables.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -35,7 +36,10 @@ const reader = createReader({
   settings,
   onRelocate,
   onExternalLink,
-  onDocument: (doc) => lightbox.attach(doc),
+  onDocument: (doc) => {
+    lightbox.attach(doc);
+    attachTables(doc);
+  },
 });
 const panel = createPanel({
   hrefFor,
@@ -169,6 +173,14 @@ document.addEventListener('click', (event) => {
   go(decodeURI(url.pathname.slice(BASE.length)).replace(/^read\/|^\/+/, ''), {
     anchor: url.hash.slice(1) || null,
   });
+});
+
+// The table frames are sized in pixels from the reading surface, so a
+// rotation or a resized window has to re-issue them.
+let resized = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resized);
+  resized = setTimeout(() => reader.applyStyles(), 200);
 });
 
 window.addEventListener('popstate', () => {

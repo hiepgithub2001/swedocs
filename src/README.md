@@ -20,6 +20,7 @@ the `<base>` computation are exercised exactly as they will be in production.
 | `lib/reader.js` | The reading surface: position, prefetch, page turns |
 | `lib/panel.js` | Contents, and the two tiers of search |
 | `lib/lightbox.js` | Diagrams, full screen, with pinch and wheel zoom |
+| `lib/tables.js` | Keeps a scrolling table's drags away from the paginator |
 | `lib/shelf.js` | The library screen |
 | `lib/settings.js` | Theme, text size, line height, layout |
 | `lib/store.js` | Guarded `localStorage`: settings and reading positions |
@@ -54,16 +55,21 @@ compose rather than fight. The same stylesheet still works in a standalone
 Diagrams follow along: Mermaid's palette was rewritten at build time to
 `var(--dg-*, …)`, so one SVG is legible in both themes.
 
-## Diagrams
+## Diagrams and tables
 
-A rendered diagram is an inline SVG sized to the text column: fine on a laptop,
-a postage stamp on a phone. Tapping one opens a clone of its SVG full screen,
-with pinch, wheel, double-tap and buttons for zoom, and bounded panning — it is
-vector, so the detail was always there, it only needed the room.
+A rendered diagram is an inline SVG sized to the column, and a table is the one
+thing on the page that cannot reflow. Both get an app-side affordance that the
+package itself knows nothing about, so the same `.epub` in any other reader is
+exactly what the converter wrote:
 
-The affordance is added to the document the reader loaded and the zoomed copy
-lives in the app's own document, so the package itself knows nothing about any
-of it and the same `.epub` in another reader is what the converter wrote.
+- Tapping a diagram opens a clone of its SVG full screen, with pinch, wheel,
+  double-tap and buttons for zoom, and bounded panning. It is vector, so the
+  detail was always there — it only needed the room.
+- A table becomes a frame the height of the reading surface, scrolling both
+  ways, with its header row sticky and its cells capped at a readable measure.
+  The paginator turns a touch-drag on the chapter document into a page turn, so
+  a drag that starts inside a table that has somewhere to scroll stops
+  propagating before it gets there.
 
 ## Offline
 

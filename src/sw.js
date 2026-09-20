@@ -28,6 +28,7 @@ const SHELL_FILES = [
   'lib/settings.js',
   'lib/shelf.js',
   'lib/store.js',
+  'lib/tables.js',
   'vendor/foliate/epub.js',
   'vendor/foliate/epubcfi.js',
   'vendor/foliate/overlayer.js',

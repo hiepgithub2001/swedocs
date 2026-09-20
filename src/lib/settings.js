@@ -16,6 +16,17 @@ export function createSettings(onChange) {
   let settings = loadSettings();
   const dialog = $('#settings');
 
+  /**
+   * How tall a table's frame may be.
+   *
+   * Measured rather than written as `vh`, because the reader's viewport is
+   * only the screen in paginated mode: set to scroll, foliate-js makes the
+   * iframe as tall as the whole chapter, and 78vh of that is several pages.
+   * The host element is the reading surface in both modes.
+   */
+  const frameHeight = () =>
+    Math.max(240, Math.round(($('#view-host')?.clientHeight || window.innerHeight) * 0.78));
+
   const userCss = () => `
     :root {
       --reader-font-size: ${settings.size / 100}em;
@@ -26,6 +37,33 @@ export function createSettings(onChange) {
     body { padding-inline: 0.4em; }
     img, svg, figure { max-width: 100%; }
     pre { white-space: pre-wrap !important; }
+
+    /* A table gets a frame the size of the page and scrolls inside it, rather
+       than reflowing — book.css sizes it to the column because most EPUB
+       engines cannot scroll a block at all, and here we can. */
+    table {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      max-height: ${frameHeight()}px;
+      overflow: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      -webkit-column-break-inside: avoid;
+      break-inside: avoid;
+    }
+    /* max-content alone would set a 200-character prose cell on one line and
+       make you scroll a sentence; capping the cell gives every column a
+       readable measure and lets the table, not the words, be the wide thing. */
+    table th, table td { max-width: 16em; }
+    /* Scrolling down a long table should not lose the column names. */
+    table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
 
     /* A diagram is a button here — the app opens it full screen and lets you
        zoom in. The attribute is set by the app on the document it loaded, so

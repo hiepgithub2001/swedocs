@@ -4,6 +4,7 @@ import { createReader } from './lib/reader.js';
 import { createPanel } from './lib/panel.js';
 import { renderShelf } from './lib/shelf.js';
 import { createLightbox } from './lib/lightbox.js';
+import { createInstall } from './lib/install.js';
 import { attachTables } from './lib/tables.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -232,6 +233,10 @@ async function boot() {
 
   const path = routeOf();
   await render(path.replace(/^read\//, ''), location.hash.slice(1) || null);
+
+  // Offered here rather than left to the browser's own banner, which appears
+  // on its own schedule and is gone for months once dismissed.
+  createInstall();
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register(`${BASE}sw.js`, { scope: BASE }).catch(() => {});

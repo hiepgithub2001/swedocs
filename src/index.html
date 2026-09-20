@@ -77,6 +77,14 @@
   <nav id="panel-body"></nav>
 </aside>
 
+<div id="install-bar" hidden>
+  <p>Install swedocs for full-screen, offline reading.</p>
+  <button id="install-go" type="button">Install</button>
+  <button id="install-later" class="icon" type="button" title="Not now" aria-label="Not now">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg>
+  </button>
+</div>
+
 <dialog id="zoom" aria-label="Diagram">
   <div id="zoom-stage">
     <div id="zoom-canvas"></div>
@@ -121,6 +129,11 @@
       <label><input type="radio" name="flow" value="paginated"> Pages</label>
       <label><input type="radio" name="flow" value="scrolled"> Scroll</label>
     </fieldset>
+
+    <p id="install-row">
+      <button id="install-now" type="button" hidden>Install app</button>
+      <span id="install-note"></span>
+    </p>
 
     <p id="offline-row">
       <button id="save-offline" type="button">Save this book offline</button>

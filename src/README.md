@@ -21,6 +21,7 @@ the `<base>` computation are exercised exactly as they will be in production.
 | `lib/panel.js` | Contents, and the two tiers of search |
 | `lib/lightbox.js` | Diagrams, full screen, with pinch and wheel zoom |
 | `lib/tables.js` | Keeps a scrolling table's drags away from the paginator |
+| `lib/install.js` | The install button, and why there sometimes isn't one |
 | `lib/shelf.js` | The library screen |
 | `lib/settings.js` | Theme, text size, line height, layout |
 | `lib/store.js` | Guarded `localStorage`: settings and reading positions |
@@ -70,6 +71,17 @@ exactly what the converter wrote:
   The paginator turns a touch-drag on the chapter document into a page turn, so
   a drag that starts inside a table that has somewhere to scroll stops
   propagating before it gets there.
+
+## Installing
+
+A manifest, a service worker with a fetch handler, icons, and an https:// origin
+make the app installable; `beforeinstallprompt` is caught and spent on a button
+in the display settings rather than left to the browser's own banner, which
+appears on its own schedule and is gone for months once dismissed. iOS has no
+such event — there the same row names the two taps in the share sheet instead.
+
+Over plain http there is no install and no service worker: the row says so,
+because that is the one cause a reader can do something about.
 
 ## Offline
 

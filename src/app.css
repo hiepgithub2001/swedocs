@@ -455,7 +455,8 @@ foliate-view {
 
 .range input { width: 100%; }
 
-#offline-row {
+#offline-row,
+#install-row {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -482,6 +483,51 @@ foliate-view {
   color: inherit;
   cursor: pointer;
 }
+
+/* ── install ─────────────────────────────────────────────────────────── */
+
+/* Above the reader's footer, out of the way of the page-turn edges, and
+   gone for good once dismissed. */
+#install-bar {
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  bottom: calc(0.75rem + var(--safe-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: max-content;
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.55rem 0.6rem 0.55rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
+}
+
+#install-bar p {
+  margin: 0;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#install-go {
+  flex: none;
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--paper);
+  cursor: pointer;
+}
+
+#install-bar .icon { width: 1.9rem; height: 1.9rem; }
+#install-bar .icon svg { width: 18px; height: 18px; }
 
 /* ── zoomed diagram ──────────────────────────────────────────────────── */
 

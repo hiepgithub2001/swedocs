@@ -44,3 +44,7 @@ const positionKey = (identifier) => `swedocs:pos:${identifier}`;
 
 export const loadPosition = (identifier) => read(positionKey(identifier), null);
 export const savePosition = (identifier, position) => write(positionKey(identifier), position);
+
+/** One-bit preferences that are not display settings: "don't offer this again". */
+export const loadFlag = (name, fallback = false) => read(`swedocs:${name}`, fallback);
+export const saveFlag = (name, value) => write(`swedocs:${name}`, value);

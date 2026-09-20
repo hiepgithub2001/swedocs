@@ -20,7 +20,14 @@ const SHELL_FILES = [
   'app.css',
   'app.js',
   'manifest.webmanifest',
+  // The icons belong to the shell: an installed app that lost its icon to a
+  // cold cache is a blank square on the home screen.
   'icons/icon.svg',
+  'icons/icon-192.png',
+  'icons/icon-512.png',
+  'icons/maskable-512.png',
+  'icons/apple-touch-icon.png',
+  'lib/install.js',
   'lib/library.js',
   'lib/lightbox.js',
   'lib/panel.js',

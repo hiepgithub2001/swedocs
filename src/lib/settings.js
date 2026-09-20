@@ -1,0 +1,83 @@
+import { loadSettings, saveSettings } from './store.js';
+
+const $ = (sel) => document.querySelector(sel);
+
+/**
+ * Display settings, applied in two places at once.
+ *
+ * The chrome follows `data-theme` on this document; the book follows the same
+ * attribute on the document inside the reader, plus a small stylesheet of
+ * `--reader-*` values. book.css declares every colour and metric as a custom
+ * property for exactly this reason, so the publisher's styles and the reader's
+ * preferences compose rather than fight — no `!important` arms race, and the
+ * same stylesheet still works in a standalone .epub where no app is involved.
+ */
+export function createSettings(onChange) {
+  let settings = loadSettings();
+  const dialog = $('#settings');
+
+  const userCss = () => `
+    :root {
+      --reader-font-size: ${settings.size / 100}em;
+      --reader-line-height: ${settings.leading / 10};
+    }
+    /* The reader's tap zones sit over the page edges, so keep text clear of
+       them, and never let a diagram or a wide table push a column sideways. */
+    body { padding-inline: 0.4em; }
+    img, svg, figure { max-width: 100%; }
+    pre { white-space: pre-wrap !important; }
+  `;
+
+  const applyChrome = () => {
+    document.documentElement.dataset.theme = settings.theme;
+    if (settings.theme === 'auto') delete document.documentElement.dataset.theme;
+  };
+
+  /** Called for every document the reader loads, including re-loads. */
+  const applyToDocument = (doc) => {
+    if (settings.theme === 'auto') delete doc.documentElement.dataset.theme;
+    else doc.documentElement.dataset.theme = settings.theme;
+  };
+
+  const sync = () => {
+    $('#out-size').value = `${settings.size}%`;
+    $('#out-leading').value = (settings.leading / 10).toFixed(1);
+    $('#set-size').value = settings.size;
+    $('#set-leading').value = settings.leading;
+    for (const input of dialog.querySelectorAll('input[name="theme"]')) {
+      input.checked = input.value === settings.theme;
+    }
+    for (const input of dialog.querySelectorAll('input[name="flow"]')) {
+      input.checked = input.value === settings.flow;
+    }
+  };
+
+  const update = (patch) => {
+    settings = { ...settings, ...patch };
+    saveSettings(settings);
+    applyChrome();
+    sync();
+    onChange(settings);
+  };
+
+  dialog.addEventListener('input', (event) => {
+    const { id, name, value } = event.target;
+    if (id === 'set-size') update({ size: Number(value) });
+    else if (id === 'set-leading') update({ leading: Number(value) });
+    else if (name === 'theme') update({ theme: value });
+    else if (name === 'flow') update({ flow: value });
+  });
+
+  $('#open-settings').addEventListener('click', () => dialog.showModal());
+
+  applyChrome();
+  sync();
+
+  return {
+    get value() {
+      return settings;
+    },
+    userCss,
+    applyToDocument,
+  };
+}

@@ -2,6 +2,28 @@ import { nest } from './nav.js';
 import { readerPath } from '../transforms/links.js';
 
 /**
+ * The chapter index the reader searches.
+ *
+ * Section-level, not word-level: the corpus has 2,287 H2/H3 headings and the
+ * thing people actually want is to jump to a section by name. Fetched lazily,
+ * one file per book, so nothing is paid for until someone opens the search
+ * box.
+ */
+export function buildSearchIndex({ chapters, meta, book }) {
+  return {
+    title: meta.title,
+    identifier: meta.identifier,
+    chapters: chapters.map((chapter) => ({
+      route: readerPath(book, chapter.relPath),
+      title: chapter.title,
+      sections: chapter.toc
+        .filter((entry) => entry.level > 1)
+        .map((entry) => ({ id: entry.id, text: entry.text })),
+    })),
+  };
+}
+
+/**
  * A Readium Web Publication Manifest for the same package.
  *
  * The OPF is what an EPUB reader parses; this is what a web reader parses.
@@ -17,6 +39,9 @@ import { readerPath } from '../transforms/links.js';
  *           lookup rather than by guessing at the spine position.
  *   source  the Markdown file it came from, so a chapter can link back to
  *           where it is edited.
+ *   size    the document's byte length, which the paginator weights progress
+ *           by. Without it every chapter counts the same and the progress bar
+ *           lies on a book whose chapters differ tenfold in length.
  */
 export function buildManifest({ chapters, assets, meta, book }) {
   const link = (chapter) => ({
@@ -27,6 +52,7 @@ export function buildManifest({ chapters, assets, meta, book }) {
       route: readerPath(book, chapter.relPath),
       source: chapter.relPath.split('\\').join('/'),
       depth: chapter.depth,
+      size: Buffer.byteLength(chapter.xhtml),
     },
   });
 

@@ -1,0 +1,457 @@
+/* The app shell. The book's own styles live inside the reader's iframe and
+   are the converter's business — everything here is chrome around it. */
+
+:root {
+  color-scheme: light dark;
+
+  --ink: #1a1a1a;
+  --paper: #ffffff;
+  --muted: #5b6470;
+  --rule: #e2e5ea;
+  --accent: #2d5b8a;
+  --sunken: #f6f8fa;
+  --bar-h: 3rem;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #e6e6e6;
+    --paper: #16181c;
+    --muted: #9aa4b1;
+    --rule: #2c313a;
+    --accent: #8fb6de;
+    --sunken: #1e2228;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e6e6e6;
+  --paper: #16181c;
+  --muted: #9aa4b1;
+  --rule: #2c313a;
+  --accent: #8fb6de;
+  --sunken: #1e2228;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+
+* { box-sizing: border-box; }
+
+/* Several rules below set `display`, which would otherwise beat the user
+   agent's [hidden] { display: none } on specificity alone. */
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  z-index: 10;
+  background: var(--paper);
+  padding: 0.5rem;
+}
+
+/* ── bar ─────────────────────────────────────────────────────────────── */
+
+#bar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: none;
+  padding: 0 0.35rem;
+  padding-top: var(--safe-top);
+  height: calc(var(--bar-h) + var(--safe-top));
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+#where {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0.35rem;
+  line-height: 1.25;
+}
+
+#where strong,
+#where span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#where strong { font-size: 0.85rem; }
+#where span { font-size: 0.75rem; color: var(--muted); }
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.icon:hover { background: var(--sunken); }
+.icon svg { width: 22px; height: 22px; fill: currentColor; }
+
+/* ── main ────────────────────────────────────────────────────────────── */
+
+#main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  outline: 0;
+}
+
+#status {
+  position: absolute;
+  left: 50%;
+  bottom: calc(3rem + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 4;
+  max-width: min(28rem, calc(100% - 2rem));
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--sunken);
+  text-align: center;
+  color: var(--muted);
+}
+
+#status:empty { display: none; }
+
+/* ── shelf ───────────────────────────────────────────────────────────── */
+
+#shelf {
+  height: 100%;
+  overflow: auto;
+  padding: 1.5rem 1rem calc(2rem + var(--safe-bottom));
+  padding-inline: max(1rem, env(safe-area-inset-left, 0px));
+}
+
+.shelf-inner {
+  max-width: 54rem;
+  margin: 0 auto;
+}
+
+.shelf-inner h1 {
+  font-size: 1.5rem;
+  margin: 0 0 0.25rem;
+}
+
+.shelf-inner .lede {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+}
+
+.books {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.books a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--sunken);
+  color: inherit;
+  text-decoration: none;
+}
+
+.books a:hover { border-color: var(--accent); }
+
+.books .name { font-weight: 600; }
+
+.books .meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.books .resume {
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+/* ── reader ──────────────────────────────────────────────────────────── */
+
+#reader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#view-host {
+  flex: 1;
+  min-height: 0;
+}
+
+foliate-view {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Tap targets for page turns. Narrow, edge-anchored and behind the text, so
+   they never swallow a tap meant for a link. */
+.edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12%;
+  max-width: 5rem;
+  z-index: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#page-prev { left: 0; }
+#page-next { right: 0; }
+
+#progress {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.75rem;
+  padding-bottom: calc(0.35rem + var(--safe-bottom));
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+#progress-track {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+#progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.15s ease-out;
+}
+
+/* ── panel ───────────────────────────────────────────────────────────── */
+
+#panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 5;
+  width: min(23rem, 100%);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--rule);
+  background: var(--paper);
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  box-shadow: -8px 0 24px rgb(0 0 0 / 0.12);
+}
+
+#panel-head {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex: none;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+#search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--sunken);
+  color: inherit;
+  font: inherit;
+}
+
+#panel-body {
+  flex: 1;
+  overflow: auto;
+  padding: 0.5rem 0;
+}
+
+#panel-body ol {
+  list-style: none;
+  margin: 0;
+  padding-left: 0.85rem;
+}
+
+#panel-body > ol { padding-left: 0; }
+
+#panel-body a {
+  display: block;
+  padding: 0.4rem 0.9rem;
+  color: inherit;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+
+#panel-body a:hover { background: var(--sunken); }
+
+#panel-body a[aria-current="true"] {
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
+#panel-body .hit-where {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+#panel-body mark {
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.full-text {
+  display: block;
+  width: calc(100% - 1.8rem);
+  margin: 0.5rem 0.9rem;
+  padding: 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+  border: 1px dashed var(--rule);
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.full-text:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
+.full-text:disabled { opacity: 0.5; cursor: default; }
+
+#panel-body .empty {
+  padding: 1rem 0.9rem;
+  color: var(--muted);
+}
+
+/* ── settings ────────────────────────────────────────────────────────── */
+
+#settings {
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 0;
+  background: var(--paper);
+  color: inherit;
+  max-width: min(24rem, calc(100vw - 2rem));
+}
+
+#settings::backdrop { background: rgb(0 0 0 / 0.4); }
+
+#settings form {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem;
+}
+
+#settings h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+#settings fieldset {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+#settings legend {
+  padding: 0 0.3rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+#settings label { display: block; }
+
+.range {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.range input { width: 100%; }
+
+#offline-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+#settings menu {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#settings button,
+#save-offline {
+  font: inherit;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--sunken);
+  color: inherit;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

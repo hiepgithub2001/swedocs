@@ -73,7 +73,7 @@ export async function writeEpub({ chapters, assets, meta, outPath, files = null 
  * reader re-downloads all of it. Exploded, a chapter is its own request, and
  * the whole directory can be published under an immutable build id.
  */
-export async function writeExploded({ files, manifest, outDir }) {
+export async function writeExploded({ files, manifest, search, outDir }) {
   const root = path.resolve(outDir);
   await fs.rm(root, { recursive: true, force: true });
 
@@ -83,6 +83,7 @@ export async function writeExploded({ files, manifest, outDir }) {
     await fs.writeFile(target, file.data);
   }
   await fs.writeFile(path.join(root, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  if (search) await fs.writeFile(path.join(root, 'search.json'), `${JSON.stringify(search)}\n`);
 }
 
 export { buildPackage };

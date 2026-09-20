@@ -5,7 +5,7 @@ import { scan } from './scan.js';
 import { createRenderer } from './render.js';
 import { collectLanguages } from './transforms/highlight.js';
 import { buildPackage, writeEpub, writeExploded } from './epub/write.js';
-import { buildManifest } from './epub/manifest.js';
+import { buildManifest, buildSearchIndex } from './epub/manifest.js';
 
 /**
  * A stable identifier for the same corpus across builds.
@@ -118,7 +118,8 @@ export async function convert({
   // cannot drift.
   const slug = book ?? path.basename(out, path.extname(out));
   const manifest = buildManifest({ chapters, assets, meta, book: slug });
-  if (exploded) await writeExploded({ files, manifest, outDir: exploded });
+  const search = buildSearchIndex({ chapters, meta, book: slug });
+  if (exploded) await writeExploded({ files, manifest, search, outDir: exploded });
 
   highlighter?.dispose?.();
 

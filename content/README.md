@@ -46,6 +46,24 @@ foundations.
 | [Distributed Systems](./distributed-systems/) | 🚧 In progress | The theory beneath the design: partial failure, logical time, consensus (Raft/Paxos), quorums, CRDTs |
 | [System Design](./system-design/) | 🚧 In progress | Designing scalable, reliable distributed systems |
 
+## Book summaries — a second shelf
+
+Alongside the knowledge areas there is a second collection: distillations of
+real, published books. They carry `collection: Book summaries` in their README
+frontmatter, which is what puts them on their own tab in the reader.
+
+| Book | What it is |
+| --- | --- |
+| [Fundamentals of Software Architecture — Distilled](./book-fundamentals-of-architecture/) | Richards & Ford (2020), rewritten as a short book: every core idea, with diagrams |
+| [Craft & Code](./books-craft/) | The Pragmatic Programmer, A Philosophy of Software Design, Clean Code, Refactoring, Code Complete |
+| [Design & Architecture](./books-design/) | Design Patterns, Domain-Driven Design, PoEAA, Clean Architecture, Building Microservices |
+| [Systems & Data](./books-systems/) | DDIA, Database Internals, SRE, Release It! |
+| [Teams & Delivery](./books-teams/) | The Mythical Man-Month, Peopleware, Accelerate, Team Topologies |
+
+These are summaries and analysis written in our own words — no book's text is
+reproduced. They are machine-written distillations: useful as maps, wrong in
+the places that matter most, and no substitute for the book itself.
+
 ## How to read this
 
 Start at an area's catalog and follow it down. Every area is arranged the same

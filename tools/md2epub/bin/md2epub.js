@@ -107,7 +107,16 @@ async function convertEach({ src, outDir, common, interactive }) {
     } catch {
       continue; // no Markdown in this subtree
     }
-    shelf.push({ name, dir, title: scanned.chapters[0].title });
+    // A book's own README steers the shelf as well as the book: `collection`
+    // in its frontmatter names the group it belongs to, which is how a shelf
+    // of nine reference works and a shelf of something else stay apart
+    // without the tool knowing what either of them is.
+    shelf.push({
+      name,
+      dir,
+      title: scanned.chapters[0].title,
+      collection: scanned.chapters[0].frontmatter?.collection ?? null,
+    });
     for (const chapter of scanned.chapters) {
       externals.set(chapter.srcPath, { book: name, route: readerPath(name, chapter.relPath) });
     }
@@ -117,7 +126,7 @@ async function convertEach({ src, outDir, common, interactive }) {
   const warnings = [];
   const stats = { chapters: 0, diagrams: 0, images: 0, elapsedMs: 0 };
 
-  for (const { name, dir, title } of shelf) {
+  for (const { name, dir, title, collection } of shelf) {
     if (interactive) process.stderr.write(`\r\x1b[2K  building ${name}…`);
 
     const result = await convert({
@@ -134,6 +143,7 @@ async function convertEach({ src, outDir, common, interactive }) {
 
     books.push({
       name,
+      collection,
       title: result.meta.title,
       bytes: result.bytes,
       stats: result.stats,
@@ -160,6 +170,7 @@ async function convertEach({ src, outDir, common, interactive }) {
       entries.push({
         slug: book.name,
         title: book.title,
+        ...(book.collection ? { collection: book.collection } : {}),
         identifier: book.identifier,
         chapters: book.stats.chapters,
         bytes: book.bytes,

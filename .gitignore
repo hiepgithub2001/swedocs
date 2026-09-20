@@ -1,0 +1,7 @@
+# Build output — every byte of it is derived from content/ by tools/md2epub.
+dist/
+
+node_modules/
+npm-debug.log*
+
+.DS_Store

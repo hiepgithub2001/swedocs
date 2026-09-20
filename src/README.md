@@ -85,8 +85,16 @@ the reader's toolbar, which does not exist on the library screen. `renderShelf`
 replaces its container's children, so the row is a node the app owns and
 re-mounts after each render.
 
-Over plain http there is no install and no service worker: the row says so,
-because that is the one cause a reader can do something about.
+Over plain http there is no install and no service worker — a service worker
+can rewrite every response the origin ever gives, so browsers only hand one
+out where the response cannot have been tampered with on the way. The row says
+so, because that is the one cause a reader can do something about.
+
+`tools/devcert.js` mints a local authority and a certificate for the names this
+machine answers to, and `node tools/serve.js --tls` serves under it. Install the
+authority on the phone — it is offered over http at `<base>swedocs-ca.crt` —
+and the tailnet address becomes a real https:// origin to that phone and to
+nothing else.
 
 ## Offline
 

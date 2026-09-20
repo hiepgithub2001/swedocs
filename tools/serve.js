@@ -6,17 +6,25 @@
  * deployed site uses, so relative URLs, the service worker's scope and the
  * <base> computation are exercised exactly as they will be in production.
  *
- *   node tools/serve.js [--port 8080] [--base /swedocs/] [--site]
+ *   node tools/serve.js [--port 8080] [--base /swedocs/] [--site] [--tls]
  *
  * `--site` serves the assembled dist/site instead, which is what CI deploys —
  * worth a look before a release, since that is the only arrangement where
  * pub/latest.json and the immutable build directory are actually exercised.
+ *
+ * `--tls` additionally listens on https, with the certificate `tools/devcert.js`
+ * mints. Service workers — and so installing the app — need a secure context,
+ * which localhost gets for free and a LAN or tailnet address never does; over
+ * http the one arrangement that matters, a phone reading from this machine, is
+ * the one arrangement none of that can be exercised in. The http listener stays
+ * up alongside it, and serves the authority to install at <base>swedocs-ca.crt.
  *
  * Any path that is not a file is answered with index.html, which is what the
  * host's 404 fallback does for the /read/<book>/<chapter> routes.
  */
 import fs from 'node:fs/promises';
 import http from 'node:http';
+import https from 'node:https';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -31,6 +39,9 @@ const arg = (name, fallback) => {
 const PORT = Number(arg('port', 8080));
 const BASE = arg('base', '/swedocs/').replace(/\/*$/, '/');
 const SITE = process.argv.includes('--site');
+const TLS = process.argv.includes('--tls');
+const TLS_PORT = Number(arg('tls-port', 8443));
+const TLS_DIR = path.join(ROOT, '.cache', 'tls');
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -46,6 +57,7 @@ const TYPES = {
   '.jpg': 'image/jpeg',
   '.gif': 'image/gif',
   '.epub': 'application/epub+zip',
+  '.crt': 'application/x-x509-ca-cert',
 };
 
 /** `pub/` is the build output; everything else is the app. */
@@ -60,12 +72,23 @@ function resolve(urlPath) {
 const fallback = () =>
   path.join(ROOT, SITE ? 'dist/site/404.html' : 'src/index.html');
 
-const server = http.createServer(async (req, res) => {
+async function handle(req, res) {
   const urlPath = decodeURI(new URL(req.url, 'http://localhost').pathname);
 
   if (!urlPath.startsWith(BASE)) {
     res.writeHead(302, { location: BASE });
     return res.end();
+  }
+
+  // The authority has to be fetched over http: until it is installed, https
+  // is exactly what the phone will not talk to.
+  if (TLS && urlPath === `${BASE}swedocs-ca.crt`) {
+    const body = await fs.readFile(path.join(TLS_DIR, 'ca.crt'));
+    res.writeHead(200, {
+      'content-type': TYPES['.crt'],
+      'content-disposition': 'attachment; filename="swedocs-ca.crt"',
+    });
+    return res.end(body);
   }
 
   const file = resolve(urlPath);
@@ -92,8 +115,21 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { 'content-type': TYPES['.html'], 'cache-control': 'no-cache' });
     res.end(body);
   }
-});
+}
 
-server.listen(PORT, () => {
+http.createServer(handle).listen(PORT, () => {
   process.stdout.write(`  http://localhost:${PORT}${BASE}\n`);
 });
+
+if (TLS) {
+  const [key, cert] = await Promise.all([
+    fs.readFile(path.join(TLS_DIR, 'server.key')),
+    fs.readFile(path.join(TLS_DIR, 'server.crt')),
+  ]).catch(() => {
+    process.stderr.write('  --tls: no certificate. Run: node tools/devcert.js\n');
+    process.exit(1);
+  });
+  https.createServer({ key, cert }, handle).listen(TLS_PORT, () => {
+    process.stdout.write(`  https://localhost:${TLS_PORT}${BASE}\n`);
+  });
+}

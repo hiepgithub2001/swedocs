@@ -28,6 +28,7 @@ const isApple = () =>
 
 export function createInstall() {
   const bar = $('#install-bar');
+  const row = $('#install-row');
   const note = $('#install-note');
   const button = $('#install-now');
 
@@ -89,6 +90,13 @@ export function createInstall() {
     bar.hidden = true;
   });
 
+  /** Put the row on the shelf, which replaces its children on every render. */
+  const mount = (container) => {
+    container.append(row);
+    row.hidden = false;
+    render();
+  };
+
   render();
-  return { render };
+  return { render, mount };
 }

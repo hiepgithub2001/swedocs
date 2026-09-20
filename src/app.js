@@ -42,6 +42,9 @@ const reader = createReader({
     attachTables(doc);
   },
 });
+// Offered on the shelf rather than left to the browser's own banner, which
+// appears on its own schedule and is gone for months once dismissed.
+const install = createInstall();
 const panel = createPanel({
   hrefFor,
   onNavigate: (route, anchor) => go(route, { anchor }),
@@ -116,6 +119,7 @@ async function render(route, anchor) {
   if (!route) {
     panel.close();
     renderShelf(shelf, $('#shelf'), { href: (slug) => hrefFor(slug) });
+    install.mount($('#shelf').firstElementChild);
     show('shelf');
     return;
   }
@@ -144,6 +148,7 @@ async function render(route, anchor) {
   } catch (error) {
     show('shelf');
     renderShelf(shelf, $('#shelf'), { href: (s) => hrefFor(s) });
+    install.mount($('#shelf').firstElementChild);
     status(`Could not open “${slug}”. ${error.message}`);
   }
 }
@@ -233,10 +238,6 @@ async function boot() {
 
   const path = routeOf();
   await render(path.replace(/^read\//, ''), location.hash.slice(1) || null);
-
-  // Offered here rather than left to the browser's own banner, which appears
-  // on its own schedule and is gone for months once dismissed.
-  createInstall();
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register(`${BASE}sw.js`, { scope: BASE }).catch(() => {});

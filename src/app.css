@@ -455,8 +455,7 @@ foliate-view {
 
 .range input { width: 100%; }
 
-#offline-row,
-#install-row {
+#offline-row {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -485,6 +484,33 @@ foliate-view {
 }
 
 /* ── install ─────────────────────────────────────────────────────────── */
+
+/* On the shelf, under the books. The settings dialog cannot hold this: its
+   toolbar only exists on the reader screen. */
+#install-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0 0;
+  padding: 0.8rem 1rem;
+  border: 1px dashed var(--rule);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+#install-now {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--paper);
+  cursor: pointer;
+}
+
 
 /* Above the reader's footer, out of the way of the page-turn edges, and
    gone for good once dismissed. */

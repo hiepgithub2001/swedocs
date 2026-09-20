@@ -65,6 +65,13 @@
   </section>
 
   <p id="status" role="status"></p>
+
+  <!-- Moved into the shelf on render: that screen has no toolbar, so this is
+       the only place the install offer can be found from the library. -->
+  <p id="install-row" hidden>
+    <button id="install-now" type="button" hidden>Install app</button>
+    <span id="install-note"></span>
+  </p>
 </main>
 
 <aside id="panel" hidden aria-label="Contents and search">
@@ -129,11 +136,6 @@
       <label><input type="radio" name="flow" value="paginated"> Pages</label>
       <label><input type="radio" name="flow" value="scrolled"> Scroll</label>
     </fieldset>
-
-    <p id="install-row">
-      <button id="install-now" type="button" hidden>Install app</button>
-      <span id="install-note"></span>
-    </p>
 
     <p id="offline-row">
       <button id="save-offline" type="button">Save this book offline</button>

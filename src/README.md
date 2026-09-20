@@ -76,9 +76,14 @@ exactly what the converter wrote:
 
 A manifest, a service worker with a fetch handler, icons, and an https:// origin
 make the app installable; `beforeinstallprompt` is caught and spent on a button
-in the display settings rather than left to the browser's own banner, which
-appears on its own schedule and is gone for months once dismissed. iOS has no
-such event — there the same row names the two taps in the share sheet instead.
+rather than left to the browser's own banner, which appears on its own schedule
+and is gone for months once dismissed. iOS has no such event — there the same
+row names the two taps in the share sheet instead.
+
+The row sits on the shelf, not in the display settings: that dialog opens from
+the reader's toolbar, which does not exist on the library screen. `renderShelf`
+replaces its container's children, so the row is a node the app owns and
+re-mounts after each render.
 
 Over plain http there is no install and no service worker: the row says so,
 because that is the one cause a reader can do something about.

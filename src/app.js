@@ -5,6 +5,7 @@ import { createPanel } from './lib/panel.js';
 import { renderShelf } from './lib/shelf.js';
 import { createLightbox } from './lib/lightbox.js';
 import { createInstall } from './lib/install.js';
+import { createUpdate } from './lib/update.js';
 import { attachTables } from './lib/tables.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -45,6 +46,9 @@ const reader = createReader({
 // Offered on the shelf rather than left to the browser's own banner, which
 // appears on its own schedule and is gone for months once dismissed.
 const install = createInstall();
+// The shell is served from the worker's cache, so a reload is not a way to
+// get a newer app. This is.
+const update = createUpdate();
 const panel = createPanel({
   hrefFor,
   onNavigate: (route, anchor) => go(route, { anchor }),
@@ -120,6 +124,7 @@ async function render(route, anchor) {
     panel.close();
     renderShelf(shelf, $('#shelf'), { href: (slug) => hrefFor(slug) });
     install.mount($('#shelf').firstElementChild);
+    update.mount($('#shelf').firstElementChild);
     show('shelf');
     return;
   }
@@ -149,6 +154,7 @@ async function render(route, anchor) {
     show('shelf');
     renderShelf(shelf, $('#shelf'), { href: (s) => hrefFor(s) });
     install.mount($('#shelf').firstElementChild);
+    update.mount($('#shelf').firstElementChild);
     status(`Could not open “${slug}”. ${error.message}`);
   }
 }

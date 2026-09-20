@@ -512,6 +512,36 @@ foliate-view {
 }
 
 
+/* ── updating ────────────────────────────────────────────────────────── */
+
+/* Under the install offer, and quieter than it: this one is for the reader who
+   already has the app and suspects it is behind. */
+#update-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0.8rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+#update-now {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--sunken);
+  color: inherit;
+  cursor: pointer;
+}
+
+#update-now:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* Above the reader's footer, out of the way of the page-turn edges, and
    gone for good once dismissed. */
 #install-bar {

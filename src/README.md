@@ -22,6 +22,7 @@ the `<base>` computation are exercised exactly as they will be in production.
 | `lib/lightbox.js` | Diagrams, full screen, with pinch and wheel zoom |
 | `lib/tables.js` | Keeps a scrolling table's drags away from the paginator |
 | `lib/install.js` | The install button, and why there sometimes isn't one |
+| `lib/update.js` | The button that pulls a newer app past the cache |
 | `lib/shelf.js` | The library screen |
 | `lib/settings.js` | Theme, text size, line height, layout |
 | `lib/store.js` | Guarded `localStorage`: settings and reading positions |
@@ -106,3 +107,12 @@ Only `latest.json`, which names the current build, goes to the network first.
 
 Chapters are cached as they are read; "Save this book offline" in the display
 settings pulls a whole publication in one go.
+
+That cache is also why the app needs a way to update itself. A reload is
+answered from it, so it cannot bring a newer app; a new one arrives only when a
+new worker takes over, and the browser goes looking for one on its own schedule
+— never while a tab stays open, and never at all in an installed app the reader
+leaves running. "Get the latest version", next to the install offer on the
+shelf, asks for `sw.js`, and either waits for the new worker to take charge or,
+if that file is byte-identical, has the running worker re-fetch every shell file
+with `cache: 'reload'`. Either way the page reloads onto what came back.

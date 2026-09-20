@@ -8,7 +8,7 @@
  * new directory rather than changing an old file. Only `latest.json`, which
  * names the current build, goes to the network first.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL = `swedocs-shell-${VERSION}`;
 const PUB = 'swedocs-pub';
 
@@ -36,6 +36,7 @@ const SHELL_FILES = [
   'lib/shelf.js',
   'lib/store.js',
   'lib/tables.js',
+  'lib/update.js',
   'vendor/foliate/epub.js',
   'vendor/foliate/epubcfi.js',
   'vendor/foliate/overlayer.js',
@@ -116,12 +117,43 @@ self.addEventListener('fetch', (event) => {
 });
 
 /**
- * "Save this book offline": pull a whole publication in one go, rather than
- * waiting for the reader to happen to visit every chapter.
+ * Re-fetch the shell, past every cache.
+ *
+ * "Get the latest app" when the worker script itself has not changed — the
+ * common case while the app is being worked on, and the case where a deploy
+ * changed a file without bumping VERSION. `cache: 'reload'` is what keeps this
+ * from being a no-op: without it the HTTP cache happily answers with the same
+ * bytes that are already stored here.
  */
+const refreshShell = async () => {
+  const cache = await caches.open(SHELL);
+  const results = await Promise.allSettled(
+    SHELL_FILES.map(async (url) => {
+      const response = await fetch(url, { cache: 'reload' });
+      if (!response.ok) throw new Error(url);
+      await cache.put(url, response);
+    }),
+  );
+  return results.every((result) => result.status === 'fulfilled');
+};
+
 self.addEventListener('message', (event) => {
-  if (event.data?.type !== 'cache-book') return;
-  const { slug, urls } = event.data;
+  const message = event.data;
+  const reply = (data) => (event.ports[0] ?? event.source)?.postMessage(data);
+
+  // A worker that installed while an older one was still controlling pages
+  // waits for every tab to go. The reader pressing "Get the latest version"
+  // has said what to do instead.
+  if (message?.type === 'skip-waiting') return void self.skipWaiting();
+
+  if (message?.type === 'refresh-shell') {
+    return event.waitUntil(refreshShell().then((ok) => reply({ type: 'shell-refreshed', ok })));
+  }
+
+  // "Save this book offline": pull a whole publication in one go, rather than
+  // waiting for the reader to happen to visit every chapter.
+  if (message?.type !== 'cache-book') return;
+  const { slug, urls } = message;
 
   event.waitUntil(
     caches
@@ -129,7 +161,7 @@ self.addEventListener('message', (event) => {
       .then((cache) => Promise.allSettled(urls.map((url) => cache.add(url))))
       .then((results) => {
         const ok = results.every((result) => result.status === 'fulfilled');
-        event.source?.postMessage({ type: 'cached', slug, ok });
+        reply({ type: 'cached', slug, ok });
       }),
   );
 });

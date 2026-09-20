@@ -23,6 +23,8 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
                             absolute URLs instead of being dropped
         --source-url <url>  repository base URL; links that leave the corpus
                             point at the file where it lives
+        --source-root <d>   root those repository paths are relative to
+                            (default: <source-dir>)
         --strict            exit non-zero on dead-link or mermaid-failed
         --no-highlight      skip syntax highlighting (faster builds)
         --mermaid <module>  ES module whose default export renders Mermaid to SVG
@@ -119,7 +121,6 @@ async function convertEach({ src, outDir, common, interactive }) {
       // A book never rewrites a link to one of its own chapters through the
       // reader URL, so its own pages are withheld from the index it is given.
       externals: new Map([...externals].filter(([, v]) => v.book !== name)),
-      sourceRoot: common.sourceRoot ?? path.resolve(src),
     });
 
     books.push({ name, title: result.meta.title, bytes: result.bytes, stats: result.stats });
@@ -166,7 +167,7 @@ async function main() {
     mermaid,
     baseUrl: opts['base-url'] ?? null,
     sourceUrl: opts['source-url'] ?? null,
-    sourceRoot: path.resolve(src),
+    sourceRoot: path.resolve(opts['source-root'] ?? src),
     onProgress: !interactive
       ? undefined
       : ({ done, total, title }) => {

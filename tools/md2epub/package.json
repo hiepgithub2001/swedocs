@@ -31,9 +31,9 @@
     "saxes": "^6.0.0"
   },
   "scripts": {
-    "build": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../.. -a hiepgithub2001 --mermaid render/mermaid.js --base-url ${BASE_URL:-https://hiepgithub2001.github.io/swedocs/read} --source-url ${SOURCE_URL:-https://github.com/hiepgithub2001/swedocs/blob/main} --each -o ../../dist/books",
+    "build": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../../content -a hiepgithub2001 --mermaid render/mermaid.js --base-url ${BASE_URL:-https://hiepgithub2001.github.io/swedocs/read} --source-url ${SOURCE_URL:-https://github.com/hiepgithub2001/swedocs/blob/main} --source-root ../.. --each -o ../../dist/books",
     "build:strict": "npm run build --silent -- --strict",
-    "build:one": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../.. -a hiepgithub2001 --mermaid render/mermaid.js --base-url ${BASE_URL:-https://hiepgithub2001.github.io/swedocs/read} --source-url ${SOURCE_URL:-https://github.com/hiepgithub2001/swedocs/blob/main} -o ../../dist/swedocs.epub -t 'swedocs \u2014 Software Knowledge Base'",
+    "build:one": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../../content -a hiepgithub2001 --mermaid render/mermaid.js --base-url ${BASE_URL:-https://hiepgithub2001.github.io/swedocs/read} --source-url ${SOURCE_URL:-https://github.com/hiepgithub2001/swedocs/blob/main} --source-root ../.. -o ../../dist/swedocs.epub -t 'swedocs \u2014 Software Knowledge Base'",
     "validate": "node test/validate.js ../../dist/books",
     "test": "npm run build:strict --silent && npm run validate --silent"
   },

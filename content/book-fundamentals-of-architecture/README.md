@@ -76,4 +76,3 @@ minimum kit for defending a choice in a room.
 - [Architecture & Patterns](../architecture-patterns/README.md) — the same material as reference docs
 - [System Design](../system-design/README.md) — the building blocks the styles are assembled from
 - [Distributed Systems](../distributed-systems/README.md) — why the distributed styles cost what they cost
-- [Clean Architecture](../book-clean-architecture/README.md) and [Building Microservices](../book-building-microservices/README.md) — the neighbouring books, in one-page form

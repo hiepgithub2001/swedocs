@@ -54,7 +54,7 @@ flowchart TB
 The defining properties:
 
 - **Bounded context.** Each service is a domain boundary in the
-  [DDD](../../book-domain-driven-design/README.md) sense, owning its data and
+  [DDD](../../architecture-patterns/1-knowledge/architectural-styles/domain-driven-design.md) sense, owning its data and
   its code.
 - **Data isolation.** No shared database — the rule that makes each service its
   own [quantum](../2-characteristics/03-scope-and-quanta.md), and the one most

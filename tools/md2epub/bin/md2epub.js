@@ -2,7 +2,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import { convert, scan, DEFAULT_IGNORE } from '../src/index.js';
+import { convert, scan, readerPath, DEFAULT_IGNORE } from '../src/index.js';
 
 const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
 
@@ -19,6 +19,11 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
     -i, --ignore <a,b>      extra directory names to skip
     -e, --each              one book per immediate subdirectory;
                             --out is then a directory
+        --base-url <url>    reader base URL; links into another book become
+                            absolute URLs instead of being dropped
+        --source-url <url>  repository base URL; links that leave the corpus
+                            point at the file where it lives
+        --strict            exit non-zero on dead-link or mermaid-failed
         --no-highlight      skip syntax highlighting (faster builds)
         --mermaid <module>  ES module whose default export renders Mermaid to SVG
         --quiet             only print the final summary
@@ -28,12 +33,13 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
     md2epub ./docs -o book.epub -t "My Handbook" -a "A. Writer"
     md2epub . --ignore drafts,archive --no-highlight
     md2epub ./content --each -o ./dist/books -a "A. Writer"
+    md2epub ./content --each -o ./dist/books --base-url https://docs.example.com
 
   Reproducible builds
     Set SOURCE_DATE_EPOCH to make output byte-for-byte identical across runs.
 `;
 
-const FLAGS = new Set(['--no-highlight', '--quiet', '--each', '-e', '-h', '--help']);
+const FLAGS = new Set(['--no-highlight', '--quiet', '--strict', '--each', '-e', '-h', '--help']);
 const ALIASES = {
   '-o': '--out', '-t': '--title', '-a': '--author', '-l': '--language',
   '-d': '--description', '-s': '--subjects', '-i': '--ignore', '-e': '--each',
@@ -79,19 +85,30 @@ async function convertEach({ src, outDir, common, interactive }) {
     .map((e) => e.name)
     .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
 
+  // Scan every book before converting any of them. 11% of this corpus's
+  // internal links cross an area, and a book cannot rewrite a link into a
+  // sibling it has not seen.
+  const shelf = [];
+  const externals = new Map();
+  for (const name of dirs) {
+    const dir = path.join(src, name);
+    let scanned;
+    try {
+      scanned = await scan(dir, { ignore: common.ignore ?? [] });
+    } catch {
+      continue; // no Markdown in this subtree
+    }
+    shelf.push({ name, dir, title: scanned.chapters[0].title });
+    for (const chapter of scanned.chapters) {
+      externals.set(chapter.srcPath, { book: name, route: readerPath(name, chapter.relPath) });
+    }
+  }
+
   const books = [];
   const warnings = [];
   const stats = { chapters: 0, diagrams: 0, images: 0, elapsedMs: 0 };
 
-  for (const name of dirs) {
-    const dir = path.join(src, name);
-    let title;
-    try {
-      ({ title } = (await scan(dir, { ignore: common.ignore ?? [] })).chapters[0]);
-    } catch {
-      continue; // no Markdown in this subtree
-    }
-
+  for (const { name, dir, title } of shelf) {
     if (interactive) process.stderr.write(`\r\x1b[2K  building ${name}…`);
 
     const result = await convert({
@@ -99,6 +116,10 @@ async function convertEach({ src, outDir, common, interactive }) {
       src: dir,
       out: path.join(outDir, `${name}.epub`),
       title: common.title ?? title,
+      // A book never rewrites a link to one of its own chapters through the
+      // reader URL, so its own pages are withheld from the index it is given.
+      externals: new Map([...externals].filter(([, v]) => v.book !== name)),
+      sourceRoot: common.sourceRoot ?? path.resolve(src),
     });
 
     books.push({ name, title: result.meta.title, bytes: result.bytes, stats: result.stats });
@@ -143,6 +164,9 @@ async function main() {
     ignore: opts.ignore?.split(',').map((s) => s.trim()).filter(Boolean),
     highlight: !opts['no-highlight'],
     mermaid,
+    baseUrl: opts['base-url'] ?? null,
+    sourceUrl: opts['source-url'] ?? null,
+    sourceRoot: path.resolve(src),
     onProgress: !interactive
       ? undefined
       : ({ done, total, title }) => {
@@ -185,17 +209,32 @@ async function main() {
     );
   }
 
+  // Generated Markdown fails in predictable ways — broken relative links,
+  // malformed Mermaid. Under --strict those stop being warnings scrolling past
+  // and become the build's verdict, which turns the converter into the quality
+  // check on whatever wrote the content.
+  const FATAL = new Set(['dead-link', 'mermaid-failed']);
+  const fatal = opts.strict ? result.warnings.filter((w) => FATAL.has(w.kind)) : [];
+
   if (result.warnings.length) {
     const byKind = result.warnings.reduce((acc, w) => ({ ...acc, [w.kind]: (acc[w.kind] ?? 0) + 1 }), {});
     process.stdout.write(`\n  warnings: ${Object.entries(byKind).map(([k, n]) => `${k} ×${n}`).join(', ')}\n`);
-    for (const w of result.warnings.slice(0, 10)) {
+    const shown = fatal.length ? fatal : result.warnings;
+    for (const w of shown.slice(0, 10)) {
       process.stdout.write(`    ${w.kind}: ${w.detail}  (${w.chapter})\n`);
     }
-    if (result.warnings.length > 10) {
-      process.stdout.write(`    … and ${result.warnings.length - 10} more\n`);
+    if (shown.length > 10) {
+      process.stdout.write(`    … and ${shown.length - 10} more\n`);
     }
   }
   process.stdout.write('\n');
+
+  if (fatal.length) {
+    const byKind = fatal.reduce((acc, w) => ({ ...acc, [w.kind]: (acc[w.kind] ?? 0) + 1 }), {});
+    throw new Error(
+      `--strict: ${Object.entries(byKind).map(([k, n]) => `${n} ${k}`).join(', ')}`,
+    );
+  }
 }
 
 main().catch((error) => {

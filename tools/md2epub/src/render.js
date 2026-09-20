@@ -46,7 +46,18 @@ ${body}
 `;
 }
 
-export function createRenderer({ chapters, highlighter, themes, mermaid, lang = 'en', warnings = [] }) {
+export function createRenderer({
+  chapters,
+  highlighter,
+  themes,
+  mermaid,
+  lang = 'en',
+  warnings = [],
+  externals = new Map(),
+  baseUrl = null,
+  sourceUrl = null,
+  sourceRoot = null,
+}) {
   const bySrcPath = new Map(chapters.map((c) => [c.srcPath, c]));
   const assets = new Map();
 
@@ -57,7 +68,7 @@ export function createRenderer({ chapters, highlighter, themes, mermaid, lang = 
       .use(remarkParse)
       .use(remarkFrontmatter, ['yaml', 'toml'])
       .use(remarkGfm)
-      .use(rewriteLinks, { chapter, bySrcPath, warnings })
+      .use(rewriteLinks, { chapter, bySrcPath, warnings, externals, baseUrl, sourceUrl, sourceRoot })
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
       .use(renderMermaid, { renderer: mermaid, chapter, warnings })

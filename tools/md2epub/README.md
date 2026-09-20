@@ -54,9 +54,47 @@ come before subdirectories.
 | `-d, --description` | — | Book description |
 | `-s, --subjects` | — | Comma-separated subject tags |
 | `-i, --ignore` | — | Extra directory names to skip |
+| `-e, --each` | off | One book per immediate subdirectory |
+| `--base-url` | — | Reader base URL for links into another book |
+| `--source-url` | — | Repository base URL for links that leave the corpus |
+| `--strict` | off | Exit non-zero on `dead-link` or `mermaid-failed` |
 | `--no-highlight` | off | Skip syntax highlighting |
 | `--mermaid <module>` | — | ES module rendering Mermaid to SVG |
 | `--quiet` | off | Summary only |
+
+## Links
+
+Inside a book, a relative Markdown link is rewritten onto the target chapter's
+file. Splitting a corpus into one book per area breaks every link that crosses
+an area — 11% of this one's — and there is no standard way to link between EPUB
+publications, so those two flags say where such a link should point instead:
+
+| Link | Becomes |
+| --- | --- |
+| Same book | `0012-sorting-and-searching.xhtml#stability` |
+| Another book, with `--base-url` | `<base>/system-design/1-knowledge/data-storage/indexing` |
+| Outside the corpus, with `--source-url` | `<source>/_TEMPLATE.md` |
+| Nothing that exists | unwrapped to plain text, reported as `dead-link` |
+
+Reader routes are `<book>/<path-without-extension>`, derived from the source
+path rather than the spine position: a chapter's file inside the package moves
+whenever something is inserted ahead of it, and a link people bookmark must
+not. An index page addresses its directory.
+
+`--source-url` applies only to a file that is really there. Without that check
+it would absorb every typo into a plausible-looking URL, which is exactly what
+`--strict` exists to catch.
+
+## The gate
+
+Generated Markdown fails in predictable ways: broken relative links, malformed
+Mermaid, unclosed fences. `--strict` turns `dead-link` and `mermaid-failed`
+from warnings scrolling past into the build's verdict, which makes the
+converter the quality check on whatever wrote the content.
+
+```bash
+npm run build:strict
+```
 
 ## Diagrams
 

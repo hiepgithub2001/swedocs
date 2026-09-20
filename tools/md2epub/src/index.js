@@ -62,6 +62,10 @@ export async function convert({
   themes = { light: 'github-light', dark: 'github-dark' },
   highlight = true,
   modified = null,
+  externals = new Map(),
+  baseUrl = null,
+  sourceUrl = null,
+  sourceRoot = null,
   onProgress = () => {},
 } = {}) {
   const started = Date.now();
@@ -81,6 +85,10 @@ export async function convert({
     mermaid,
     lang: language,
     warnings,
+    externals,
+    baseUrl,
+    sourceUrl,
+    sourceRoot,
   });
 
   const chapters = [];
@@ -118,3 +126,4 @@ export async function convert({
 }
 
 export { scan, DEFAULT_IGNORE } from './scan.js';
+export { readerPath } from './transforms/links.js';

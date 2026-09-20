@@ -77,6 +77,26 @@
   <nav id="panel-body"></nav>
 </aside>
 
+<dialog id="zoom" aria-label="Diagram">
+  <div id="zoom-stage">
+    <div id="zoom-canvas"></div>
+  </div>
+  <div id="zoom-bar">
+    <button id="zoom-out" class="icon" type="button" title="Zoom out" aria-label="Zoom out">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v2H5z"/></svg>
+    </button>
+    <output id="zoom-level">100%</output>
+    <button id="zoom-in" class="icon" type="button" title="Zoom in" aria-label="Zoom in">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>
+    </button>
+    <button id="zoom-reset" type="button">Fit</button>
+    <p id="zoom-caption" hidden></p>
+    <button id="zoom-close" class="icon" type="button" title="Close" aria-label="Close">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12 19 6.4 17.6 5 12 10.6z"/></svg>
+    </button>
+  </div>
+</dialog>
+
 <dialog id="settings">
   <form method="dialog">
     <h2>Display</h2>

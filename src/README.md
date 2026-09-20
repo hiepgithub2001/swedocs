@@ -19,6 +19,7 @@ the `<base>` computation are exercised exactly as they will be in production.
 | `lib/library.js` | Finds the current build, opens a book as a publication |
 | `lib/reader.js` | The reading surface: position, prefetch, page turns |
 | `lib/panel.js` | Contents, and the two tiers of search |
+| `lib/lightbox.js` | Diagrams, full screen, with pinch and wheel zoom |
 | `lib/shelf.js` | The library screen |
 | `lib/settings.js` | Theme, text size, line height, layout |
 | `lib/store.js` | Guarded `localStorage`: settings and reading positions |
@@ -52,6 +53,17 @@ compose rather than fight. The same stylesheet still works in a standalone
 
 Diagrams follow along: Mermaid's palette was rewritten at build time to
 `var(--dg-*, …)`, so one SVG is legible in both themes.
+
+## Diagrams
+
+A rendered diagram is an inline SVG sized to the text column: fine on a laptop,
+a postage stamp on a phone. Tapping one opens a clone of its SVG full screen,
+with pinch, wheel, double-tap and buttons for zoom, and bounded panning — it is
+vector, so the detail was always there, it only needed the room.
+
+The affordance is added to the document the reader loaded and the zoomed copy
+lives in the app's own document, so the package itself knows nothing about any
+of it and the same `.epub` in another reader is what the converter wrote.
 
 ## Offline
 

@@ -13,7 +13,7 @@ const idle = (fn) =>
  * where the reader is, what that means as a URL, and making the next page
  * already be there when it is asked for.
  */
-export function createReader({ settings, onRelocate, onExternalLink }) {
+export function createReader({ settings, onRelocate, onExternalLink, onDocument }) {
   let view = null;
   let current = null; // { book, manifest, entry, base }
   let restoring = false;
@@ -85,7 +85,10 @@ export function createReader({ settings, onRelocate, onExternalLink }) {
       view = document.createElement('foliate-view');
       host.append(view);
 
-      view.addEventListener('load', ({ detail }) => settings.applyToDocument(detail.doc));
+      view.addEventListener('load', ({ detail }) => {
+        settings.applyToDocument(detail.doc);
+        onDocument?.(detail.doc);
+      });
 
       view.addEventListener('relocate', ({ detail }) => {
         const index = detail.section?.current ?? 0;

@@ -26,6 +26,33 @@ export function createSettings(onChange) {
     body { padding-inline: 0.4em; }
     img, svg, figure { max-width: 100%; }
     pre { white-space: pre-wrap !important; }
+
+    /* A diagram is a button here — the app opens it full screen and lets you
+       zoom in. The attribute is set by the app on the document it loaded, so
+       the same package in a standalone reader shows none of this. */
+    figure.diagram[data-zoom] {
+      position: relative;
+      cursor: zoom-in;
+      -webkit-tap-highlight-color: transparent;
+    }
+    figure.diagram[data-zoom]::after {
+      content: "\\2921";
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 0.15em 0.4em;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 0.8em;
+      line-height: 1.3;
+      pointer-events: none;
+    }
+    figure.diagram[data-zoom]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
   `;
 
   const applyChrome = () => {

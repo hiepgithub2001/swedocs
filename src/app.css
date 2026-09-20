@@ -14,6 +14,19 @@
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* The same diagram palette book.css declares. A zoomed diagram is a clone
+     of the book's SVG living in this document, and it resolves these names
+     here — without them it would fall back to its own light-mode literals and
+     sit there glowing in a dark room. */
+  --dg-node-bg: #eaeff5;
+  --dg-node-border: #4a6785;
+  --dg-node-text: #16202b;
+  --dg-line: #4a6785;
+  --dg-label-bg: #eaeff5;
+  --dg-alt-bg: #dbe3ed;
+  --dg-note-bg: #fbf3d5;
+  --dg-note-border: #b59b4a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,6 +37,15 @@
     --rule: #2c313a;
     --accent: #8fb6de;
     --sunken: #1e2228;
+
+    --dg-node-bg: #232b35;
+    --dg-node-border: #7d9dc0;
+    --dg-node-text: #dfe6ee;
+    --dg-line: #7d9dc0;
+    --dg-label-bg: #232b35;
+    --dg-alt-bg: #2d3742;
+    --dg-note-bg: #3a331d;
+    --dg-note-border: #b59b4a;
   }
 }
 
@@ -35,6 +57,15 @@
   --rule: #2c313a;
   --accent: #8fb6de;
   --sunken: #1e2228;
+
+  --dg-node-bg: #232b35;
+  --dg-node-border: #7d9dc0;
+  --dg-node-text: #dfe6ee;
+  --dg-line: #7d9dc0;
+  --dg-label-bg: #232b35;
+  --dg-alt-bg: #2d3742;
+  --dg-note-bg: #3a331d;
+  --dg-note-border: #b59b4a;
 }
 
 :root[data-theme="light"] { color-scheme: light; }
@@ -451,6 +482,94 @@ foliate-view {
   color: inherit;
   cursor: pointer;
 }
+
+/* ── zoomed diagram ──────────────────────────────────────────────────── */
+
+#zoom {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--paper);
+  color: inherit;
+  display: none;
+  flex-direction: column;
+}
+
+#zoom[open] { display: flex; }
+#zoom::backdrop { background: var(--paper); }
+
+/* The pan surface owns every touch inside it: without this the browser's own
+   pinch-zoom and overscroll fight the diagram's. */
+#zoom-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: contain;
+  cursor: zoom-in;
+}
+
+#zoom-stage.pannable { cursor: grab; }
+#zoom-stage.pannable:active { cursor: grabbing; }
+
+#zoom-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+#zoom-canvas svg { display: block; width: 100%; height: 100%; }
+
+#zoom-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  padding-bottom: calc(0.35rem + var(--safe-bottom));
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+#zoom-level {
+  min-width: 3.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+#zoom-reset {
+  flex: none;
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--sunken);
+  color: inherit;
+  cursor: pointer;
+}
+
+#zoom-caption {
+  flex: 1;
+  min-width: 0;
+  margin: 0 0.4rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#zoom-caption[hidden] + #zoom-close { margin-left: auto; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }

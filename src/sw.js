@@ -8,7 +8,7 @@
  * new directory rather than changing an old file. Only `latest.json`, which
  * names the current build, goes to the network first.
  */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL = `swedocs-shell-${VERSION}`;
 const PUB = 'swedocs-pub';
 
@@ -22,6 +22,7 @@ const SHELL_FILES = [
   'manifest.webmanifest',
   'icons/icon.svg',
   'lib/library.js',
+  'lib/lightbox.js',
   'lib/panel.js',
   'lib/reader.js',
   'lib/settings.js',

@@ -3,6 +3,7 @@ import { createSettings } from './lib/settings.js';
 import { createReader } from './lib/reader.js';
 import { createPanel } from './lib/panel.js';
 import { renderShelf } from './lib/shelf.js';
+import { createLightbox } from './lib/lightbox.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -29,7 +30,13 @@ let publication = null;
 let landed = null; // the route the reader is actually showing
 
 const settings = createSettings(() => reader.applyStyles());
-const reader = createReader({ settings, onRelocate, onExternalLink });
+const lightbox = createLightbox();
+const reader = createReader({
+  settings,
+  onRelocate,
+  onExternalLink,
+  onDocument: (doc) => lightbox.attach(doc),
+});
 const panel = createPanel({
   hrefFor,
   onNavigate: (route, anchor) => go(route, { anchor }),
@@ -144,6 +151,9 @@ $('#page-next').addEventListener('click', () => reader.next());
 
 document.addEventListener('keydown', (event) => {
   if (event.target.matches('input, textarea')) return;
+  // A modal is on top of the reader, not beside it: space should not turn a
+  // page behind a zoomed diagram.
+  if (document.querySelector('dialog[open]')) return;
   if (event.key === 'ArrowLeft' || event.key === 'PageUp') reader.prev();
   else if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') reader.next();
 });

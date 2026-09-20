@@ -240,7 +240,12 @@ async function boot() {
   await render(path.replace(/^read\//, ''), location.hash.slice(1) || null);
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(`${BASE}sw.js`, { scope: BASE }).catch(() => {});
+    navigator.serviceWorker
+      .register(`${BASE}sw.js`, { scope: BASE })
+      .then(() => install.workerReady(true))
+      .catch(() => install.workerReady(false));
+  } else {
+    install.workerReady(false);
   }
 }
 

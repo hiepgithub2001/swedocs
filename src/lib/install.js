@@ -33,6 +33,7 @@ export function createInstall() {
   const button = $('#install-now');
 
   let deferred = null;
+  let worker = null; // null until the registration has been attempted
 
   const why = () => {
     if (standalone()) return 'You are reading the installed app.';
@@ -40,6 +41,14 @@ export function createInstall() {
     if (isApple()) return 'On iPhone and iPad: Share, then “Add to Home Screen”.';
     if (!window.isSecureContext) {
       return 'Installing needs an https:// address — this page is plain http.';
+    }
+    // An https:// page whose certificate this device does not trust counts as
+    // secure to the page itself, but the browser still refuses it a service
+    // worker — and refuses to install it. That is worth saying out loud: it
+    // looks identical to "not installable yet" and is not.
+    if (worker === false) {
+      return 'The browser refused this page a service worker, so it will not offer to install. ' +
+        'On an https:// address that usually means this device does not trust the certificate.';
     }
     return 'Your browser will offer to install once it has seen the app work.';
   };
@@ -97,6 +106,12 @@ export function createInstall() {
     render();
   };
 
+  /** What came of registering the service worker — the install depends on it. */
+  const workerReady = (ok) => {
+    worker = ok;
+    render();
+  };
+
   render();
-  return { render, mount };
+  return { render, mount, workerReady };
 }

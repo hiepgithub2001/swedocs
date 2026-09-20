@@ -181,7 +181,7 @@ document.addEventListener('click', (event) => {
 let resized = null;
 window.addEventListener('resize', () => {
   clearTimeout(resized);
-  resized = setTimeout(() => reader.applyStyles(), 200);
+  resized = setTimeout(() => reader.refreshStyles(), 200);
 });
 
 window.addEventListener('popstate', () => {

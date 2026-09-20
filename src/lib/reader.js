@@ -48,6 +48,17 @@ export function createReader({ settings, onRelocate, onExternalLink, onDocument 
     }
   };
 
+  /**
+   * Re-issue the injected stylesheet, and nothing else.
+   *
+   * The table frames are sized in pixels from the reading surface, so they
+   * have to be rewritten when the window changes shape — but setting the
+   * paginator's layout attributes again, even to the values they already
+   * have, makes it lay the whole section out afresh. This only touches the
+   * stylesheet, which the renderer swaps in place.
+   */
+  const refreshStyles = () => view?.renderer.setStyles?.(settings.userCss());
+
   const applyStyles = () => {
     if (!view) return;
     view.renderer.setAttribute('flow', settings.value.flow);
@@ -147,6 +158,7 @@ export function createReader({ settings, onRelocate, onExternalLink, onDocument 
     open,
     close,
     applyStyles,
+    refreshStyles,
     get view() {
       return view;
     },

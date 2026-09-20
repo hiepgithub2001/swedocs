@@ -1,0 +1,30 @@
+# The gate, on a pull request: the same build, without publishing anything.
+name: Check
+
+on:
+  pull_request:
+    paths:
+      - 'content/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/md2epub/package-lock.json
+      - run: npm ci
+        working-directory: tools/md2epub
+      - run: npm run browsers
+      - uses: actions/cache@v4
+        with:
+          path: .cache/mermaid
+          key: mermaid-${{ hashFiles('content/**/*.md', 'tools/md2epub/render/mermaid.js') }}
+          restore-keys: mermaid-
+      - run: npm test

@@ -3,11 +3,14 @@
   "private": true,
   "type": "module",
   "description": "A software-engineering knowledge base: Markdown in, EPUB 3 books and a reader out.",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "npm --prefix tools/md2epub run build:strict",
     "test": "npm --prefix tools/md2epub test",
     "site": "node tools/site.js",
-    "dev": "node tools/serve.js"
+    "dev": "node tools/serve.js",
+    "browsers": "npm --prefix tools/md2epub run browsers"
   }
 }

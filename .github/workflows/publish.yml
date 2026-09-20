@@ -1,0 +1,85 @@
+# Markdown in, books and a reader out.
+#
+# Everything published here is derived: nothing in content/ is ever modified,
+# and dist/ is not in the repository. The build is deterministic, so a commit
+# that changes no content produces the same build id — which is the directory
+# name every published URL sits under, so readers re-download nothing.
+name: Publish
+
+on:
+  push:
+    branches: [main]
+    # Scoped, because most commits touch only content/ and there is no reason
+    # for a docs edit to wait on anything else.
+    paths:
+      - 'content/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/md2epub/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: tools/md2epub
+
+      # Diagram rendering is the one stage that needs a browser: Mermaid's
+      # layout engines measure text, and nothing but a real layout engine
+      # knows how wide a label is.
+      - name: Install Chromium
+        run: npm run browsers
+
+      # 220 diagrams is minutes cold and seconds warm. The key includes the
+      # renderer because changing the palette invalidates every cached SVG.
+      - name: Restore rendered diagrams
+        uses: actions/cache@v4
+        with:
+          path: .cache/mermaid
+          key: mermaid-${{ hashFiles('content/**/*.md', 'tools/md2epub/render/mermaid.js') }}
+          restore-keys: mermaid-
+
+      # Builds all nine books under --strict, then validates each package:
+      # a broken relative link or a Mermaid block that does not parse fails
+      # here rather than reaching a reader.
+      - name: Build and validate
+        run: npm test
+        env:
+          BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/read
+          SOURCE_URL: https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}
+
+      - name: Assemble the site
+        run: npm run site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

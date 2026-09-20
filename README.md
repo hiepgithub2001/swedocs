@@ -18,14 +18,23 @@ a retrieval index.
 ## Build
 
 ```bash
-cd tools/md2epub
-npm install
-npm test          # build all nine books under --strict, then validate them
+npm --prefix tools/md2epub ci
+npm run browsers     # Chromium, for rendering diagrams
+npm test             # build all nine books under --strict, then validate them
+npm run site         # assemble dist/site, what CI deploys
+npm run dev          # http://localhost:8080/swedocs/
 ```
 
 `npm test` fails on a broken relative link or a Mermaid block that does not
 parse, so the converter doubles as the quality check on new content. See
-[the converter's README](./tools/md2epub/README.md) for the flags.
+[the converter's README](./tools/md2epub/README.md) for the flags and
+[the reader's](./src/README.md) for how the app is put together.
+
+A push to `main` runs the same build and publishes to GitHub Pages. Books are
+deployed under `pub/<build-id>/`, where the id is a hash of the packages
+themselves: a commit that changes no content produces the same id and the same
+URLs, so readers re-download nothing, and every URL below it can be cached
+forever.
 
 ## Writing
 

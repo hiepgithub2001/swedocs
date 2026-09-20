@@ -6,7 +6,11 @@
  * deployed site uses, so relative URLs, the service worker's scope and the
  * <base> computation are exercised exactly as they will be in production.
  *
- *   node tools/serve.js [--port 8080] [--base /swedocs/]
+ *   node tools/serve.js [--port 8080] [--base /swedocs/] [--site]
+ *
+ * `--site` serves the assembled dist/site instead, which is what CI deploys —
+ * worth a look before a release, since that is the only arrangement where
+ * pub/latest.json and the immutable build directory are actually exercised.
  *
  * Any path that is not a file is answered with index.html, which is what the
  * host's 404 fallback does for the /read/<book>/<chapter> routes.
@@ -26,6 +30,7 @@ const arg = (name, fallback) => {
 
 const PORT = Number(arg('port', 8080));
 const BASE = arg('base', '/swedocs/').replace(/\/*$/, '/');
+const SITE = process.argv.includes('--site');
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -46,10 +51,14 @@ const TYPES = {
 /** `pub/` is the build output; everything else is the app. */
 function resolve(urlPath) {
   const rel = urlPath.slice(BASE.length);
+  if (SITE) return path.join(ROOT, 'dist', 'site', rel || 'index.html');
   if (rel === '' || rel === 'index.html') return path.join(ROOT, 'src', 'index.html');
   if (rel.startsWith('pub/')) return path.join(ROOT, 'dist', 'pub', rel.slice(4));
   return path.join(ROOT, 'src', rel);
 }
+
+const fallback = () =>
+  path.join(ROOT, SITE ? 'dist/site/404.html' : 'src/index.html');
 
 const server = http.createServer(async (req, res) => {
   const urlPath = decodeURI(new URL(req.url, 'http://localhost').pathname);
@@ -79,7 +88,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(404, { 'content-type': 'text/plain' });
       return res.end('not found\n');
     }
-    const body = await fs.readFile(path.join(ROOT, 'src', 'index.html'));
+    const body = await fs.readFile(fallback());
     res.writeHead(200, { 'content-type': TYPES['.html'], 'cache-control': 'no-cache' });
     res.end(body);
   }

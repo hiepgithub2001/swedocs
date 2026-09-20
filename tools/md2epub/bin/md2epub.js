@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
@@ -19,6 +20,9 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
     -i, --ignore <a,b>      extra directory names to skip
     -e, --each              one book per immediate subdirectory;
                             --out is then a directory
+    -x, --exploded          also write each package unzipped, next to its
+                            .epub, with a Readium web manifest
+        --shelf-title <t>   title for the shelf index written by --each
         --base-url <url>    reader base URL; links into another book become
                             absolute URLs instead of being dropped
         --source-url <url>  repository base URL; links that leave the corpus
@@ -41,10 +45,13 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
     Set SOURCE_DATE_EPOCH to make output byte-for-byte identical across runs.
 `;
 
-const FLAGS = new Set(['--no-highlight', '--quiet', '--strict', '--each', '-e', '-h', '--help']);
+const FLAGS = new Set([
+  '--no-highlight', '--quiet', '--strict', '--each', '-e', '--exploded', '-x', '-h', '--help',
+]);
 const ALIASES = {
   '-o': '--out', '-t': '--title', '-a': '--author', '-l': '--language',
   '-d': '--description', '-s': '--subjects', '-i': '--ignore', '-e': '--each',
+  '-x': '--exploded',
 };
 
 function parseArgs(argv) {
@@ -118,12 +125,20 @@ async function convertEach({ src, outDir, common, interactive }) {
       src: dir,
       out: path.join(outDir, `${name}.epub`),
       title: common.title ?? title,
+      book: name,
+      exploded: common.exploded ? path.join(outDir, name) : null,
       // A book never rewrites a link to one of its own chapters through the
       // reader URL, so its own pages are withheld from the index it is given.
       externals: new Map([...externals].filter(([, v]) => v.book !== name)),
     });
 
-    books.push({ name, title: result.meta.title, bytes: result.bytes, stats: result.stats });
+    books.push({
+      name,
+      title: result.meta.title,
+      bytes: result.bytes,
+      stats: result.stats,
+      identifier: result.meta.identifier,
+    });
     warnings.push(...result.warnings.map((w) => ({ ...w, book: name })));
     stats.chapters += result.stats.chapters;
     stats.diagrams += result.stats.diagrams;
@@ -132,6 +147,40 @@ async function convertEach({ src, outDir, common, interactive }) {
   }
 
   if (!books.length) throw new Error(`No subdirectory of ${src} contains Markdown`);
+
+  // One index for the whole shelf, so the reader's first request tells it what
+  // exists without fetching nine manifests.
+  if (common.exploded) {
+    const digest = crypto.createHash('sha256');
+    const entries = [];
+    for (const book of books) {
+      const bytes = await fs.readFile(path.join(outDir, `${book.name}.epub`));
+      const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+      digest.update(`${book.name}:${hash}\n`);
+      entries.push({
+        slug: book.name,
+        title: book.title,
+        identifier: book.identifier,
+        chapters: book.stats.chapters,
+        bytes: book.bytes,
+        hash: hash.slice(0, 16),
+        manifest: `${book.name}/manifest.json`,
+        epub: `${book.name}.epub`,
+      });
+    }
+
+    // The build id names the immutable directory this shelf is published
+    // under. Derived from the packages rather than from the commit, so a
+    // commit that changes no content produces the same id and CI can skip the
+    // redeploy entirely.
+    const shelf = {
+      title: common.shelfTitle ?? 'Library',
+      build: digest.digest('hex').slice(0, 12),
+      books: entries,
+    };
+    await fs.writeFile(path.join(outDir, 'index.json'), `${JSON.stringify(shelf, null, 2)}\n`);
+  }
+
   return { outPath: path.resolve(outDir), books, warnings, stats };
 }
 
@@ -165,6 +214,8 @@ async function main() {
     ignore: opts.ignore?.split(',').map((s) => s.trim()).filter(Boolean),
     highlight: !opts['no-highlight'],
     mermaid,
+    exploded: Boolean(opts.exploded),
+    shelfTitle: opts['shelf-title'] ?? opts.title,
     baseUrl: opts['base-url'] ?? null,
     sourceUrl: opts['source-url'] ?? null,
     sourceRoot: path.resolve(opts['source-root'] ?? src),
@@ -180,7 +231,17 @@ async function main() {
   try {
     result = opts.each
       ? await convertEach({ src, outDir: out, common, interactive })
-      : await convert({ ...common, src, out });
+      : await convert({
+          ...common,
+          src,
+          out,
+          // One book: the exploded form sits beside the .epub under its own
+          // name, the same shape --each produces.
+          exploded: opts.exploded
+            ? path.join(path.dirname(out), path.basename(out, path.extname(out)))
+            : null,
+          book: path.basename(out, path.extname(out)),
+        });
   } finally {
     // A renderer may hold a browser open. Shut it down whether or not the
     // build succeeded, or the process never exits.

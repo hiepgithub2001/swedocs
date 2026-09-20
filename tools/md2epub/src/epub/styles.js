@@ -3,6 +3,12 @@
  * 15-year-old renderers, so this leans on inherited defaults, avoids layout
  * that assumes a viewport size, and never fixes a font size in px — the reader's
  * own size control has to keep working.
+ *
+ * Every colour and metric is a custom property on :root, and the app overrides
+ * them by setting `data-theme` and a handful of `--reader-*` values on the
+ * document it loads. That is the whole theming contract: the publisher styles
+ * and the user's settings compose instead of fighting, and the same stylesheet
+ * serves a standalone .epub where no app is involved.
  */
 export const BOOK_CSS = `@charset "utf-8";
 
@@ -27,8 +33,11 @@ export const BOOK_CSS = `@charset "utf-8";
   --dg-note-border: #b59b4a;
 }
 
+/* The dark palette, written twice: once for a reader following the system,
+   once for an app that has been told which mode to use. The :not() keeps the
+   system rule from overriding an explicit choice of light. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --ink: #e6e6e6;
     --paper: #16181c;
     --muted: #9aa4b1;
@@ -47,13 +56,32 @@ export const BOOK_CSS = `@charset "utf-8";
   }
 }
 
+:root[data-theme="dark"] {
+  --ink: #e6e6e6;
+  --paper: #16181c;
+  --muted: #9aa4b1;
+  --rule: #2c313a;
+  --accent: #8fb6de;
+  --code-bg: #1e2228;
+
+  --dg-node-bg: #232b35;
+  --dg-node-border: #7d9dc0;
+  --dg-node-text: #dfe6ee;
+  --dg-line: #7d9dc0;
+  --dg-label-bg: #232b35;
+  --dg-alt-bg: #2d3742;
+  --dg-note-bg: #3a331d;
+  --dg-note-border: #b59b4a;
+}
+
 body {
   color: var(--ink);
   background: var(--paper);
-  line-height: 1.6;
+  line-height: var(--reader-line-height, 1.6);
   margin: 0;
   padding: 0 1em;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--reader-font, Georgia, "Times New Roman", serif);
+  font-size: var(--reader-font-size, 1em);
   widows: 2;
   orphans: 2;
 }
@@ -120,7 +148,16 @@ pre code {
    an equal-specificity light rule after it wins in dark mode too. */
 .shiki, .shiki span { color: var(--shiki-light); background-color: var(--shiki-light-bg); }
 @media (prefers-color-scheme: dark) {
-  .shiki, .shiki span { color: var(--shiki-dark); background-color: var(--shiki-dark-bg); }
+  :root:not([data-theme="light"]) .shiki,
+  :root:not([data-theme="light"]) .shiki span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
+}
+:root[data-theme="dark"] .shiki,
+:root[data-theme="dark"] .shiki span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
 }
 
 table {

@@ -4,7 +4,8 @@ import path from 'node:path';
 import { scan } from './scan.js';
 import { createRenderer } from './render.js';
 import { collectLanguages } from './transforms/highlight.js';
-import { writeEpub } from './epub/write.js';
+import { buildPackage, writeEpub, writeExploded } from './epub/write.js';
+import { buildManifest } from './epub/manifest.js';
 
 /**
  * A stable identifier for the same corpus across builds.
@@ -63,6 +64,8 @@ export async function convert({
   highlight = true,
   modified = null,
   externals = new Map(),
+  exploded = null,
+  book = null,
   baseUrl = null,
   sourceUrl = null,
   sourceRoot = null,
@@ -107,7 +110,16 @@ export async function convert({
     modified: resolveModified(modified),
   };
 
-  const { bytes } = await writeEpub({ chapters, assets, meta, outPath: out });
+  const files = await buildPackage({ chapters, assets, meta });
+  const { bytes } = await writeEpub({ meta, outPath: out, files });
+
+  // The web reader loads the same files, unzipped, next to a manifest it can
+  // parse without a zip library. Built from the same array, so the two forms
+  // cannot drift.
+  const slug = book ?? path.basename(out, path.extname(out));
+  const manifest = buildManifest({ chapters, assets, meta, book: slug });
+  if (exploded) await writeExploded({ files, manifest, outDir: exploded });
+
   highlighter?.dispose?.();
 
   return {
@@ -122,6 +134,7 @@ export async function convert({
     },
     warnings,
     meta,
+    manifest,
   };
 }
 

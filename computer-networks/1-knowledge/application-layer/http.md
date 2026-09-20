@@ -28,7 +28,7 @@ sequenceDiagram
     participant Browser
     participant Server
     Browser->>Server: GET /index.html HTTP/1.1<br/>Host: example.com
-    Server-->>Browser: 200 OK<br/>Content-Type: text/html<br/><br/>&lt;html&gt;…&lt;/html&gt;
+    Server-->>Browser: 200 OK<br/>Content-Type: text/html<br/><br/>(the HTML body)
 ```
 
 **Anatomy of a request:**

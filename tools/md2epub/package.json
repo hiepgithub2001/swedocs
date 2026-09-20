@@ -26,17 +26,20 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "mermaid": "^11.17.2",
+    "playwright-core": "^1.57.0",
     "saxes": "^6.0.0"
   },
   "scripts": {
-    "build": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../.. --each -o ../../dist/books -a hiepgithub2001",
-    "build:one": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../.. -o ../../dist/swedocs.epub -t 'swedocs \u2014 Software Knowledge Base' -a hiepgithub2001",
+    "build": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../.. --each -o ../../dist/books -a hiepgithub2001 --mermaid render/mermaid.js",
+    "build:one": "SOURCE_DATE_EPOCH=$(git -C ../.. log -1 --format=%ct) node bin/md2epub.js ../.. -o ../../dist/swedocs.epub -t 'swedocs \u2014 Software Knowledge Base' -a hiepgithub2001 --mermaid render/mermaid.js",
     "validate": "node test/validate.js ../../dist/books",
     "test": "npm run build --silent && npm run validate --silent"
   },
   "files": [
     "bin",
     "src",
+    "render",
     "README.md"
   ]
 }

@@ -5,3 +5,6 @@ node_modules/
 npm-debug.log*
 
 .DS_Store
+
+# Mermaid render cache — keyed by diagram source, safe to delete.
+.cache/

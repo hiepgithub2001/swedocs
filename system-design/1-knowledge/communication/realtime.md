@@ -34,7 +34,7 @@ flowchart LR
       C1[Client] <-->|full-duplex| S1[Server]
     end
     subgraph SSE
-      C2[Client] <--|server stream only| S2[Server]
+      S2[Server] -->|server stream only| C2[Client]
     end
 ```
 

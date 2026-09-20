@@ -3,7 +3,8 @@
 Convert a folder of Markdown into a reflowable **EPUB 3**.
 
 Generic: it takes any directory, makes no assumptions about this repository, and
-has no browser or JVM dependency.
+has no JVM dependency and no browser dependency of its own — diagram rendering
+is a plugin (see Diagrams).
 
 ```bash
 npm install
@@ -59,7 +60,7 @@ come before subdirectories.
 
 ## Diagrams
 
-Mermaid rendering is injected, not imported, so the converter stays
+Mermaid rendering is injected, not imported, so the core converter stays
 browser-free. `--mermaid` takes an ES module whose default export is:
 
 ```js
@@ -69,8 +70,48 @@ export default async function render(source, { id }) {
 ```
 
 Without one, diagram source is preserved as a labelled block rather than
-dropped. Any renderer works — `@mermaid-js/mermaid-cli`, a Playwright page, a
-remote service.
+dropped.
+
+`render/mermaid.js` is the renderer this repo uses. It drives Mermaid 11 in a
+headless Chromium — the only stage that needs a browser, because Mermaid's
+layout engines measure text, and nothing but a real layout engine knows how
+wide a label is.
+
+```bash
+node bin/md2epub.js ../.. --each -o ../../dist/books --mermaid render/mermaid.js
+```
+
+Three things keep it usable in CI:
+
+- One browser and one page for the whole run, not one per diagram.
+- Rendered SVG is cached under a hash of the source and the rendering settings,
+  so an unchanged diagram never re-renders. Cold: 12s for 220 diagrams. Warm: 4s.
+- Mermaid is served over loopback rather than injected as a script, so its
+  lazily-imported per-diagram chunks resolve.
+
+Diagrams are themed, not baked. Mermaid renders against a fixed palette, which
+is then rewritten to `var(--dg-*, <original>)` — textually inside the SVG's own
+stylesheet, and via scoped attribute-selector rules for the colours that land on
+presentation attributes, where `var()` is not substituted. `book.css` defines
+those custom properties for light and dark, so one SVG follows the reader's
+appearance setting, and a reader that defines nothing still gets the fallback.
+
+Every SVG carries intrinsic `width` and `height` off its viewBox. In a
+paginated view a late reflow does not merely shift text — it changes which page
+the reader is on.
+
+| Variable | |
+| --- | --- |
+| `MD2EPUB_MERMAID_CACHE` | Cache directory (default: `<repo>/.cache/mermaid`) |
+| `MD2EPUB_CHROMIUM_LIBS` | Directory of Chromium's shared libraries, for a machine without them and without root. Unset in CI, where `playwright install --with-deps chromium` has done the job. |
+
+### Diagrams that do not parse
+
+Mermaid's grammar is stricter than it looks, and generated Markdown finds the
+edges. Three blocks in this corpus failed until fixed: HTML entities in a
+sequence message, a `;` in message text (it ends the statement), and `<--|x|`,
+which is not a link. Each surfaces as a `mermaid-failed` warning naming the
+chapter.
 
 ## Validation
 

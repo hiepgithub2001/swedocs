@@ -30,9 +30,9 @@ three packets:
 sequenceDiagram
     participant C as Client
     participant S as Server
-    C->>S: SYN (seq=x)            — "let's talk; my numbering starts at x"
-    S-->>C: SYN-ACK (seq=y, ack=x+1) — "ok; mine starts at y; got your x"
-    C->>S: ACK (ack=y+1)          — "got your y; we're connected"
+    C->>S: SYN (seq=x)            — “let’s talk, my numbering starts at x”
+    S-->>C: SYN-ACK (seq=y, ack=x+1) — “ok, mine starts at y, got your x”
+    C->>S: ACK (ack=y+1)          — “got your y, we’re connected”
     Note over C,S: connection ESTABLISHED — data can flow
 ```
 This costs **1 RTT** before the first byte of data — one of the round-trips you pay on
@@ -52,10 +52,10 @@ sequenceDiagram
     participant Sender
     participant Receiver
     Sender->>Receiver: bytes 1–100 (seq=1)
-    Receiver-->>Sender: ACK 101  ("have through 100")
+    Receiver-->>Sender: ACK 101  (“have through 100”)
     Sender->>Receiver: bytes 101–200 ❌ lost
     Sender->>Receiver: bytes 201–300 (seq=201)
-    Receiver-->>Sender: ACK 101  (dup! "still only have 100")
+    Receiver-->>Sender: ACK 101  (dup! “still only have 100”)
     Note over Sender: duplicate ACKs → retransmit 101–200
     Sender->>Receiver: bytes 101–200 (resent)
     Receiver-->>Sender: ACK 301  ("now have through 300")

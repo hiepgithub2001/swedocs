@@ -13,6 +13,18 @@ export const BOOK_CSS = `@charset "utf-8";
   --rule: #e2e5ea;
   --accent: #2d5b8a;
   --code-bg: #f6f8fa;
+
+  /* Diagram palette. Rendered Mermaid SVG refers to these by name and carries
+     the light value as its own fallback, so a reader that defines nothing
+     still gets a legible figure. */
+  --dg-node-bg: #eaeff5;
+  --dg-node-border: #4a6785;
+  --dg-node-text: #16202b;
+  --dg-line: #4a6785;
+  --dg-label-bg: #eaeff5;
+  --dg-alt-bg: #dbe3ed;
+  --dg-note-bg: #fbf3d5;
+  --dg-note-border: #b59b4a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,6 +35,15 @@ export const BOOK_CSS = `@charset "utf-8";
     --rule: #2c313a;
     --accent: #8fb6de;
     --code-bg: #1e2228;
+
+    --dg-node-bg: #232b35;
+    --dg-node-border: #7d9dc0;
+    --dg-node-text: #dfe6ee;
+    --dg-line: #7d9dc0;
+    --dg-label-bg: #232b35;
+    --dg-alt-bg: #2d3742;
+    --dg-note-bg: #3a331d;
+    --dg-note-border: #b59b4a;
   }
 }
 
@@ -94,12 +115,13 @@ pre code {
   font-size: inherit;
 }
 
-/* Shiki dual themes: one package follows the reader's day/night setting. */
+/* Shiki dual themes: one package follows the reader's day/night setting.
+   Both rules have the same specificity, so the dark one has to come last —
+   an equal-specificity light rule after it wins in dark mode too. */
 .shiki, .shiki span { color: var(--shiki-light); background-color: var(--shiki-light-bg); }
 @media (prefers-color-scheme: dark) {
   .shiki, .shiki span { color: var(--shiki-dark); background-color: var(--shiki-dark-bg); }
 }
-.shiki { background-color: var(--shiki-light-bg); }
 
 table {
   border-collapse: collapse;

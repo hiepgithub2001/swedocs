@@ -151,9 +151,16 @@ async function main() {
         },
   };
 
-  const result = opts.each
-    ? await convertEach({ src, outDir: out, common, interactive })
-    : await convert({ ...common, src, out });
+  let result;
+  try {
+    result = opts.each
+      ? await convertEach({ src, outDir: out, common, interactive })
+      : await convert({ ...common, src, out });
+  } finally {
+    // A renderer may hold a browser open. Shut it down whether or not the
+    // build succeeded, or the process never exits.
+    if (typeof mermaid?.close === 'function') await mermaid.close();
+  }
 
   if (interactive) process.stderr.write('\r\x1b[2K');
 

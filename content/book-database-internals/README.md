@@ -1,8 +1,18 @@
+---
+collection: Book summaries
+---
+
 # Database Internals
 
 > Alex Petrov, 2019. Two halves — how one node stores data, and how many nodes
 > agree about it — written for the engineer who wants to know what is under the
 > query planner.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -60,7 +70,7 @@ distributed transactions (2PC, 3PC, Calvin, Percolator), and consensus — Paxos
 Multi-Paxos, Raft, and their practical relatives.
 
 It covers the same ground as the second half of
-[DDIA](./designing-data-intensive-applications.md), from the implementer's side
+[DDIA](../book-designing-data-intensive-applications/README.md), from the implementer's side
 rather than the user's: less "what does this guarantee mean for my
 application", more "here is the protocol and here is where it stalls".
 
@@ -100,5 +110,5 @@ have read DDIA, and a dense first pass if you have not.
 
 ## If you liked this
 
-[DDIA](./designing-data-intensive-applications.md) for the application-facing
+[DDIA](../book-designing-data-intensive-applications/README.md) for the application-facing
 view of the same guarantees.

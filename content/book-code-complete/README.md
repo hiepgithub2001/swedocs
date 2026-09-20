@@ -1,8 +1,18 @@
+---
+collection: Book summaries
+---
+
 # Code Complete
 
 > Steve McConnell, 1993 — 2nd edition 2004. The encyclopedia of construction:
 > everything about writing code, with citations, from an era that measured
 > things.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -107,7 +117,7 @@ usable artifact.
 
 ## If you liked this
 
-[The Pragmatic Programmer](./the-pragmatic-programmer.md) is the same material
+[The Pragmatic Programmer](../book-the-pragmatic-programmer/README.md) is the same material
 at a tenth of the length and none of the citations.
-[The Mythical Man-Month](../books-teams/the-mythical-man-month.md) is what
+[The Mythical Man-Month](../book-the-mythical-man-month/README.md) is what
 happens one level up, when the thing being constructed is a team.

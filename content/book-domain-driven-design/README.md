@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Domain-Driven Design
 
 > Eric Evans, 2003. The book that said the hard part is not the technology but
 > agreeing what the words mean — and then built a design method on that.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -123,6 +133,6 @@ summaries alone.
 
 ## If you liked this
 
-[Building Microservices](./building-microservices.md) is Part IV with an
-operations bill attached. [Clean Architecture](./clean-architecture.md) argues
+[Building Microservices](../book-building-microservices/README.md) is Part IV with an
+operations bill attached. [Clean Architecture](../book-clean-architecture/README.md) argues
 about which way dependencies cross the boundaries Evans draws.

@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Refactoring
 
 > Martin Fowler, 1999 — 2nd edition 2018, in JavaScript. The book that turned
 > "clean it up" from an instinct into a procedure with names and steps.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -110,8 +120,8 @@ you want is noticing the smell, not remembering the catalogue.
 
 ## If you liked this
 
-[Clean Code](./clean-code.md) for the target state, and [Patterns of Enterprise
-Application Architecture](../books-design/patterns-of-enterprise-application-architecture.md)
+[Clean Code](../book-clean-code/README.md) for the target state, and [Patterns of Enterprise
+Application Architecture](../book-patterns-of-enterprise-application-architecture/README.md)
 for where Fowler points the refactored design. When the tests do not exist yet,
 the companion nobody should work without is Michael Feathers' *Working
 Effectively with Legacy Code* — not summarised here yet.

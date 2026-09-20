@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Patterns of Enterprise Application Architecture
 
 > Martin Fowler, 2002. The catalogue that named the machinery inside every ORM,
 > web framework, and layered application you have ever used.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -117,6 +127,6 @@ recall.
 
 ## If you liked this
 
-[Domain-Driven Design](./domain-driven-design.md) is what to do once Domain
-Model wins. [Design Patterns](./design-patterns.md) is the same catalogue
+[Domain-Driven Design](../book-domain-driven-design/README.md) is what to do once Domain
+Model wins. [Design Patterns](../book-design-patterns/README.md) is the same catalogue
 approach one level down.

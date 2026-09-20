@@ -1,8 +1,18 @@
+---
+collection: Book summaries
+---
+
 # Clean Architecture
 
 > Robert C. Martin, 2017. One rule — source-code dependencies point inward,
 > toward policy — stated at book length, with the SOLID principles rebuilt on
 > top of it.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -111,7 +121,7 @@ architecture. Ignore the case study at the end unless you enjoy period detail.
 
 ## If you liked this
 
-[Domain-Driven Design](./domain-driven-design.md) tells you where to draw the
+[Domain-Driven Design](../book-domain-driven-design/README.md) tells you where to draw the
 boundaries this book tells you how to cross. *Fundamentals of Software
 Architecture* — the distilled edition is
 [here](../book-fundamentals-of-architecture/README.md) — is the broader,

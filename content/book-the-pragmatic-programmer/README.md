@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # The Pragmatic Programmer
 
 > Andrew Hunt & David Thomas, 1999 — 20th Anniversary Edition, 2019. A book of
 > habits rather than rules, written by two people who have clearly been on call.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -114,7 +124,7 @@ and the part that changes behaviour.
 
 ## If you liked this
 
-[A Philosophy of Software Design](./a-philosophy-of-software-design.md) takes
+[A Philosophy of Software Design](../book-a-philosophy-of-software-design/README.md) takes
 one of these instincts and pursues it for a whole book.
-[Refactoring](./refactoring.md) is what you reach for once you agree the code
+[Refactoring](../book-refactoring/README.md) is what you reach for once you agree the code
 should be changeable and want the moves written down.

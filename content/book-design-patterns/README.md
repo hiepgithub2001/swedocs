@@ -1,9 +1,19 @@
+---
+collection: Book summaries
+---
+
 # Design Patterns
 
 > Gamma, Helm, Johnson & Vlissides ("the Gang of Four"), 1994. Twenty-three
 > named solutions that gave the industry a shared language — and a generation
 > of over-engineered code written by people who read the catalogue and skipped
 > the first chapter.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -112,7 +122,7 @@ is how the cargo cult happened.
 
 ## If you liked this
 
-[Patterns of Enterprise Application Architecture](./patterns-of-enterprise-application-architecture.md)
+[Patterns of Enterprise Application Architecture](../book-patterns-of-enterprise-application-architecture/README.md)
 does the same job one level up, for applications rather than objects.
-[Refactoring](../books-craft/refactoring.md) is the other half: patterns are
+[Refactoring](../book-refactoring/README.md) is the other half: patterns are
 where you are going, refactorings are how you get there.

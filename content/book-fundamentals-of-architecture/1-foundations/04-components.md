@@ -31,7 +31,7 @@ owns a domain.
 
 **Domain partitioning** groups by *what part of the business it is*. A change
 to ordering lives in ordering. This is what
-[DDD](../../books-design/domain-driven-design.md) argues for, what
+[DDD](../../book-domain-driven-design/README.md) argues for, what
 microservices assume, and — through Conway's law — what most cross-functional
 teams naturally produce. The cost: technical concerns (persistence, auth) are
 duplicated or must be factored into a shared platform, and the database is

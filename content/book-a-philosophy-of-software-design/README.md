@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # A Philosophy of Software Design
 
 > John Ousterhout, 2018 (2nd edition 2021). One claim — that complexity is the
 > only real problem — followed further than anyone else bothers to follow it.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -122,6 +132,6 @@ next to you in a code review.
 
 ## If you liked this
 
-[Clean Code](./clean-code.md), read as the opposing brief.
-[The Pragmatic Programmer](./the-pragmatic-programmer.md) for the same instincts
+[Clean Code](../book-clean-code/README.md), read as the opposing brief.
+[The Pragmatic Programmer](../book-the-pragmatic-programmer/README.md) for the same instincts
 spread over a career rather than a principle.

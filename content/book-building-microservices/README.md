@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Building Microservices
 
 > Sam Newman, 2015 — 2nd edition 2021. The unusual architecture book that
 > spends most of its length on what the style costs you.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -84,7 +94,7 @@ practically useful pages in the book.
   IDs; "which service caused this?" is a question a monolith never asks.
 - **Resilience** — timeouts on everything, circuit breakers, bulkheads,
   back-pressure, idempotent retries. Newman leans on Nygard here; see
-  [Release It!](../books-systems/release-it.md).
+  [Release It!](../book-release-it/README.md).
 - **Security** — the network is no longer a trust boundary; identity has to
   propagate.
 
@@ -93,7 +103,7 @@ practically useful pages in the book.
 Architecture and organisation mirror each other, so a service boundary that
 cuts across team boundaries will be eroded. The *inverse Conway manoeuvre* —
 shape teams to the architecture you want — is a central recommendation, and the
-reason this book and [Team Topologies](../books-teams/team-topologies.md) are
+reason this book and [Team Topologies](../book-team-topologies/README.md) are
 usually read together.
 
 ## Ideas worth stealing
@@ -135,7 +145,7 @@ book assumes.
 
 ## If you liked this
 
-[Domain-Driven Design](./domain-driven-design.md) for the boundaries,
-[Release It!](../books-systems/release-it.md) for the failure modes, and
-[Team Topologies](../books-teams/team-topologies.md) for the organisation that
+[Domain-Driven Design](../book-domain-driven-design/README.md) for the boundaries,
+[Release It!](../book-release-it/README.md) for the failure modes, and
+[Team Topologies](../book-team-topologies/README.md) for the organisation that
 has to run them.

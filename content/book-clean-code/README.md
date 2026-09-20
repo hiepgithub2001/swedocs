@@ -1,8 +1,18 @@
+---
+collection: Book summaries
+---
+
 # Clean Code
 
 > Robert C. Martin, 2008. The most influential and most argued-with book about
 > code style ever written. Read it for the vocabulary, and read the criticism
 > alongside it.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -10,7 +20,7 @@
 | **Published** | 2008 |
 | **Shape** | ~460 pages: rules, then long worked refactorings, then a smell catalogue |
 | **Read it for** | The shared words a team argues in — and a genuinely good chapter on naming |
-| **Read it with** | [A Philosophy of Software Design](./a-philosophy-of-software-design.md), which disagrees |
+| **Read it with** | [A Philosophy of Software Design](../book-a-philosophy-of-software-design/README.md), which disagrees |
 
 ## The argument in one paragraph
 
@@ -100,10 +110,10 @@ with, which is how the useful teams use it.
 - [Readable code](../best-practices/1-knowledge/code-quality/readable-code.md)
 - [Code reviews](../best-practices/1-knowledge/code-quality/code-reviews.md) — the smell catalogue is a review checklist
 - [Test doubles and TDD](../best-practices/1-knowledge/testing/test-doubles-and-tdd.md)
-- [SOLID principles](../architecture-patterns/1-knowledge/fundamentals/solid-principles.md) — Martin's other contribution, argued at length in [Clean Architecture](../books-design/clean-architecture.md)
+- [SOLID principles](../architecture-patterns/1-knowledge/fundamentals/solid-principles.md) — Martin's other contribution, argued at length in [Clean Architecture](../book-clean-architecture/README.md)
 
 ## If you liked this
 
-[Refactoring](./refactoring.md) gives the same instincts a safe procedure.
-[A Philosophy of Software Design](./a-philosophy-of-software-design.md) gives
+[Refactoring](../book-refactoring/README.md) gives the same instincts a safe procedure.
+[A Philosophy of Software Design](../book-a-philosophy-of-software-design/README.md) gives
 them a principle, and disputes the conclusions.

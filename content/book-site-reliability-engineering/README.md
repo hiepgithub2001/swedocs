@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Site Reliability Engineering
 
 > Beyer, Jones, Petoff & Murphy (eds.), Google, 2016. The book that turned
 > "keep it up" into an engineering discipline with a budget.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -106,7 +116,7 @@ where you go for worked SLO examples.
 
 ## If you liked this
 
-[Release It!](./release-it.md) is the same subject from the architect's side —
+[Release It!](../book-release-it/README.md) is the same subject from the architect's side —
 the failure modes you design against.
-[Accelerate](../books-teams/accelerate.md) has the evidence that this way of
+[Accelerate](../book-accelerate/README.md) has the evidence that this way of
 working is also the faster one.

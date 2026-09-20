@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Team Topologies
 
 > Matthew Skelton & Manuel Pais, 2019. Conway's law, turned from a warning into
 > a design tool: choose the teams you want the architecture to have.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -109,7 +119,7 @@ immediately.
 
 ## If you liked this
 
-[Building Microservices](../books-design/building-microservices.md) is the
+[Building Microservices](../book-building-microservices/README.md) is the
 architectural half of the same argument, and
-[Accelerate](./accelerate.md) supplies the evidence that team autonomy is what
+[Accelerate](../book-accelerate/README.md) supplies the evidence that team autonomy is what
 the delivery metrics are actually measuring.

@@ -73,8 +73,12 @@ function show(screen) {
 function onRelocate(detail) {
   const route = detail.link?.properties?.route;
   landed = route ?? landed;
-  $('#where-book').textContent = detail.publication.entry.title;
-  $('#where-chapter').textContent = detail.link?.title ?? '';
+  // A one-chapter book names its only chapter after itself; repeating it
+  // reads as a bug rather than a breadcrumb.
+  const book = detail.publication.entry.title;
+  const chapter = detail.link?.title ?? '';
+  $('#where-book').textContent = book;
+  $('#where-chapter').textContent = chapter === book ? '' : chapter;
   // The bar is the whole book; the label names the chapter too. On a
   // 70-chapter book a page turn moves the book fraction by a third of a
   // percent, so a bare percentage looks frozen and reads as broken.
@@ -85,7 +89,7 @@ function onRelocate(detail) {
   panel.setRoute(route);
 
   if (route) {
-    document.title = `${detail.link.title} · ${detail.publication.entry.title}`;
+    document.title = chapter === book ? book : `${chapter} · ${book}`;
     // replaceState, not push: turning pages is not navigation history, but the
     // address bar should still be the link you would send someone.
     const href = hrefFor(route);

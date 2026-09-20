@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # The Mythical Man-Month
 
 > Frederick P. Brooks Jr., 1975 — anniversary edition 1995. Fifty years old and
 > still the most accurate book about why software is late.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -112,6 +122,6 @@ afternoon and covers everything people quote.
 
 ## If you liked this
 
-[Peopleware](./peopleware.md) picks up the sociological thread;
-[Team Topologies](./team-topologies.md) turns Conway's law into a design tool;
-[Accelerate](./accelerate.md) supplies the evidence Brooks could only assert.
+[Peopleware](../book-peopleware/README.md) picks up the sociological thread;
+[Team Topologies](../book-team-topologies/README.md) turns Conway's law into a design tool;
+[Accelerate](../book-accelerate/README.md) supplies the evidence Brooks could only assert.

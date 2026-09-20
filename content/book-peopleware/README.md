@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Peopleware
 
 > Tom DeMarco & Timothy Lister, 1987 — 3rd edition 2013. "The major problems of
 > our work are not so much technological as sociological in nature."
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -100,7 +110,7 @@ argument your manager cannot wave away.
 
 ## If you liked this
 
-[The Mythical Man-Month](./the-mythical-man-month.md) for the arithmetic of
-coordination, [Team Topologies](./team-topologies.md) for a structural answer,
-and [Accelerate](./accelerate.md) for the same claims with a research method
+[The Mythical Man-Month](../book-the-mythical-man-month/README.md) for the arithmetic of
+coordination, [Team Topologies](../book-team-topologies/README.md) for a structural answer,
+and [Accelerate](../book-accelerate/README.md) for the same claims with a research method
 attached.

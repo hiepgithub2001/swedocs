@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Release It!
 
 > Michael T. Nygard, 2007 — 2nd edition 2018. A catalogue of the ways
 > production kills software, written by someone who was there when it happened.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -123,7 +133,7 @@ to integrate with.
 
 ## If you liked this
 
-[Site Reliability Engineering](./site-reliability-engineering.md) for how to
+[Site Reliability Engineering](../book-site-reliability-engineering/README.md) for how to
 run what you have hardened, and
-[Building Microservices](../books-design/building-microservices.md) for the
+[Building Microservices](../book-building-microservices/README.md) for the
 architecture that makes all of these failure modes mandatory reading.

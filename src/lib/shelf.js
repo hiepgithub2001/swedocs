@@ -25,7 +25,7 @@ const entry = (book, href) => {
       el('span', { className: 'name', textContent: book.title }),
       el('span', {
         className: 'meta',
-        textContent: `${book.chapters} chapters · ${kb(book.bytes)}`,
+        textContent: `${book.chapters} chapter${book.chapters === 1 ? '' : 's'} · ${kb(book.bytes)}`,
       }),
       ...(saved ? [el('span', { className: 'resume', textContent: 'Continue reading' })] : []),
     ]),

@@ -1,7 +1,17 @@
+---
+collection: Book summaries
+---
+
 # Accelerate
 
 > Nicole Forsgren, Jez Humble & Gene Kim, 2018. The book that made "does this
 > practice actually help?" an empirical question.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -113,6 +123,6 @@ current year's DORA report, because the capability list has moved on.
 
 ## If you liked this
 
-[Team Topologies](./team-topologies.md) is the structural companion, and
-[Site Reliability Engineering](../books-systems/site-reliability-engineering.md)
+[Team Topologies](../book-team-topologies/README.md) is the structural companion, and
+[Site Reliability Engineering](../book-site-reliability-engineering/README.md)
 is where the stability half of the metrics gets its mechanism.

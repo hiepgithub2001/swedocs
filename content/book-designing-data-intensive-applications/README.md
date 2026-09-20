@@ -1,8 +1,18 @@
+---
+collection: Book summaries
+---
+
 # Designing Data-Intensive Applications
 
 > Martin Kleppmann, 2017. The rare book that is both the best introduction and
 > the best reference for its subject. If you read one book on this shelf, this
 > one.
+
+<!--
+  Provenance: this summary is a machine-written distillation, not the author's
+  words and not reviewed by them. It is a map, and a map is wrong in the places
+  that matter most. Check anything you are about to bet on against the book.
+-->
 
 | | |
 | --- | --- |
@@ -122,7 +132,7 @@ storage chapter. Do the exercises in your head against a system you operate:
 
 ## If you liked this
 
-[Database Internals](./database-internals.md) goes one level deeper into
+[Database Internals](../book-database-internals/README.md) goes one level deeper into
 storage and cluster protocols. The papers in the bibliography — Dynamo,
 Spanner, Raft — are covered as case studies in
 [Distributed Systems](../distributed-systems/2-case-studies/README.md).

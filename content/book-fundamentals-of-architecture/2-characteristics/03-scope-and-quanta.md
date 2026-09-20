@@ -22,7 +22,7 @@ Three conditions, each doing work:
   that must ship together are one quantum, not two.
 - **High functional cohesion** — it does one coherent thing. In practice this
   is very close to a
-  [bounded context](../../books-design/domain-driven-design.md).
+  [bounded context](../../book-domain-driven-design/README.md).
 - **Synchronous connascence** — anything that must respond synchronously for a
   request to succeed is inside the same quantum. A shared database dragged into
   the request path pulls both callers into one quantum, whatever the deployment

@@ -26,6 +26,20 @@ The danger zone is the bottom. Decisions are not wrong because you chose badly
 between two options — they are wrong because there was a third option you had
 never heard of.
 
+### The frozen caveman
+
+The book names the behaviour that comes from letting one bad memory stand in
+for analysis: the architect who reverts to the same pet irrational concern on
+every system. The authors' example is a colleague who met every centralised
+design with *"but what if we lose Italy?"* — because years earlier a freak
+outage had cut headquarters off from its Italian stores, and the fear outlived
+the odds.
+
+Everyone has one. The tell is that the concern arrives before the requirements
+do, at the same volume regardless of the system. The cure is the risk matrix
+from [analysing risk](../4-practice/02-risk-and-fitness-functions.md): make
+yourself put a *likelihood* next to the impact, and say the number out loud.
+
 ## Trade-off analysis, concretely
 
 The book's teaching example is small enough to remember. Should a producer talk

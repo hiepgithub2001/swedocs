@@ -17,8 +17,15 @@ An architecture characteristic:
    *few*. Every characteristic you add costs complexity, and they conflict.
 
 That third test is the one teams skip. A list of fifteen "must-haves" is not an
-architecture, it is a wish. The book's guidance: keep the driving list to about
-**seven at most**, and rank the top three.
+architecture, it is a wish. The book gives no number — the guidance is to keep
+the final list **as short as possible**, because an architecture that supports
+everything is the *generic architecture* anti-pattern and each characteristic
+you add complicates the design.
+
+Do not try to rank the whole list, either: stakeholders will not agree, and the
+argument is expensive and produces nothing. Ask them instead for the **top
+three, in any order**. That much people can agree on, and it is enough to
+settle the trade-offs you will actually face.
 
 ## The three families
 

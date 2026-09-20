@@ -1,0 +1,4 @@
+# Source PDFs are yours, read locally, never committed.
+*
+!.gitignore
+!README.md

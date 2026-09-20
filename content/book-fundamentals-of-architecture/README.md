@@ -17,7 +17,9 @@ practices — decisions, risk, diagrams, teams — that the book treats as part 
 the job rather than an afterthought.
 
 It is a **distillation written in our own words**, not a copy of the text. No
-passage of the book is reproduced here. Where the authors' framing has become
+passage of the book is reproduced here; the source was read to check that the
+definitions, the chapter order and the characteristic ratings match what the
+authors actually wrote. Where the authors' framing has become
 industry vocabulary — architecture characteristics, the architecture quantum,
 connascence, fitness functions — the terms are kept, because using different
 words would make this harder to take to work. Buy the book: it has the worked

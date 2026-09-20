@@ -46,22 +46,30 @@ quantum, and therefore one availability number, one scaling decision, and one
 release schedule. The database is what makes it so — which is why "each service
 owns its data" is not dogma but the definition of getting two quanta.
 
-## Static and dynamic coupling
+## Static and dynamic connascence
 
-The quantum definition distinguishes them, and the distinction is useful on its
-own:
+The quantum definition rests on Meilir Page-Jones' connascence, and the two
+kinds it splits into are worth holding separately:
 
-- **Static coupling** — what a component needs to *boot and exist*: its
-  libraries, its database, its configuration service. This is what decides the
-  quantum boundary.
-- **Dynamic coupling** — how quanta talk at runtime: synchronous or
-  asynchronous, and how tolerant they are of each other's failure.
+- **Static connascence** — discoverable by reading the code. Two services that
+  share a class definition, a schema or a generated client are statically
+  connascent: change it and both must change together.
+- **Dynamic connascence** — a property of the calls at runtime, and here it
+  narrows to one question: **synchronous or asynchronous?** A synchronous call
+  makes the caller wait, so the two services share an availability number and a
+  response time. An asynchronous call is fire-and-forget, and lets the two
+  differ in their operational characteristics.
 
-A microservice with its own database is statically independent. If it then
-makes a blocking call to another service in every request, it is dynamically
-coupled, and its availability is the product of both. Many "microservice"
-systems fail here: static independence achieved, dynamic independence never
-attempted.
+Only *synchronous* connascence draws the quantum boundary. Two services that
+talk only through events are two quanta even though they are coupled: each can
+be down, slow or scaled independently of the other. Two that make a blocking
+call to each other in the request path are one quantum, whatever the deployment
+diagram says — the caller's availability is the product of both.
+
+This is why "each service owns its data" is not dogma. A shared database is
+both static connascence (one schema, changed together) and synchronous
+connascence (both wait on it), so it collapses every service that touches it
+into a single quantum.
 
 ## What this buys you
 

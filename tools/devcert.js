@@ -72,6 +72,11 @@ fs.writeFileSync(at('ext.cnf'),
   `basicConstraints=CA:FALSE\n` +
   `keyUsage=critical,digitalSignature,keyEncipherment\n` +
   `extendedKeyUsage=serverAuth\n` +
+  // `openssl x509 -req` copies no extensions of its own, so the key
+  // identifiers that let a verifier match this certificate to its issuer
+  // have to be asked for by name.
+  `subjectKeyIdentifier=hash\n` +
+  `authorityKeyIdentifier=keyid:always,issuer\n` +
   `subjectAltName=${san.join(',')}\n`);
 
 openssl('req', '-newkey', 'rsa:2048', '-nodes',

@@ -55,6 +55,7 @@ README frontmatter, which is what puts it on its own tab in the reader.
 | Book | What it is |
 | --- | --- |
 | [Fundamentals of Software Architecture — Distilled](./book-fundamentals-of-architecture/) | Richards & Ford (O'Reilly, 2020), rewritten as a short book: every core idea, in order, with diagrams |
+| [Kinh tế học căn bản — bản rút gọn](./book-kinh-te-hoc-can-ban/) | Sowell, *Basic Economics* (5th ed., 2014), distilled **in Vietnamese** for a reader new to economics: one question per chapter, a glossary, and the book's argument kept separate from settled fact |
 
 Written in our own words — no passage of a book is reproduced. A book only
 belongs here once its source has actually been read and the distillation

@@ -9,11 +9,14 @@ index every object, expand the compressed object streams that hold the page
 tree in modern PDFs, walk /Root -> /Pages -> /Kids for the real reading order,
 and pull the strings out of each page's content stream.
 
-The fallback loses the things that live in the font encoding rather than the
-text: ligatures come through as gaps ("Eective"), and glyphs from a subset
-font with no standard encoding may not come through at all. That is fine for
-what this is for — checking claims against the source — and wrong for anything
-that needs the text to be exact. Quote nothing from this output.
+The fallback reads each font's /ToUnicode CMap where there is one, which is
+what makes text from an ebook-converter PDF (calibre and friends emit glyph
+ids, not characters) come out as words at all. Where there is no such map it
+falls back to the raw bytes, and then it loses what lives in the font encoding:
+ligatures come through as gaps ("Eective"), and glyphs from a subset font may
+not come through at all. Either way it is fine for what this is for — checking
+claims against the source — and wrong for anything needing exact text. Quote
+nothing from this output.
 
 Output carries `=== PAGE n ===` markers so a passage can be traced back to a
 page, which is also how you find the table of contents.
@@ -106,6 +109,95 @@ def page_order(objs: dict[int, bytes], data: bytes) -> list[int]:
     return order
 
 
+def utf16be(hexdigits: bytes) -> str:
+    b = bytes.fromhex(hexdigits.decode('ascii'))
+    if len(b) % 2:
+        b = b'\x00' + b
+    return b.decode('utf-16-be', 'replace')
+
+
+HEXPAIR = re.compile(rb'<([0-9A-Fa-f]+)>')
+
+
+def parse_cmap(data: bytes) -> tuple[dict[int, str], int]:
+    """A /ToUnicode CMap: glyph code -> the characters it stands for."""
+    out: dict[int, str] = {}
+    for blk in re.findall(rb'beginbfchar(.*?)endbfchar', data, re.S):
+        codes = HEXPAIR.findall(blk)
+        for src, dst in zip(codes[::2], codes[1::2]):
+            out[int(src, 16)] = utf16be(dst)
+
+    for blk in re.findall(rb'beginbfrange(.*?)endbfrange', data, re.S):
+        # Two forms share the block: <lo> <hi> <dst>, and <lo> <hi> [<d> <d>…]
+        for m in re.finditer(rb'<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*'
+                             rb'(?:<([0-9A-Fa-f]+)>|\[([^\]]*)\])', blk, re.S):
+            lo, hi = int(m.group(1), 16), int(m.group(2), 16)
+            if hi < lo or hi - lo > 65535:
+                continue
+            if m.group(3) is not None:
+                base = utf16be(m.group(3))
+                for i in range(hi - lo + 1):
+                    out[lo + i] = base[:-1] + chr(ord(base[-1]) + i) if base else ''
+            else:
+                for i, dst in enumerate(HEXPAIR.findall(m.group(4))):
+                    if lo + i <= hi:
+                        out[lo + i] = utf16be(dst)
+
+    width = 1
+    cs = re.search(rb'begincodespacerange(.*?)endcodespacerange', data, re.S)
+    if cs:
+        first = HEXPAIR.search(cs.group(1))
+        if first and len(first.group(1)) >= 4:
+            width = 2
+    return out, width
+
+
+def resources(objs: dict[int, bytes], page: int) -> bytes:
+    """A page's /Resources, which it may inherit from a /Pages ancestor."""
+    num, seen = page, set()
+    while num is not None and num not in seen:
+        seen.add(num)
+        body = objs.get(num, b'')
+        ref = re.search(rb'/Resources\s+(\d+)\s+\d+\s+R', body)
+        if ref:
+            return objs.get(int(ref.group(1)), b'')
+        inline = re.search(rb'/Resources\s*<<', body)
+        if inline:
+            return body[inline.end() - 2:]
+        parent = re.search(rb'/Parent\s+(\d+)\s+\d+\s+R', body)
+        num = int(parent.group(1)) if parent else None
+    return b''
+
+
+def font_map(objs: dict[int, bytes], num: int,
+             cache: dict[int, tuple[dict[int, str], int]]):
+    if num in cache:
+        return cache[num]
+    body = objs.get(num, b'')
+    width = 2 if re.search(rb'/Identity-[HV]\b', body) else 1
+    table: dict[int, str] = {}
+    tu = re.search(rb'/ToUnicode\s+(\d+)\s+\d+\s+R', body)
+    if tu:
+        payload = inflate(objs.get(int(tu.group(1)), b''))
+        if payload:
+            table, width = parse_cmap(payload)
+    cache[num] = (table, width)
+    return cache[num]
+
+
+def page_fonts(objs: dict[int, bytes], page: int, cache: dict) -> dict:
+    res = resources(objs, page)
+    ref = re.search(rb'/Font\s+(\d+)\s+\d+\s+R', res)
+    if ref:
+        fdict = objs.get(int(ref.group(1)), b'')
+    else:
+        m = re.search(rb'/Font\s*<<(.*?)>>', res, re.S)
+        fdict = m.group(1) if m else b''
+    return {name.decode('latin-1'): font_map(objs, int(n), cache)
+            for name, n in re.findall(rb'/([A-Za-z0-9._+-]+)\s+(\d+)\s+\d+\s+R',
+                                      fdict)}
+
+
 def content(objs: dict[int, bytes], page: int) -> bytes:
     body = objs.get(page, b'')
     single = re.search(rb'/Contents\s+(\d+)\s+\d+\s+R', body)
@@ -123,25 +215,83 @@ def content(objs: dict[int, bytes], page: int) -> bytes:
 
 
 STRING = rb'\((?:\\.|[^\\()])*\)'
-TOKENS = re.compile(rb'(?:\[((?:' + STRING + rb'|[^\[\]])*)\]\s*TJ)'
-                    rb'|(' + STRING + rb'\s*Tj)'
-                    rb'|(TD|Td|T\*)')
+HEXSTR = rb'<[0-9A-Fa-f\s]*>'
+TOKENS = re.compile(
+    rb'/([A-Za-z0-9._+-]+)\s+[-\d.]+\s+Tf'                  # 1: font switch
+    rb'|\[((?:' + STRING + rb'|' + HEXSTR + rb'|[^\[\]])*)\]\s*TJ'  # 2
+    rb'|(' + STRING + rb')\s*Tj'                             # 3: literal
+    rb'|(' + HEXSTR + rb')\s*Tj'                             # 4: hex
+    rb'|([-\d.]+)\s+([-\d.]+)\s+T[Dd]\b'                   # 5,6: move
+    rb'|(T\*)')                                             # 7: next line
+PIECE = re.compile(STRING + rb'|' + HEXSTR)
 
 
-def text_of(stream: bytes) -> str:
-    parts: list[bytes] = []
+def unescape(raw: bytes) -> bytes:
+    r"""Resolve a literal string's \n, \053 and \( escapes to bytes."""
+    out, i = bytearray(), 0
+    while i < len(raw):
+        c = raw[i:i + 1]
+        if c != b'\\':
+            out += c
+            i += 1
+            continue
+        nxt = raw[i + 1:i + 2]
+        if nxt in (b'n', b'r', b't'):
+            out += b' '
+            i += 2
+        elif nxt.isdigit():
+            m = re.match(rb'[0-7]{1,3}', raw[i + 1:])
+            out += bytes([int(m.group(0), 8) & 0xFF])
+            i += 1 + len(m.group(0))
+        else:
+            out += nxt
+            i += 2
+    return bytes(out)
+
+
+def decode(raw: bytes, font) -> str:
+    """One string's bytes, through the current font's /ToUnicode map."""
+    table, width = font if font else ({}, 1)
+    if not table:
+        return raw.decode('latin-1')
+    out = []
+    for i in range(0, len(raw) - width + 1, width):
+        code = int.from_bytes(raw[i:i + width], 'big')
+        out.append(table.get(code, ''))
+    return ''.join(out)
+
+
+def text_of(stream: bytes, fonts: dict | None = None) -> str:
+    fonts = fonts or {}
+    parts: list[str] = []
+    font = None
+
+    def piece(tok: bytes) -> str:
+        if tok.startswith(b'<'):
+            h = re.sub(rb'\s', b'', tok)[1:-1]
+            if len(h) % 2:
+                h += b'0'
+            return decode(bytes.fromhex(h.decode('ascii')), font)
+        return decode(unescape(tok[1:-1]), font)
+
     for m in TOKENS.finditer(stream):
-        if m.group(1) is not None:            # [ (a) -30 (b) ] TJ
-            parts.append(b''.join(s.group(0)[1:-1] for s in re.finditer(STRING, m.group(1))))
-        elif m.group(2) is not None:          # (a) Tj
-            parts.append(m.group(2).rsplit(b')', 1)[0][1:])
-        else:                                 # a line break in the layout
-            parts.append(b'\n')
-    s = b''.join(parts).decode('latin-1')
-    s = re.sub(r'\\([nrt])', ' ', s)
-    s = re.sub(r'\\([0-7]{1,3})',
-               lambda m: chr(int(m.group(1), 8)) if int(m.group(1), 8) < 256 else '', s)
-    return re.sub(r'\\(.)', r'\1', s)
+        if m.group(1) is not None:                  # /F3 11 Tf
+            font = fonts.get(m.group(1).decode('latin-1'))
+        elif m.group(2) is not None:                # [ (a) -30 (b) ] TJ
+            parts.append(''.join(piece(t.group(0))
+                                 for t in PIECE.finditer(m.group(2))))
+        elif m.group(3) is not None or m.group(4) is not None:
+            parts.append(piece(m.group(3) or m.group(4)))
+        elif m.group(7) is not None:                # T*
+            parts.append('\n')
+        else:                                       # tx ty Td
+            # Converter PDFs place every glyph with its own Td. Only a move
+            # that changes the vertical is a new line; the rest is kerning.
+            try:
+                parts.append('\n' if float(m.group(6)) else '')
+            except ValueError:
+                pass
+    return ''.join(parts)
 
 
 def via_parser(path: str) -> str:
@@ -150,8 +300,11 @@ def via_parser(path: str) -> str:
     order = page_order(objs, data)
     if not order:
         sys.exit('no pages found — the file may be encrypted or damaged')
-    return ''.join(f'\n\n=== PAGE {i} ===\n{text_of(content(objs, p))}'
-                   for i, p in enumerate(order, 1))
+    cache: dict = {}
+    return ''.join(
+        f'\n\n=== PAGE {i} ===\n'
+        f'{text_of(content(objs, p), page_fonts(objs, p, cache))}'
+        for i, p in enumerate(order, 1))
 
 
 def main() -> None:

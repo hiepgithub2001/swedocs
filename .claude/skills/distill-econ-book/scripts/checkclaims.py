@@ -131,6 +131,17 @@ def variants(kind, value):
             out.add(f'{int(plain):,}')
         if plain.endswith('.0'):
             out.add(plain[:-2])
+        # A distillation written in a locale that groups with "." and marks
+        # decimals with "," ("100.000", "10,80") must still match an English
+        # source that does the opposite. Try the number both ways round.
+        swapped = v.translate(str.maketrans({',': '.', '.': ','}))
+        for form in (v, swapped):
+            bare2 = form.split()[0]
+            out.add(bare2)
+            out.add(bare2.replace('.', '').replace(',', ''))
+            digits = re.sub(r'[.,]', '', bare2)
+            if digits.isdigit() and len(digits) > 3:
+                out.add(f'{int(digits):,}')
         if kind == 'percent':
             out |= {f'{plain}%', f'{plain} percent', f'{plain} per cent'}
         if kind == 'money':

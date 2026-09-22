@@ -116,6 +116,10 @@ async function convertEach({ src, outDir, common, interactive }) {
       dir,
       title: scanned.chapters[0].title,
       collection: scanned.chapters[0].frontmatter?.collection ?? null,
+      // A shelf need not be monolingual. A book that says so in its own
+      // frontmatter is built in its own language, which is what reaches
+      // dc:language and the xml:lang every reader styles and speaks from.
+      language: scanned.chapters[0].frontmatter?.language ?? null,
     });
     for (const chapter of scanned.chapters) {
       externals.set(chapter.srcPath, { book: name, route: readerPath(name, chapter.relPath) });
@@ -126,7 +130,7 @@ async function convertEach({ src, outDir, common, interactive }) {
   const warnings = [];
   const stats = { chapters: 0, diagrams: 0, images: 0, elapsedMs: 0 };
 
-  for (const { name, dir, title, collection } of shelf) {
+  for (const { name, dir, title, collection, language } of shelf) {
     if (interactive) process.stderr.write(`\r\x1b[2K  building ${name}…`);
 
     const result = await convert({
@@ -134,6 +138,7 @@ async function convertEach({ src, outDir, common, interactive }) {
       src: dir,
       out: path.join(outDir, `${name}.epub`),
       title: common.title ?? title,
+      ...(language ? { language } : {}),
       book: name,
       exploded: common.exploded ? path.join(outDir, name) : null,
       // A book never rewrites a link to one of its own chapters through the

@@ -86,6 +86,21 @@ body {
   orphans: 2;
 }
 
+/*
+ * Vietnamese tone marks sit in Latin Extended Additional (U+1EA0-U+1EF9).
+ * Georgia has no glyphs there: it draws "â" (U+00E2) but not "ấ" (U+1EA5).
+ * Faced with a character it cannot draw, the text engine decomposes it and
+ * places the acute itself — and with no mark anchors in the font the accent
+ * lands beside the vowel instead of above it, so "gấp" renders as "gâ´p".
+ * Per-character fallback would fix the glyph and break the word, half of it
+ * in one face and half in another, so the whole body is named to faces that
+ * cover the range: Cambria on Windows, Noto or DejaVu on Linux, Charter on
+ * macOS.
+ */
+body:lang(vi) {
+  font-family: var(--reader-font, Cambria, "Noto Serif", "DejaVu Serif", Charter, "Times New Roman", serif);
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.25;

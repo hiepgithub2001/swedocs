@@ -1,5 +1,6 @@
 ---
 collection: Book summaries
+language: vi
 ---
 
 # Kinh tế học căn bản — bản rút gọn

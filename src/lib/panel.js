@@ -123,14 +123,19 @@ export function createPanel({ hrefFor, onNavigate, onNavigateTo, fullText }) {
         onProgress: (fraction) => {
           note.textContent = `Reading the book… ${Math.round(fraction * 100)}%`;
         },
-        onHit: ({ label, subitems }) => {
+        onHit: ({ label, subitems, index }) => {
+          // A hit is a position, not a route, so the exact spot cannot be a URL.
+          // The chapter it sits in can be, which is what ctrl-click and the
+          // context menu need — a left click still lands on the word itself.
+          const route = manifest?.readingOrder?.[index]?.properties?.route ?? null;
           for (const { cfi, excerpt } of subitems) {
             found += 1;
-            const a = el('a', { href: '#' }, [
+            const a = el('a', { href: route ? hrefFor(route) : '#' }, [
               el('span', {}, [excerpt.pre, el('mark', { textContent: excerpt.match }), excerpt.post]),
               el('span', { className: 'hit-where', textContent: label }),
             ]);
             a.addEventListener('click', (event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey) return;
               event.preventDefault();
               event.stopPropagation();
               close();

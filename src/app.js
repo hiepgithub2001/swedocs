@@ -36,6 +36,7 @@ const settings = createSettings(() => reader.applyStyles());
 const lightbox = createLightbox();
 const reader = createReader({
   settings,
+  hrefFor,
   onRelocate,
   onExternalLink,
   onDocument: (doc) => {
@@ -72,6 +73,7 @@ function show(screen) {
 
 function onRelocate(detail) {
   const route = detail.link?.properties?.route;
+  here = detail.cfi ?? here;
   landed = route ?? landed;
   // A one-chapter book names its only chapter after itself; repeating it
   // reads as a bug rather than a breadcrumb.
@@ -93,7 +95,9 @@ function onRelocate(detail) {
     // replaceState, not push: turning pages is not navigation history, but the
     // address bar should still be the link you would send someone.
     const href = hrefFor(route);
-    if (!detail.restoring && location.pathname !== href) history.replaceState({}, '', href);
+    if (!detail.restoring && location.pathname !== href) {
+      history.replaceState({ ...history.state }, '', href);
+    }
   }
 }
 
@@ -116,10 +120,47 @@ function onExternalLink(href) {
   window.open(url.href, '_blank', 'noopener');
 }
 
+/* ── navigation history ──────────────────────────────────────────────── */
+
+/**
+ * Back and forward, the way an editor does them.
+ *
+ * The browser already keeps the stack — every go() pushes onto it — so this
+ * adds no second stack to drift out of sync with it. It only numbers the
+ * entries, so the buttons can tell whether there is anywhere to go, and
+ * stamps the position being left into the entry being left, so coming back
+ * lands where you were reading rather than at the top of the chapter.
+ *
+ * `max` restarts at the current entry on a cold load: the browser will not
+ * say whether anything lies ahead, and a Forward button that might do nothing
+ * is worse than one that is honestly disabled until you have gone back.
+ */
+const journal = { idx: history.state?.idx ?? 0, max: history.state?.idx ?? 0 };
+let here = null; // the CFI on screen, stamped into the entry when leaving it
+
+/** Re-write the current entry without touching the URL or the stack. */
+const stamp = (extra = {}) =>
+  history.replaceState({ ...history.state, idx: journal.idx, ...extra }, '');
+
+const refreshNav = () => {
+  $('#nav-back').disabled = journal.idx <= 0;
+  $('#nav-forward').disabled = journal.idx >= journal.max;
+};
+
 /** Navigate. `route` is `<book>` or `<book>/<path>`; `anchor` is a heading id. */
 async function go(route, { anchor = null, replace = false, push = true } = {}) {
   const url = hrefFor(route) + (anchor ? `#${anchor}` : '');
-  if (push) history[replace ? 'replaceState' : 'pushState']({}, '', url);
+  if (push) {
+    if (replace) {
+      history.replaceState({ ...history.state, idx: journal.idx }, '', url);
+    } else {
+      stamp({ cfi: here });
+      journal.idx += 1;
+      journal.max = journal.idx;
+      history.pushState({ idx: journal.idx }, '', url);
+    }
+  }
+  refreshNav();
   await render(route, anchor);
 }
 
@@ -152,7 +193,7 @@ async function render(route, anchor) {
     // Now that it has landed somewhere, say so in the address bar, so the link
     // is the page on screen rather than "the book, wherever you were".
     if (!chapterRoute && landed && location.pathname !== hrefFor(landed)) {
-      history.replaceState({}, '', hrefFor(landed));
+      history.replaceState({ ...history.state }, '', hrefFor(landed));
     }
   } catch (error) {
     show('shelf');
@@ -165,6 +206,10 @@ async function render(route, anchor) {
 
 /* ── chrome ──────────────────────────────────────────────────────────── */
 
+$('#nav-back').addEventListener('click', () => history.back());
+$('#nav-forward').addEventListener('click', () => history.forward());
+refreshNav();
+
 $('#to-shelf').addEventListener('click', () => go(''));
 $('#page-prev').addEventListener('click', () => reader.prev());
 $('#page-next').addEventListener('click', () => reader.next());
@@ -174,6 +219,21 @@ document.addEventListener('keydown', (event) => {
   // A modal is on top of the reader, not beside it: space should not turn a
   // page behind a zoomed diagram.
   if (document.querySelector('dialog[open]')) return;
+  // Alt+arrow is the platform's own Back and Forward, and what VS Code binds
+  // on Windows and Linux; Ctrl+arrow is here because it was asked for. Either
+  // is a jump through history, never a page turn — and preventDefault stops
+  // the browser acting on Alt+arrow a second time.
+  if (event.altKey || event.ctrlKey || event.metaKey) {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      history.back();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      history.forward();
+    }
+    return;
+  }
+  if (event.shiftKey) return;
   if (event.key === 'ArrowLeft' || event.key === 'PageUp') reader.prev();
   else if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') reader.next();
 });
@@ -182,7 +242,7 @@ document.addEventListener('keydown', (event) => {
 // without a page load; everything else is left to the browser.
 document.addEventListener('click', (event) => {
   const a = event.target.closest?.('a[href]');
-  if (!a || event.metaKey || event.ctrlKey || a.target) return;
+  if (!a || event.metaKey || event.ctrlKey || event.shiftKey || a.target) return;
   const url = new URL(a.href, location.href);
   if (url.origin !== location.origin || !url.pathname.startsWith(BASE)) return;
   event.preventDefault();
@@ -199,9 +259,22 @@ window.addEventListener('resize', () => {
   resized = setTimeout(() => reader.refreshStyles(), 200);
 });
 
-window.addEventListener('popstate', () => {
+window.addEventListener('popstate', async (event) => {
+  journal.idx = event.state?.idx ?? 0;
+  journal.max = Math.max(journal.max, journal.idx);
+  refreshNav();
   const path = routeOf();
-  render(path.replace(/^read\//, ''), location.hash.slice(1) || null);
+  const anchor = location.hash.slice(1) || null;
+  await render(path.replace(/^read\//, ''), anchor);
+  // An anchor is a more specific request than "where you were", so it wins.
+  const { cfi } = event.state ?? {};
+  if (cfi && !anchor) {
+    try {
+      await reader.goTo(cfi);
+    } catch {
+      /* a rebuilt book can move a position out from under an old entry */
+    }
+  }
 });
 
 /* ── offline ─────────────────────────────────────────────────────────── */

@@ -13,13 +13,72 @@ const idle = (fn) =>
  * where the reader is, what that means as a URL, and making the next page
  * already be there when it is asked for.
  */
-export function createReader({ settings, onRelocate, onExternalLink, onDocument }) {
+export function createReader({ settings, hrefFor, onRelocate, onExternalLink, onDocument }) {
   let view = null;
   let current = null; // { book, manifest, entry, base }
   let restoring = false;
   const warmed = new Set();
 
   const host = $('#view-host');
+
+  /**
+   * Give a link to another chapter an address the browser can use.
+   *
+   * foliate loads each chapter into a blob: URL, so a relative href like
+   * "0004-cdn.xhtml" resolves against a document with no origin of its own.
+   * Left-clicking works, because foliate intercepts the click and turns the
+   * page itself — but the browser's own "Open link in new tab" has no URL to
+   * open, so on the context menu the entry is missing or leads nowhere.
+   *
+   * Rewriting to the app's own /read/ URL costs nothing in place: an absolute
+   * URL reaches foliate's external-link event, which routes back through the
+   * app and navigates exactly as the relative link did. Only the copy inside
+   * the reader is touched — the .epub someone downloads keeps its relative
+   * links, which is what lets it work in any other e-reader.
+   */
+  const letModifiedClicksThrough = (doc) => {
+    // foliate calls preventDefault() on every link click in the chapter, with
+    // no test for a modifier, so ctrl-click and shift-click are swallowed and
+    // the new tab is never opened. Listening in the capture phase on the
+    // document — foliate listens in the bubble phase — lets a modified click
+    // be taken off the path before its handler sees it. stopPropagation does
+    // not touch the default action, so the browser still does exactly what
+    // the modifier asked for.
+    doc.addEventListener(
+      'click',
+      (event) => {
+        if (!event.target.closest?.('a[href]')) return;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+          event.stopPropagation();
+        }
+      },
+      true,
+    );
+  };
+
+  const addressInBookLinks = (doc, index) => {
+    const here = current?.manifest.readingOrder[index];
+    if (!here || !hrefFor) return;
+    const from = new URL(here.href, current.base);
+    const routes = new Map(
+      current.manifest.readingOrder.map((link) => [
+        new URL(link.href, current.base).href,
+        link.properties?.route,
+      ]),
+    );
+    for (const a of doc.querySelectorAll('a[href]')) {
+      const raw = a.getAttribute('href');
+      // Absolute URLs are already addressable, and a bare fragment stays
+      // inside the chapter it was written in.
+      if (!raw || raw.startsWith('#') || /^[a-z][a-z0-9+.-]*:/i.test(raw)) continue;
+      const target = new URL(raw, from);
+      const route = routes.get(target.href.split('#')[0]);
+      // Absolute, not root-relative: the chapter's own document has no origin
+      // to resolve a leading "/" against, so only a full URL is something the
+      // browser can hand to a new tab.
+      if (route) a.setAttribute('href', new URL(hrefFor(route) + target.hash, location.href).href);
+    }
+  };
 
   /**
    * Warm the next and previous chapters.
@@ -98,6 +157,8 @@ export function createReader({ settings, onRelocate, onExternalLink, onDocument 
 
       view.addEventListener('load', ({ detail }) => {
         settings.applyToDocument(detail.doc);
+        addressInBookLinks(detail.doc, detail.index);
+        letModifiedClicksThrough(detail.doc);
         onDocument?.(detail.doc);
       });
 

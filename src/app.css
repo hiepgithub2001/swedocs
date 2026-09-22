@@ -150,6 +150,11 @@ body {
 }
 
 .icon:hover { background: var(--sunken); }
+
+/* Disabled means "nowhere to go", which is information — so it stays legible
+   rather than vanishing, and stops answering the pointer. */
+.icon[disabled] { opacity: 0.35; cursor: default; }
+.icon[disabled]:hover { background: none; }
 .icon svg { width: 22px; height: 22px; fill: currentColor; }
 
 /* ── main ────────────────────────────────────────────────────────────── */

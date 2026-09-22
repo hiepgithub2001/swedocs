@@ -561,6 +561,10 @@ export class View extends HTMLElement {
                 this.#searchResults.set(result.index, list)
                 for (const item of list) this.addAnnotation(item)
                 yield {
+                    // `index` is local divergence from upstream: it is already
+                    // known here and dropped, and it is the only way a caller
+                    // can turn a hit into the chapter's own URL.
+                    index: result.index,
                     label: this.#tocProgress.getProgress(result.index)?.label ?? '',
                     subitems: result.subitems,
                 }

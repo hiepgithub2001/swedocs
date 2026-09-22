@@ -1,0 +1,109 @@
+# The same build as publish.yml, delivered to the Oracle Cloud VM instead of
+# Pages. Both can run: Pages stays the published site until you move DNS, and
+# this one is how you prove the VM serves it correctly first.
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'src/**'
+      - 'tools/**'
+      - 'deploy/**'
+      - '.github/workflows/deploy-oci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: oci
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/md2epub/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: tools/md2epub
+
+      - name: Install Chromium
+        run: npm run browsers
+
+      - name: Restore rendered diagrams
+        uses: actions/cache@v4
+        with:
+          path: .cache/mermaid
+          key: mermaid-${{ hashFiles('content/**/*.md', 'tools/md2epub/render/mermaid.js') }}
+          restore-keys: mermaid-
+
+      # BASE_URL is baked into every book's links, so it has to name the host
+      # this build is going to — otherwise a reader on the Oracle site follows
+      # a cross-reference and lands back on github.io.
+      - name: Build and validate
+        run: npm test
+        env:
+          BASE_URL: https://${{ secrets.OCI_DOMAIN }}/read
+          SOURCE_URL: https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}
+
+      - name: Assemble the site
+        run: npm run site
+
+      - name: Authorise
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "${{ secrets.OCI_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.OCI_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # Order is the whole trick. The new build directory goes up first, so
+      # that by the time latest.json names it, every file it names is already
+      # there. Uploading latest.json first would point live readers at a
+      # directory that does not exist yet.
+      - name: Upload the new build
+        run: |
+          BUILD=$(node -p "require('./dist/site/pub/latest.json').build")
+          echo "Build $BUILD"
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            "dist/site/pub/$BUILD/" \
+            "deploy@${{ secrets.OCI_HOST }}:/srv/swedocs/pub/$BUILD/"
+          echo "BUILD=$BUILD" >> "$GITHUB_ENV"
+
+      - name: Upload the app
+        run: |
+          rsync -az --delete --exclude 'pub/' \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            dist/site/ \
+            "deploy@${{ secrets.OCI_HOST }}:/srv/swedocs/"
+
+      - name: Publish the build
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            dist/site/pub/latest.json \
+            "deploy@${{ secrets.OCI_HOST }}:/srv/swedocs/pub/latest.json"
+
+      # Keep the previous build. A reader who loaded the app minutes ago still
+      # holds the old id in memory, and 18 MB is not worth the 404.
+      - name: Prune old builds
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes \
+            "deploy@${{ secrets.OCI_HOST }}" \
+            "cd /srv/swedocs/pub && ls -1dt */ 2>/dev/null | tail -n +3 | xargs -r rm -rf && ls -1d */"
+
+      - name: Check it is actually serving
+        run: |
+          set -e
+          URL="https://${{ secrets.OCI_DOMAIN }}"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' "$URL/")" = 200
+          test "$(curl -sS -o /dev/null -w '%{http_code}' "$URL/read/anything")" = 404
+          curl -fsS "$URL/pub/latest.json" | grep -q "$BUILD"
+          echo "Serving build $BUILD at $URL"

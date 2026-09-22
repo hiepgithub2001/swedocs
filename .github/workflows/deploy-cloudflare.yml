@@ -1,0 +1,89 @@
+# The same build as publish.yml, delivered to Cloudflare Pages.
+#
+# Pages needs no server config: it serves 404.html for unmatched paths on its
+# own, which is what makes /read/<book>/<chapter> a real URL. The only thing it
+# has to be told is how to cache, and that is generated below.
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'src/**'
+      - 'tools/**'
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: cloudflare
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/md2epub/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: tools/md2epub
+
+      - name: Install Chromium
+        run: npm run browsers
+
+      - name: Restore rendered diagrams
+        uses: actions/cache@v4
+        with:
+          path: .cache/mermaid
+          key: mermaid-${{ hashFiles('content/**/*.md', 'tools/md2epub/render/mermaid.js') }}
+          restore-keys: mermaid-
+
+      - name: Build and validate
+        run: npm test
+        env:
+          BASE_URL: https://${{ vars.CF_DOMAIN || 'swedocs.pages.dev' }}/read
+          SOURCE_URL: https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}
+
+      - name: Assemble the site
+        run: npm run site
+
+      # Overlapping rules in _headers ACCUMULATE — two rules setting
+      # Cache-Control on one path produce a single header with both values
+      # joined by a comma, which is not what anyone means. So the immutable
+      # rule names this build's directory exactly, and cannot overlap
+      # latest.json sitting beside it.
+      - name: Write cache rules
+        run: |
+          BUILD=$(node -p "require('./dist/site/pub/latest.json').build")
+          cat > dist/site/_headers <<EOF
+          /sw.js
+            Cache-Control: no-cache
+
+          /index.html
+            Cache-Control: no-cache
+
+          /404.html
+            Cache-Control: no-cache
+
+          /pub/latest.json
+            Cache-Control: no-cache
+
+          /pub/$BUILD/*
+            Cache-Control: public, max-age=31536000, immutable
+          EOF
+          echo "Build $BUILD"
+          cat dist/site/_headers
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist/site --project-name=swedocs --branch=main

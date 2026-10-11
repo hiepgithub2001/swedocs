@@ -1,6 +1,6 @@
 ---
-name: distill-book
-description: Read a PDF book the user has placed in books/ and rewrite it as a short, concise book under content/ — one chapter per idea, a diagram wherever there is a mechanism, pitched at a mid-level software engineer. Use when asked to distill, summarise, condense, or "re-write" a book, or to check an existing distillation against its source. Covers extracting text from a PDF without poppler, verifying every claim against the source, and wiring the result into the md2epub build.
+name: distill-swe-book
+description: Read a software engineering book (a PDF the user has placed in books/) and rewrite it as a short, concise book under content/ — one chapter per idea, a diagram wherever there is a mechanism (Mermaid, or the diagram-design plugin when Mermaid cannot show it), pitched at a mid-level software engineer. Use when asked to distill, summarise, condense, or "re-write" a book, or to check an existing distillation against its source. Covers extracting text from a PDF without poppler, verifying every claim against the source, and wiring the result into the md2epub build.
 ---
 
 # Distilling a book
@@ -26,7 +26,7 @@ never enters the repository. Nothing from it is reproduced in the output.
 ## 1. Extract
 
 ```bash
-python3 .claude/skills/distill-book/scripts/pdftext.py books/<file>.pdf \
+python3 .claude/skills/distill-swe-book/scripts/pdftext.py books/<file>.pdf \
   -o "$SCRATCH/<slug>.txt"
 ```
 
@@ -110,16 +110,53 @@ the same ground; that is what makes this part of the base rather than a guest.
 
 ## 5. Diagrams
 
-Mermaid, rendered at build time. **Draw the mechanism, not the table of
-contents** — a diagram that lists the chapter's headings in boxes is decoration.
-Draw what flows, what waits on what, and where the boundary is.
+**Draw the mechanism, not the table of contents** — a diagram that lists the
+chapter's headings in boxes is decoration. Draw what flows, what waits on what,
+and where the boundary is.
 
 Label edges with what crosses them. Name the failure the picture explains.
 Two contrasting subgraphs in one diagram beats two diagrams.
 
-One parser gotcha: a `"` inside an unquoted node label is a syntax error.
-Wrap the whole label instead — `A["Sales context<br/>Customer = a lead"]`,
-never `A[Sales context<br/>"Customer" = a lead]`.
+### Pick the tool per diagram
+
+Choose by what the picture has to show, not by habit:
+
+| The picture is… | Use |
+|---|---|
+| a flow, request path, sequence, state machine, small dependency graph | **Mermaid** |
+| an architecture with zones/tiers, layer stack, deployment, before/after delta | **diagram-design** |
+| a quadrant, trade-off matrix, timeline, Wardley map, pyramid, Venn, fishbone | **diagram-design** |
+| numbers — bar, line, scatter, heatmap, waterfall, Sankey | **diagram-design** |
+
+Mermaid is the default because it is plain text in the chapter, diffs cleanly,
+and the build renders it. Reach for diagram-design when Mermaid's auto-layout
+would mangle the point — positions that carry meaning, nested boundaries,
+axes, or anything you would otherwise fake with a table.
+
+**Mermaid** — a ```` ```mermaid ```` fence, rendered to SVG at build time. One
+parser gotcha: a `"` inside an unquoted node label is a syntax error. Wrap the
+whole label instead — `A["Sales context<br/>Customer = a lead"]`, never
+`A[Sales context<br/>"Customer" = a lead]`.
+
+**diagram-design** — the `diagram-design` plugin (`/plugin` to check it is
+installed; if it is not, fall back to Mermaid and say so). Load its skill
+before drawing. Then:
+
+1. Generate the HTML source to `content/book-<slug>/diagrams/<chapter>-<what>.html`.
+   Keep the default style for every book unless the user picks a profile once;
+   do not re-ask per chapter.
+2. Export with `/diagram-design:export-diagram <file> --svg-only` — SVG only:
+   it stays sharp at any zoom, and the export needs no browser.
+3. Reference it from the chapter with real alt text that states the point,
+   not the shape: `![Writes fan out to three replicas; reads hit one](diagrams/03-replication.svg)`.
+   md2epub packs local images into the EPUB; a wrong path is a
+   `missing-image` warning, which fails the strict build.
+4. Commit both the `.html` (the editable source) and the `.svg`.
+
+Two things to check by opening the built book, light and dark theme: the SVG's
+web fonts cannot load inside an EPUB image, so it must still read in the
+fallback system font; and its paper background shows as a light card on the
+dark theme — fine, but the text inside must not inherit the page colour.
 
 ## 6. Verify against the source
 

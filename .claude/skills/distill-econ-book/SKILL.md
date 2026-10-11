@@ -15,7 +15,7 @@ not a manual. A distillation that flattens the argument into bullet points and
 drops the arguing leaves a beginner more confident and no better informed —
 which is worse than where they started.
 
-Where this overlaps with [`distill-book`](../distill-book/SKILL.md) — sourcing,
+Where this overlaps with [`distill-swe-book`](../distill-swe-book/SKILL.md) — sourcing,
 extraction, the build — it says so and moves on. The rest is what changes when
 the subject is economics and the reader is new.
 
@@ -33,7 +33,7 @@ no passage of one is reproduced in the output.
 Reuse the sibling skill's extractor — it is dependency-free and page-marked:
 
 ```bash
-python3 .claude/skills/distill-book/scripts/pdftext.py books/<file>.pdf \
+python3 .claude/skills/distill-swe-book/scripts/pdftext.py books/<file>.pdf \
   -o "$SCRATCH/<slug>.txt"
 ```
 

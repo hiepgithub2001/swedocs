@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sparse formats: what each one buys</title>
+  <!-- Font source: system. No font link: the diagram is embedded in an offline EPUB. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #bf4520;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1200px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 640px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Matrix · PMPP ch. 14</p>
+    <h1>Sparse formats: what each one buys</h1>
+    <div class="diagram-container">
+      <svg viewBox="0 0 640 398" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="14-sparse-formats-title 14-sparse-formats-desc">
+        <title id="14-sparse-formats-title">Sparse formats: what each one buys</title>
+        <desc id="14-sparse-formats-desc">Matrix of five sparse formats against five criteria. COO: partial space efficiency, flexible, partial access, coalesced, balanced but needs atomics. CSR: compact, inflexible, row access only, uncoalesced, unbalanced. ELL: padding wastes space, partly flexible, full access, coalesced, unbalanced. Hybrid ELL-COO: partial space, flexible, partial access, coalesced, partly balanced. JDS: compact, inflexible, row access, coalesced but unaligned, balanced.</desc>
+        <defs>
+          <pattern id="14-sparse-formats-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+        <rect width="100%" height="100%" fill="url(#14-sparse-formats-dots)" opacity="0.55"/>
+        <text x="208" y="62" fill="#2d3142" font-size="11" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Space</text>
+        <text x="208" y="78" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">compaction</text>
+        <text x="292" y="62" fill="#2d3142" font-size="11" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Flexible</text>
+        <text x="292" y="78" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">add nonzeros</text>
+        <text x="376" y="62" fill="#2d3142" font-size="11" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Access</text>
+        <text x="376" y="78" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">row / element</text>
+        <text x="460" y="62" fill="#2d3142" font-size="11" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Coalesced</text>
+        <text x="460" y="78" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">SpMV reads</text>
+        <text x="544" y="62" fill="#2d3142" font-size="11" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Balanced</text>
+        <text x="544" y="78" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">per-thread work</text>
+        <text x="156" y="112" fill="#2d3142" font-size="12" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="end">COO</text>
+        <text x="156" y="126" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">thread per nonzero</text>
+        <rect x="168" y="92" width="80" height="42" fill="#ffffff"/>
+        <rect x="168" y="92" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="208" y="118" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="252" y="92" width="80" height="42" fill="#ffffff"/>
+        <rect x="252" y="92" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="292" y="118" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="336" y="92" width="80" height="42" fill="#ffffff"/>
+        <rect x="336" y="92" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="376" y="118" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="420" y="92" width="80" height="42" fill="#ffffff"/>
+        <rect x="420" y="92" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="460" y="118" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="504" y="92" width="80" height="42" fill="#ffffff"/>
+        <rect x="504" y="92" width="80" height="42" fill="rgba(191,69,32,0.10)" stroke="#bf4520" stroke-width="1.2"/>
+        <text x="544" y="112" fill="#bf4520" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <text x="544" y="125" fill="#bf4520" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">but atomics</text>
+        <text x="156" y="158" fill="#2d3142" font-size="12" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="end">CSR</text>
+        <text x="156" y="172" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">thread per row</text>
+        <rect x="168" y="138" width="80" height="42" fill="#ffffff"/>
+        <rect x="168" y="138" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="208" y="164" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="252" y="138" width="80" height="42" fill="#ffffff"/>
+        <rect x="252" y="138" width="80" height="42" fill="rgba(45,49,66,0.05)"/>
+        <text x="292" y="164" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">POOR</text>
+        <rect x="336" y="138" width="80" height="42" fill="#ffffff"/>
+        <rect x="336" y="138" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="376" y="164" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="420" y="138" width="80" height="42" fill="#ffffff"/>
+        <rect x="420" y="138" width="80" height="42" fill="rgba(45,49,66,0.05)"/>
+        <text x="460" y="164" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">POOR</text>
+        <rect x="504" y="138" width="80" height="42" fill="#ffffff"/>
+        <rect x="504" y="138" width="80" height="42" fill="rgba(45,49,66,0.05)"/>
+        <text x="544" y="164" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">POOR</text>
+        <text x="156" y="204" fill="#2d3142" font-size="12" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="end">ELL</text>
+        <text x="156" y="218" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">padded, column-major</text>
+        <rect x="168" y="184" width="80" height="42" fill="#ffffff"/>
+        <rect x="168" y="184" width="80" height="42" fill="rgba(45,49,66,0.05)"/>
+        <text x="208" y="210" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">POOR</text>
+        <rect x="252" y="184" width="80" height="42" fill="#ffffff"/>
+        <rect x="252" y="184" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="292" y="210" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="336" y="184" width="80" height="42" fill="#ffffff"/>
+        <rect x="336" y="184" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="376" y="210" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="420" y="184" width="80" height="42" fill="#ffffff"/>
+        <rect x="420" y="184" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="460" y="210" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="504" y="184" width="80" height="42" fill="#ffffff"/>
+        <rect x="504" y="184" width="80" height="42" fill="rgba(45,49,66,0.05)"/>
+        <text x="544" y="210" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">POOR</text>
+        <text x="156" y="250" fill="#2d3142" font-size="12" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="end">ELL + COO</text>
+        <text x="156" y="264" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">hybrid</text>
+        <rect x="168" y="230" width="80" height="42" fill="#ffffff"/>
+        <rect x="168" y="230" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="208" y="256" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="252" y="230" width="80" height="42" fill="#ffffff"/>
+        <rect x="252" y="230" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="292" y="256" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="336" y="230" width="80" height="42" fill="#ffffff"/>
+        <rect x="336" y="230" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="376" y="256" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="420" y="230" width="80" height="42" fill="#ffffff"/>
+        <rect x="420" y="230" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="460" y="256" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="504" y="230" width="80" height="42" fill="#ffffff"/>
+        <rect x="504" y="230" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="544" y="256" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <text x="156" y="296" fill="#2d3142" font-size="12" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="end">JDS</text>
+        <text x="156" y="310" fill="#4f5d75" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="end">rows sorted by length</text>
+        <rect x="168" y="276" width="80" height="42" fill="#ffffff"/>
+        <rect x="168" y="276" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="208" y="302" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <rect x="252" y="276" width="80" height="42" fill="#ffffff"/>
+        <rect x="252" y="276" width="80" height="42" fill="rgba(45,49,66,0.05)"/>
+        <text x="292" y="302" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">POOR</text>
+        <rect x="336" y="276" width="80" height="42" fill="#ffffff"/>
+        <rect x="336" y="276" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="376" y="302" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="420" y="276" width="80" height="42" fill="#ffffff"/>
+        <rect x="420" y="276" width="80" height="42" fill="rgba(45,49,66,0.20)"/>
+        <text x="460" y="302" fill="#2d3142" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARTIAL</text>
+        <rect x="504" y="276" width="80" height="42" fill="#ffffff"/>
+        <rect x="504" y="276" width="80" height="42" fill="rgba(45,49,66,0.62)"/>
+        <text x="544" y="302" fill="#ffffff" font-size="10" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" text-anchor="middle" letter-spacing="0.08em">GOOD</text>
+        <text x="24" y="344" fill="#4f5d75" font-size="10" font-family="'Geist Mono', ui-monospace, monospace">The book&#x27;s own judgements, relative to each other; JDS coalesces but can&#x27;t align.</text>
+        <text x="24" y="374" fill="#4f5d75" font-size="13" font-family="'Instrument Serif', 'Noto Serif', serif" font-style="italic">No format wins every column; the matrix decides.</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

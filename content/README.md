@@ -57,6 +57,7 @@ README frontmatter, which is what puts it on its own tab in the reader.
 | [Fundamentals of Software Architecture — Distilled](./book-fundamentals-of-architecture/) | Richards & Ford (O'Reilly, 2020), rewritten as a short book: every core idea, in order, with diagrams |
 | [Computer Systems: A Programmer's Perspective — Distilled](./book-csapp/) | Bryant & O'Hallaron (2nd ed., 2011), the CMU 15-213 textbook rewritten as a short book: bits, machine code, caches, linking, processes, virtual memory, I/O, networking and concurrency, with notes where things have changed since |
 | [Operating Systems: Three Easy Pieces — Distilled](./book-ostep/) | Arpaci-Dusseau & Arpaci-Dusseau (version 0.90, March 2015): CPU and memory virtualization, concurrency, persistence, distributed file systems, and the supplied PDF's appendices, in source order with mechanism diagrams |
+| [Designing Data-Intensive Applications — Distilled](./book-ddia/) | Kleppmann (1st ed., 2017), rewritten as a short book: storage engines, encoding, replication, partitioning, transactions, distributed-systems failure, consensus, batch and stream processing, and the case for derived data, with notes where things have changed since |
 | [Kinh tế học căn bản — bản rút gọn](./book-kinh-te-hoc-can-ban/) | Sowell, *Basic Economics* (5th ed., 2014), distilled **in Vietnamese** for a reader new to economics: one question per chapter, a glossary, and the book's argument kept separate from settled fact |
 
 Written in our own words — no passage of a book is reproduced. A book only

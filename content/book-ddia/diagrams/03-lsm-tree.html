@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The LSM-tree write path</title>
+  <!-- Font source: system. No font link: the diagram is embedded in an offline EPUB. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #bf4520;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1200px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 640px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Layer stack · DDIA ch. 3</p>
+    <h1>The LSM-tree write path</h1>
+    <div class="diagram-container">
+      <svg viewBox="0 0 640 472" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="03-lsm-tree-title 03-lsm-tree-desc">
+        <title id="03-lsm-tree-title">The LSM-tree write path</title>
+        <desc id="03-lsm-tree-desc">Writes go to an in-memory memtable and are appended to a write-ahead log; full memtables are flushed as sorted SSTables, and background compaction merges SSTables into larger, older levels. Reads check the memtable first, then each level from newest to oldest.</desc>
+        <defs>
+          <pattern id="03-lsm-tree-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+        <rect width="100%" height="100%" fill="url(#03-lsm-tree-dots)" opacity="0.55"/>
+        <text x="24" y="52" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">WRITES ARRIVE</text>
+        <line x1="64" y1="64" x2="64" y2="384" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <polygon points="60,64 68,64 64,56" fill="#4f5d75"/>
+        <text x="24" y="408" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">OLDER · LARGER</text>
+        <line x1="96" y1="64" x2="476" y2="64" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <rect x="96" y="64" width="380" height="64" fill="rgba(191,69,32,0.08)"/>
+        <rect x="96" y="64" width="380" height="64" fill="none" stroke="#bf4520" stroke-width="1"/>
+        <text x="108" y="90" fill="#bf4520" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" letter-spacing="0.10em">MEM</text>
+        <text x="196" y="92" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Memtable</text>
+        <text x="196" y="112" fill="#bf4520" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">sorted tree · takes every write</text>
+        <rect x="96" y="128" width="380" height="64" fill="#ececec"/>
+        <line x1="96" y1="192" x2="476" y2="192" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="108" y="154" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.10em">LOG</text>
+        <text x="196" y="156" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Write-ahead log</text>
+        <text x="196" y="176" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">append-only · crash recovery only</text>
+        <rect x="96" y="192" width="380" height="64" fill="#ffffff"/>
+        <line x1="96" y1="256" x2="476" y2="256" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="108" y="218" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.10em">L0</text>
+        <text x="196" y="220" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Fresh SSTables</text>
+        <text x="196" y="240" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">flushed memtables · a few MB each</text>
+        <rect x="96" y="256" width="380" height="64" fill="#f5f5f5"/>
+        <line x1="96" y1="320" x2="476" y2="320" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="108" y="282" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.10em">L1</text>
+        <text x="196" y="284" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Compacted SSTables</text>
+        <text x="196" y="304" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">merged · duplicates dropped</text>
+        <rect x="96" y="320" width="380" height="64" fill="#f5f5f5"/>
+        <line x1="96" y1="384" x2="476" y2="384" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="108" y="346" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.10em">L2…</text>
+        <text x="196" y="348" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Older, larger SSTables</text>
+        <text x="196" y="368" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">leveled or size-tiered</text>
+        <path d="M 488 72 H 496 V 120 H 488" fill="none" stroke="#4f5d75" stroke-width="1"/>
+        <text x="504" y="100" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.12em">MEMORY</text>
+        <path d="M 488 136 H 496 V 376 H 488" fill="none" stroke="#4f5d75" stroke-width="1"/>
+        <text x="504" y="260" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.12em">DISK</text>
+        <text x="24" y="448" fill="#4f5d75" font-size="13" font-family="'Instrument Serif', 'Noto Serif', serif" font-style="italic">A read checks top to bottom; Bloom filters skip levels that lack the key.</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The memory hierarchy</title>
+  <!-- Font source: system. No font link: the diagram is embedded in an offline EPUB. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #bf4520;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+    body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+           min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+    .frame { max-width: 1200px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+               text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+    h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+         letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink); margin-bottom: 1.5rem; }
+    svg { width: 100%; min-width: 640px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Pyramid · CS:APP ch. 6</p>
+    <h1>The memory hierarchy</h1>
+    <div class="diagram-container">
+      <svg viewBox="0 0 640 484" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="06-memory-hierarchy-title 06-memory-hierarchy-desc">
+        <title id="06-memory-hierarchy-title">The memory hierarchy</title>
+        <desc id="06-memory-hierarchy-desc">Pyramid of storage levels from CPU registers at the top through SRAM caches, DRAM main memory and local disk to remote storage, each level caching the one below it.</desc>
+        <defs>
+          <pattern id="06-memory-hierarchy-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(45,49,66,0.10)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+        <rect width="100%" height="100%" fill="url(#06-memory-hierarchy-dots)" opacity="0.55"/>
+        <text x="208" y="52" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.12em">SMALLER · FASTER · DEARER PER BYTE</text>
+        <polygon points="188,72 228,72 264,136 152,136" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <text x="208" y="112" fill="#2d3142" font-size="16" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Registers</text>
+        <line x1="272" y1="104" x2="428" y2="104" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="436" y="100" fill="#2d3142" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600">≈1 cycle</text>
+        <text x="436" y="118" fill="#4f5d75" font-size="12" font-family="'Geist', system-ui, sans-serif">managed by the compiler</text>
+        <polygon points="152,136 264,136 300,200 116,200" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1"/>
+        <text x="208" y="166" fill="#2d3142" font-size="16" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Caches</text>
+        <text x="208" y="184" fill="#bf4520" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">L1–L3 · SRAM</text>
+        <line x1="308" y1="168" x2="428" y2="168" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="436" y="164" fill="#bf4520" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600">L1 2–4 · L2 10 · L3 30–40</text>
+        <text x="436" y="182" fill="#4f5d75" font-size="12" font-family="'Geist', system-ui, sans-serif">cycles · managed by hardware</text>
+        <polygon points="116,200 300,200 336,264 80,264" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <text x="208" y="230" fill="#2d3142" font-size="16" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Main memory</text>
+        <text x="208" y="248" fill="#4f5d75" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">DRAM</text>
+        <line x1="344" y1="232" x2="428" y2="232" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="436" y="228" fill="#2d3142" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600">≈100 cycles</text>
+        <text x="436" y="246" fill="#4f5d75" font-size="12" font-family="'Geist', system-ui, sans-serif">caches disk pages (VM)</text>
+        <polygon points="80,264 336,264 372,328 44,328" fill="#ececec" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <text x="208" y="294" fill="#2d3142" font-size="16" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Local disk</text>
+        <text x="208" y="312" fill="#4f5d75" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">magnetic or SSD</text>
+        <line x1="380" y1="296" x2="428" y2="296" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="436" y="292" fill="#2d3142" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600">≈10 ms per access</text>
+        <text x="436" y="310" fill="#4f5d75" font-size="12" font-family="'Geist', system-ui, sans-serif">caches remote files</text>
+        <polygon points="44,328 372,328 408,392 8,392" fill="#ffffff" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+        <text x="208" y="358" fill="#2d3142" font-size="16" font-family="'Geist', system-ui, sans-serif" font-weight="600" text-anchor="middle">Remote storage</text>
+        <text x="208" y="376" fill="#4f5d75" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">network file systems, web</text>
+        <line x1="416" y1="360" x2="428" y2="360" stroke="rgba(45,49,66,0.12)" stroke-width="1"/>
+        <text x="436" y="356" fill="#2d3142" font-size="12" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600">network + disk</text>
+        <text x="436" y="374" fill="#4f5d75" font-size="12" font-family="'Geist', system-ui, sans-serif">NFS, AFS, web servers</text>
+        <text x="208" y="420" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.12em">LARGER · SLOWER · CHEAPER PER BYTE</text>
+        <text x="24" y="460" fill="#4f5d75" font-size="13" font-family="'Instrument Serif', 'Noto Serif', serif" font-style="italic">Level k is a cache for level k+1. Locality decides where your program mostly runs.</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 640 536" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="03-stack-frame-title 03-stack-frame-desc" id="d-03-stack-frame-root">
+        <title id="03-stack-frame-title">Stack frames during a call</title>
+        <desc id="03-stack-frame-desc">Two stack frames: the caller&#x27;s locals, extra arguments and the return address above the callee&#x27;s saved registers and local buffers, with the stack growing toward lower addresses.</desc>
+        <defs>
+      <style>#d-03-stack-frame-root { --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #bf4520;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', 'Noto Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace; }
+      #d-03-stack-frame-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #d-03-stack-frame-root .diagram-container { width: 100%; overflow-x: auto; }
+      #d-03-stack-frame-root .diagram-container { overflow-x: visible; }</style>
+          <pattern id="d-03-stack-frame-03-stack-frame-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="#2d3142" fill-opacity="0.10"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="#f5f5f5"/>
+        <rect width="100%" height="100%" fill="url(#d-03-stack-frame-03-stack-frame-dots)" opacity="0.55"/>
+        <text x="24" y="52" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">HIGH ADDR</text>
+        <line x1="64" y1="64" x2="64" y2="448" stroke="#2d3142" stroke-opacity="0.30" stroke-width="1"/>
+        <polygon points="60,64 68,64 64,56" fill="#4f5d75"/>
+        <text x="24" y="472" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">GROWS DOWN</text>
+        <line x1="96" y1="64" x2="476" y2="64" stroke="#2d3142" stroke-opacity="0.12" stroke-width="1"/>
+        <rect x="96" y="64" width="380" height="64" fill="#ececec"/>
+        <line x1="96" y1="128" x2="476" y2="128" stroke="#2d3142" stroke-opacity="0.12" stroke-width="1"/>
+        <text x="196" y="92" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Earlier frames</text>
+        <text x="196" y="112" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">callers of the caller</text>
+        <rect x="96" y="128" width="380" height="64" fill="#ffffff"/>
+        <line x1="96" y1="192" x2="476" y2="192" stroke="#2d3142" stroke-opacity="0.12" stroke-width="1"/>
+        <text x="196" y="156" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Caller&#x27;s locals</text>
+        <text x="196" y="176" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">and saved registers</text>
+        <rect x="96" y="192" width="380" height="64" fill="#ffffff"/>
+        <line x1="96" y1="256" x2="476" y2="256" stroke="#2d3142" stroke-opacity="0.12" stroke-width="1"/>
+        <text x="196" y="220" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Arguments 7 and up</text>
+        <text x="196" y="240" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">x86-64 · IA32: all of them</text>
+        <rect x="96" y="256" width="380" height="64" fill="#bf4520" fill-opacity="0.08"/>
+        <rect x="96" y="256" width="380" height="64" fill="none" stroke="#bf4520" stroke-width="1"/>
+        <text x="108" y="282" fill="#bf4520" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" font-weight="600" letter-spacing="0.10em">RET</text>
+        <text x="196" y="284" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Return address</text>
+        <text x="196" y="304" fill="#bf4520" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">pushed by call, popped by ret</text>
+        <rect x="96" y="320" width="380" height="64" fill="#f5f5f5"/>
+        <line x1="96" y1="384" x2="476" y2="384" stroke="#2d3142" stroke-opacity="0.12" stroke-width="1"/>
+        <text x="196" y="348" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Saved registers</text>
+        <text x="196" y="368" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">callee-saved: %rbx %rbp %r12–15</text>
+        <rect x="96" y="384" width="380" height="64" fill="#f5f5f5"/>
+        <line x1="96" y1="448" x2="476" y2="448" stroke="#2d3142" stroke-opacity="0.12" stroke-width="1"/>
+        <text x="108" y="410" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.10em">%rsp</text>
+        <text x="196" y="412" fill="#2d3142" font-size="17" font-family="'Geist', system-ui, sans-serif" font-weight="600">Locals and buffers</text>
+        <text x="196" y="432" fill="#4f5d75" font-size="13" font-family="'Geist Mono', ui-monospace, monospace">buf[] overflow writes upward</text>
+        <path d="M 488 136 H 496 V 312 H 488" fill="none" stroke="#4f5d75" stroke-width="1"/>
+        <text x="504" y="228" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.12em">CALLER</text>
+        <path d="M 488 328 H 496 V 440 H 488" fill="none" stroke="#4f5d75" stroke-width="1"/>
+        <text x="504" y="388" fill="#4f5d75" font-size="11" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.12em">CALLEE</text>
+        <text x="24" y="512" fill="#4f5d75" font-size="13" font-family="'Instrument Serif', 'Noto Serif', serif" font-style="italic">Overrun a local buffer and you write over saved state, then the return address.</text>
+      </svg>

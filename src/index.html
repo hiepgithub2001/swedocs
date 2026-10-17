@@ -52,6 +52,10 @@
   <button id="open-search" class="icon" title="Search" aria-label="Search">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l4.1 4.1 1.4-1.4-4.1-4.1A7 7 0 0 0 10 3zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"/></svg>
   </button>
+  <button id="save-book" class="icon save" type="button" title="Save this book for offline reading" aria-label="Save this book for offline reading" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3h2v9.2l3.3-3.3 1.4 1.4L12 16l-5.7-5.7 1.4-1.4 3.3 3.3zM5 18h14v2H5z"/></svg>
+    <span class="pct"></span>
+  </button>
   <button id="open-settings" class="icon" title="Display settings" aria-label="Display settings">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h12v2H6zM4 11h16v2H4zM8 17h8v2H8z"/></svg>
   </button>
@@ -149,11 +153,6 @@
       <label><input type="radio" name="flow" value="paginated"> Pages</label>
       <label><input type="radio" name="flow" value="scrolled"> Scroll</label>
     </fieldset>
-
-    <p id="offline-row">
-      <button id="save-offline" type="button">Save this book offline</button>
-      <span id="offline-state"></span>
-    </p>
 
     <menu><button value="close">Done</button></menu>
   </form>

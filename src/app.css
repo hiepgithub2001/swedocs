@@ -291,6 +291,99 @@ body {
   color: var(--accent);
 }
 
+/* ── saving offline ──────────────────────────────────────────────────── */
+
+/* The card is a link, and a button cannot live inside one, so the save
+   button sits on the card's corner as its sibling. */
+.books li { position: relative; }
+.books a { padding-right: 3.4rem; }
+
+.books .save {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.books .save svg { width: 20px; height: 20px; fill: currentColor; }
+.books .save:hover { border-color: var(--accent); }
+
+.save { position: relative; }
+.save > * { grid-area: 1 / 1; }
+.save .pct { font-size: 0.65rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.save .pct:empty { display: none; }
+
+.books .save[data-state="saved"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--paper);
+}
+
+#save-book[data-state="saved"] { color: var(--accent); }
+
+/* Saved, but a newer copy is out: the arrow again, with a dot. */
+.save[data-state="stale"]::after {
+  content: "";
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #d9822b;
+}
+
+/* Saving: a ring that fills, with the percentage inside. */
+.save[data-state="saving"] svg { display: none; }
+.save[data-state="saving"]::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) var(--p, 0%), var(--rule) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+}
+
+.books .offline-note {
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+.books .offline-note:empty { display: none; }
+
+.save-all-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.save-all {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.save-all:disabled { opacity: 0.6; cursor: default; }
+
 /* ── reader ──────────────────────────────────────────────────────────── */
 
 #reader {
@@ -507,16 +600,6 @@ foliate-view {
 
 .range input { width: 100%; }
 
-#offline-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
 #settings menu {
   margin: 0;
   padding: 0;
@@ -524,8 +607,7 @@ foliate-view {
   justify-content: flex-end;
 }
 
-#settings button,
-#save-offline {
+#settings button {
   font: inherit;
   padding: 0.45rem 0.9rem;
   border: 1px solid var(--rule);

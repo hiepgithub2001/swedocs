@@ -8,7 +8,7 @@
  * new directory rather than changing an old file. Only `latest.json`, which
  * names the current build, goes to the network first.
  */
-const VERSION = 'v4';
+const VERSION = 'v5';
 const SHELL = `swedocs-shell-${VERSION}`;
 const PUB = 'swedocs-pub';
 
@@ -30,6 +30,7 @@ const SHELL_FILES = [
   'lib/install.js',
   'lib/library.js',
   'lib/lightbox.js',
+  'lib/offline.js',
   'lib/panel.js',
   'lib/reader.js',
   'lib/settings.js',
@@ -149,19 +150,4 @@ self.addEventListener('message', (event) => {
   if (message?.type === 'refresh-shell') {
     return event.waitUntil(refreshShell().then((ok) => reply({ type: 'shell-refreshed', ok })));
   }
-
-  // "Save this book offline": pull a whole publication in one go, rather than
-  // waiting for the reader to happen to visit every chapter.
-  if (message?.type !== 'cache-book') return;
-  const { slug, urls } = message;
-
-  event.waitUntil(
-    caches
-      .open(PUB)
-      .then((cache) => Promise.allSettled(urls.map((url) => cache.add(url))))
-      .then((results) => {
-        const ok = results.every((result) => result.status === 'fulfilled');
-        reply({ type: 'cached', slug, ok });
-      }),
-  );
 });

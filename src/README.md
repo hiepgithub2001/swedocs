@@ -22,6 +22,7 @@ the `<base>` computation are exercised exactly as they will be in production.
 | `lib/lightbox.js` | Diagrams, full screen, with pinch and wheel zoom |
 | `lib/tables.js` | Keeps a scrolling table's drags away from the paginator |
 | `lib/install.js` | The install button, and why there sometimes isn't one |
+| `lib/offline.js` | Saving whole books for offline reading, across deploys |
 | `lib/update.js` | The button that pulls a newer app past the cache |
 | `lib/shelf.js` | The library screen |
 | `lib/settings.js` | Theme, text size, line height, layout |
@@ -105,8 +106,21 @@ wholesale on deploy. Published chapters live under an immutable
 revalidated — a rebuild writes a new directory rather than changing a file.
 Only `latest.json`, which names the current build, goes to the network first.
 
-Chapters are cached as they are read; "Save this book offline" in the display
-settings pulls a whole publication in one go.
+Chapters are cached as they are read. To keep a whole book, every card on the
+shelf has a ↓ button, the reader's toolbar has the same one for the open book,
+and each collection has "Save all". A saved book shows a check; pressing it
+again offers to remove the copy. The page does the saving itself with the
+Cache API, into the worker's `pub/` cache, so there is real progress to show
+and it works before the worker controls the page. What it saves comes from the
+package's own `container.xml` and OPF, because that is what the reading engine
+opens a book with.
+
+Saved books have to survive deploys, which publish under a new build id. Each
+save records its build and the book's content hash. A book whose hash a deploy
+did not change keeps reading from the saved copy. One that did change opens
+from the new build and falls back to the saved copy when the new one can't be
+fetched, which is always the case offline. It is re-saved in the background the
+next time the app is open online, and the old copy is then deleted.
 
 That cache is also why the app needs a way to update itself. A reload is
 answered from it, so it cannot bring a newer app; a new one arrives only when a

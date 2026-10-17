@@ -1,4 +1,5 @@
 import { EPUB } from '../vendor/foliate/epub.js';
+import { loadFlag, saveFlag } from './store.js';
 
 const json = async (url) => {
   const response = await fetch(url);
@@ -16,11 +17,26 @@ const json = async (url) => {
  * than being an error.
  */
 export async function loadShelf() {
-  try {
-    const { build } = await json('pub/latest.json');
+  const at = async (build) => {
     const root = `pub/${build}/`;
-    return { ...(await json(`${root}index.json`)), root };
+    const shelf = { ...(await json(`${root}index.json`)), root };
+    saveFlag('shelf-build', build);
+    return shelf;
+  };
+  try {
+    return await at((await json('pub/latest.json')).build);
   } catch {
+    // Offline with a cold `latest.json`, or one naming a build whose index
+    // never made it into the cache: the last shelf that did open is the one
+    // the saved books belong to.
+    const last = loadFlag('shelf-build', null);
+    if (last) {
+      try {
+        return await at(last);
+      } catch {
+        /* fall through to the development layout */
+      }
+    }
     return { ...(await json('pub/index.json')), root: 'pub/' };
   }
 }
@@ -33,17 +49,27 @@ export async function loadShelf() {
  * cache entry. Sizes come from the manifest because the paginator weights
  * progress by them and HEAD requests for 70 chapters would be absurd.
  */
-export async function openBook(shelf, slug) {
+export async function openBook(shelf, slug, root = shelf.root) {
   const entry = shelf.books.find((book) => book.slug === slug);
   if (!entry) throw new Error(`No book named "${slug}"`);
 
-  const base = new URL(`${shelf.root}${slug}/`, document.baseURI);
+  // `root` is the shelf's own build, unless the book was saved offline from an
+  // older one (see offline.js).
+  const base = new URL(`${root}${slug}/`, document.baseURI);
   const manifest = await json(new URL('manifest.json', base));
   const sizes = new Map(manifest.readingOrder.map((l) => [l.href, l.properties?.size ?? 0]));
 
+  // A file that cannot be reached reads as one that is not there. Online the
+  // engine's probe for an optional META-INF/encryption.xml is a 404; offline
+  // it is a network error, and letting that throw would sink the open of a
+  // book whose every real file is saved.
   const fetchPart = async (href, as) => {
-    const response = await fetch(new URL(href, base));
-    return response.ok ? response[as]() : null;
+    try {
+      const response = await fetch(new URL(href, base));
+      return response.ok ? response[as]() : null;
+    } catch {
+      return null;
+    }
   };
 
   const book = new EPUB({
@@ -63,15 +89,6 @@ export function findByRoute(manifest, route) {
 }
 
 /** Section-level search index, fetched only when someone opens the search box. */
-export async function loadSearchIndex(shelf, slug) {
-  return json(new URL(`${shelf.root}${slug}/search.json`, document.baseURI));
-}
-
-export function bookUrls(shelf, slug) {
-  const entry = shelf.books.find((book) => book.slug === slug);
-  return {
-    manifest: `${shelf.root}${slug}/manifest.json`,
-    search: `${shelf.root}${slug}/search.json`,
-    epub: `${shelf.root}${entry?.epub ?? `${slug}.epub`}`,
-  };
+export async function loadSearchIndex(publication) {
+  return json(new URL('search.json', publication.base));
 }

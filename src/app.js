@@ -1,8 +1,9 @@
-import { loadShelf, openBook, loadSearchIndex, bookUrls } from './lib/library.js';
+import { loadShelf, openBook, loadSearchIndex } from './lib/library.js';
+import * as offline from './lib/offline.js';
 import { createSettings } from './lib/settings.js';
 import { createReader } from './lib/reader.js';
 import { createPanel } from './lib/panel.js';
-import { renderShelf } from './lib/shelf.js';
+import { renderShelf, paintSave, pressSave, watchSave } from './lib/shelf.js';
 import { createLightbox } from './lib/lightbox.js';
 import { createInstall } from './lib/install.js';
 import { createUpdate } from './lib/update.js';
@@ -180,9 +181,10 @@ async function render(route, anchor) {
   try {
     if (publication?.entry.slug !== slug) {
       status('Opening…');
-      publication = await openBook(shelf, slug);
-      panel.setBook(publication.manifest, () => loadSearchIndex(shelf, slug));
-      $('#save-offline').dataset.slug = slug;
+      publication = await openSaved(slug);
+      const opened = publication;
+      panel.setBook(publication.manifest, () => loadSearchIndex(opened));
+      watchToolbarSave(slug);
     }
     show('reader');
     status('');
@@ -200,7 +202,11 @@ async function render(route, anchor) {
     renderShelf(shelf, $('#shelf'), { href: (s) => hrefFor(s) });
     install.mount($('#shelf').firstElementChild);
     update.mount($('#shelf').firstElementChild);
-    status(`Could not open “${slug}”. ${error.message}`);
+    const unsaved = shelf.books.some((b) => b.slug === slug) &&
+      offline.stateOf(shelf, slug).state === 'none';
+    status(unsaved && (navigator.onLine === false || error instanceof TypeError)
+      ? 'This book is not saved for offline reading. Tap ↓ on it next time you are online.'
+      : `Could not open “${slug}”. ${error.message}`);
   }
 }
 
@@ -279,35 +285,45 @@ window.addEventListener('popstate', async (event) => {
 
 /* ── offline ─────────────────────────────────────────────────────────── */
 
-$('#save-offline').addEventListener('click', async () => {
-  const { slug } = $('#save-offline').dataset;
-  const state = $('#offline-state');
-  if (!slug) {
-    state.textContent = 'Open a book first.';
-    return;
+/**
+ * Open a book from the best copy there is: the one saved offline when its
+ * content is unchanged, else the current build, falling back to the saved one
+ * when the current one cannot be reached.
+ */
+async function openSaved(slug) {
+  let failure = null;
+  for (const root of offline.rootsFor(shelf, slug)) {
+    try {
+      return await openBook(shelf, slug, root);
+    } catch (error) {
+      failure = error;
+    }
   }
-  if (!navigator.serviceWorker?.controller) {
-    // First visit: the worker is installed but not yet controlling this page.
-    state.textContent = 'Reload once, then try again.';
-    return;
-  }
-  state.textContent = 'Saving…';
+  throw failure;
+}
 
-  const urls = [
-    ...publication.manifest.readingOrder.map((l) => new URL(l.href, publication.base).pathname),
-    ...publication.manifest.resources.map((l) => new URL(l.href, publication.base).pathname),
-    new URL('manifest.json', publication.base).pathname,
-    new URL('search.json', publication.base).pathname,
-    `${BASE}${bookUrls(shelf, slug).manifest}`,
-  ];
+// The toolbar's save button follows whichever book is open.
+let unwatchToolbar = null;
+function watchToolbarSave(slug) {
+  const button = $('#save-book');
+  unwatchToolbar?.();
+  button.hidden = !offline.supported();
+  button.dataset.slug = slug;
+  unwatchToolbar = watchSave(slug, () => paintSave(button, shelf, slug));
+}
 
-  navigator.serviceWorker.controller.postMessage({ type: 'cache-book', slug, urls });
-  navigator.serviceWorker.addEventListener('message', function done(event) {
-    if (event.data?.type !== 'cached' || event.data.slug !== slug) return;
-    navigator.serviceWorker.removeEventListener('message', done);
-    state.textContent = event.data.ok ? 'Available offline.' : 'Could not save everything.';
-  });
+$('#save-book').addEventListener('click', async () => {
+  const { slug } = $('#save-book').dataset;
+  if (!slug) return;
+  const ok = await pressSave(shelf, slug);
+  if (ok === true) status('Saved. This whole book now reads offline.');
+  else if (ok === false) status('Could not save everything. Check the connection and try again.');
+  if (ok !== null) setTimeout(() => status(''), 3000);
 });
+
+// A deploy that changed a saved book: fetch the new copy while there is a
+// connection, rather than leaving the reader on the old one indefinitely.
+window.addEventListener('online', () => shelf && offline.refreshStale(shelf));
 
 /* ── boot ────────────────────────────────────────────────────────────── */
 
@@ -321,6 +337,7 @@ async function boot() {
 
   const path = routeOf();
   await render(path.replace(/^read\//, ''), location.hash.slice(1) || null);
+  offline.refreshStale(shelf);
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker

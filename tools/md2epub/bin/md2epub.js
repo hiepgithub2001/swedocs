@@ -9,6 +9,7 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
 
   Usage
     md2epub <source-dir> [options]
+    md2epub <source-dir> <more-dirs…> --each [options]
 
   Options
     -o, --out <file>        output path            (default: <source-dir>.epub)
@@ -18,8 +19,8 @@ const USAGE = `md2epub — convert a folder of Markdown into a reflowable EPUB 3
     -d, --description <t>   book description
     -s, --subjects <a,b>    comma-separated subject tags
     -i, --ignore <a,b>      extra directory names to skip
-    -e, --each              one book per immediate subdirectory;
-                            --out is then a directory
+    -e, --each              one book per immediate subdirectory (of every
+                            source dir given); --out is then a directory
     -x, --exploded          also write each package unzipped, next to its
                             .epub, with a Readium web manifest
         --shelf-title <t>   title for the shelf index written by --each
@@ -86,13 +87,20 @@ const human = (bytes) =>
  * because each one holds a Shiki highlighter; the whole corpus still finishes
  * in seconds.
  */
-async function convertEach({ src, outDir, common, interactive }) {
+async function convertEach({ srcs, outDir, common, interactive }) {
   const skip = new Set([...DEFAULT_IGNORE, ...(common.ignore ?? [])]);
-  const entries = await fs.readdir(path.resolve(src), { withFileTypes: true });
-  const dirs = entries
-    .filter((e) => e.isDirectory() && !e.name.startsWith('.') && !skip.has(e.name))
-    .map((e) => e.name)
-    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
+  // Several roots make one shelf — how a local build adds books that must
+  // never be committed (private/) to the ones that are (content/).
+  const found = new Map();
+  for (const src of srcs) {
+    const entries = await fs.readdir(path.resolve(src), { withFileTypes: true }).catch(() => []);
+    for (const e of entries) {
+      if (!e.isDirectory() || e.name.startsWith('.') || skip.has(e.name)) continue;
+      if (found.has(e.name)) throw new Error(`Two books named "${e.name}" (in ${found.get(e.name)} and ${src})`);
+      found.set(e.name, src);
+    }
+  }
+  const dirs = [...found.keys()].sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
 
   // Scan every book before converting any of them. 11% of this corpus's
   // internal links cross an area, and a book cannot rewrite a link into a
@@ -100,7 +108,7 @@ async function convertEach({ src, outDir, common, interactive }) {
   const shelf = [];
   const externals = new Map();
   for (const name of dirs) {
-    const dir = path.join(src, name);
+    const dir = path.join(found.get(name), name);
     let scanned;
     try {
       scanned = await scan(dir, { ignore: common.ignore ?? [] });
@@ -246,7 +254,7 @@ async function main() {
   let result;
   try {
     result = opts.each
-      ? await convertEach({ src, outDir: out, common, interactive })
+      ? await convertEach({ srcs: positional, outDir: out, common, interactive })
       : await convert({
           ...common,
           src,

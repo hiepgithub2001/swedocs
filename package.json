@@ -11,6 +11,8 @@
     "test": "npm --prefix tools/md2epub test",
     "site": "node tools/site.js",
     "dev": "node tools/serve.js",
-    "browsers": "npm --prefix tools/md2epub run browsers"
+    "browsers": "npm --prefix tools/md2epub run browsers",
+    "build:private": "npm --prefix tools/md2epub run build:private",
+    "pdf2md": "node tools/pdf2md/bin/pdf2md.js"
   }
 }

@@ -1,0 +1,5 @@
+# Books converted from PDFs (pdf2md) live here, and only here.
+# They are full texts: built into your local reader, never committed, never deployed.
+*
+!.gitignore
+!README.md

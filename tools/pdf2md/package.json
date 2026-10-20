@@ -1,0 +1,20 @@
+{
+  "name": "pdf2md",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Convert a PDF into a folder of Markdown that md2epub builds into a reflowable book.",
+  "type": "module",
+  "bin": {
+    "pdf2md": "./bin/pdf2md.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "pdfjs-dist": "4.8.69"
+  },
+  "optionalDependencies": {
+    "canvas": "^3.2.3"
+  }
+}

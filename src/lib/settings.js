@@ -36,7 +36,19 @@ export function createSettings(onChange) {
        them, and never let a diagram or a wide table push a column sideways. */
     body { padding-inline: 0.4em; }
     img, svg, figure { max-width: 100%; }
-    pre { white-space: pre-wrap !important; }
+
+    /* Code keeps its lines, as a table keeps its rows: a long line scrolls
+       inside the block instead of wrapping into the next one, which on a phone
+       turns a listing's indentation and line numbers into noise. */
+    pre {
+      white-space: pre !important;
+      overflow-wrap: normal !important;
+      word-wrap: normal !important;
+      max-width: 100%;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+    }
 
     /* A table gets a frame the size of the page and scrolls inside it, rather
        than reflowing — book.css sizes it to the column because most EPUB

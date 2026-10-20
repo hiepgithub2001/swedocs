@@ -14,8 +14,10 @@ rewritten. For a short book in our own words, use `distill-swe-book` instead.
  books/x.pdf ─[D] info ─► text layer? bookmarks?      (no text → stop: scanned, needs OCR)
       │
       ├─[D] extract (pdf.js): glyphs + position + font, outline, drawing ops
-      ├─[H] infer: lines → paragraphs, headings, code, lists, notes; drop running heads
-      ├─[D] figures: render page, crop image / vector boxes → images/
+      ├─[D] repair symbol-font glyphs by shape ("2"→"−", "ð"→"(") — listed in the report
+      ├─[H] infer: lines → paragraphs, headings, code, lists, callouts, notes; drop running heads
+      ├─[H] tables: text in columns + rules → Markdown table; with drawing → image
+      ├─[D] figures: render page, crop images, drawings, captioned figures, display equations → images/
       ├─[D] split along the outline, write .md + README + .pdf2md/report.md
       ├─[J] review the flagged pages against rendered PNGs, fix by hand
       └─[D] build:private → site → serve --tls → phone
@@ -82,9 +84,13 @@ Read `report.md` top to bottom before anything else:
 
 - **candidate heading sizes / heading sizes** — which font sizes became `##`,
   `###`… If a level looks wrong, that explains every wrong heading in the book.
-- **Pages to check** — tables kept as text, lines with wide gaps (a flattened
-  table), two-column pages, full-page images (scans or a page drawn as one
-  picture).
+- **glyphs repaired from their shapes** — symbol-font characters replaced by
+  what they draw. Spot-check one or two against the page.
+- **files, figures, tables rebuilt** — counts for the book itself (skipped
+  pages excluded).
+- **Pages to check** — ruled regions that would not rebuild as a table,
+  lines with wide gaps left as text, two-column pages, full-page images (a
+  cover, a scan, or a page drawn as one picture).
 - **Figures cut out** — where each image came from.
 
 ## 3. Review against the page — the step that makes it trustworthy
@@ -101,15 +107,17 @@ compare. What to look for, and the fix:
 
 | Symptom | Fix |
 | --- | --- |
-| Table flattened into lines of text | Rewrite as a Markdown table from the rendered page. If it is too complex, render it as an image: `render --page N --crop x,y,w,h` (coordinates from the report) into `images/`, and reference it. |
+| Table flattened into lines of text | Tables of text and rules are rebuilt automatically, so this is one that would not rebuild. Write it as a Markdown table from the rendered page, or render it as an image: `render --page N --crop x,y,w,h` (coordinates from the report) into `images/`. |
+| Rebuilt table has a cell in the wrong column, or a two-row header split | Fix the Markdown table by hand. |
 | Figure missing (vector drawing not detected) | `render --crop` it into `images/` and insert `![what it shows](images/….png)` where it belongs. |
 | Figure cropped badly or including body text | Re-render with a corrected `--crop`; overwrite the file. |
 | Caption detached from its figure | Move the caption line directly under the image. |
-| Code characters missing (`float A_d` for `float *A_d`) | Symbol-font glyphs with no text mapping. Retype the line from the PNG. |
+| Code characters missing (`float A_d` for `float *A_d`) | A glyph with no text mapping that shape repair did not catch (code fonts are left alone on purpose). Retype the line from the PNG. |
+| A symbol in prose is wrong (`x1 2 0.5`) | A symbol font shape repair did not trust. Fix it from the PNG; if the whole font is affected, say so in the summary. |
 | Paragraph split in two / two paragraphs run together | Join or split by hand. |
 | Two-column page interleaved | Re-order the paragraphs from the PNG. |
 | A heading came out as body text, or body text as a heading | Fix the `#`s. If it is systematic, it is a size rule — re-run rather than hand-fix. |
-| Equations as garbled text | Render the equation region to an image, or write it in plain text (`x² + y²`); md2epub has no math renderer. |
+| Equations as garbled text | Display equations (numbered, or with stacked limits and fractions) become images automatically; inline math stays text. For one that was missed, render its region to an image, or write it in plain text (`x² + y²`); md2epub has no math renderer. |
 
 Fix the text **only toward what the page says**. Never paraphrase, summarise or
 "improve" the author's sentences — this is a conversion.
@@ -160,9 +168,12 @@ only tool or skill changes.
 ## Limits — say these rather than work around them silently
 
 - **Scanned PDFs**: no text layer, no conversion. OCR is not installed.
-- **Tables** are never detected as tables; they come out as text and are
-  flagged when the page has rules or wide gaps.
+- **Tables** become Markdown tables only when they are text in columns with
+  rules; shaded or drawn ones become images, and every row being boxed (a
+  schedule chart) means a drawing.
 - **Two-column layouts** are flagged, not untangled.
-- **Equations** come out as whatever glyphs the PDF used.
-- **Fonts without a text mapping** lose characters; only the rendered page
-  shows what they were.
+- **Equations**: display equations become images (not searchable); inline
+  math is text, with symbol-font glyphs repaired only when the shape match is
+  confident.
+- **Fonts without a text mapping** in code fonts lose characters; only the
+  rendered page shows what they were.

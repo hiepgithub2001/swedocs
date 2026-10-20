@@ -110,7 +110,8 @@ async function validate(file) {
   // carries a fragment, on a real id inside that file.
   for (const [name, xml] of text) {
     if (!name.endsWith('.xhtml')) continue;
-    for (const m of xml.matchAll(/(?:href|src)\s*=\s*"([^"]+)"/g)) {
+    // Attributes only: code in a <pre> can say `src = "hello"` too.
+    for (const m of xml.matchAll(/<[^>]*?\s(?:href|src)\s*=\s*"([^"]+)"/g)) {
       const raw = m[1];
       if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|data:)/i.test(raw)) continue;
 

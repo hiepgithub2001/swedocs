@@ -283,7 +283,9 @@ class View {
         })
     }
     render(layout) {
-        if (!layout) return
+        // swedocs: a fast page turn can tear the view's document down before a
+        // pending render runs; there is nothing left to lay out.
+        if (!layout || !this.document?.body) return
         this.#column = layout.flow !== 'scrolled'
         this.#layout = layout
         if (this.#column) this.columnize(layout)
@@ -360,6 +362,8 @@ class View {
         }
     }
     expand() {
+        // swedocs: the resize observer can fire after the document is gone.
+        if (!this.document?.documentElement) return
         const { documentElement } = this.document
         if (this.#column) {
             const side = this.#vertical ? 'height' : 'width'
@@ -950,6 +954,9 @@ export class Paginator extends HTMLElement {
             this.start - size, this.end - size, this.#getRectMapper())
     }
     #afterScroll(reason) {
+        // swedocs: the section may already be unloaded by a newer page turn,
+        // which will report its own position.
+        if (!this.#view?.document?.body) return
         const range = this.#getVisibleRange()
         this.#lastVisibleRange = range
         // don't set new anchor if relocation was to scroll to anchor

@@ -8,7 +8,7 @@
  * new directory rather than changing an old file. Only `latest.json`, which
  * names the current build, goes to the network first.
  */
-const VERSION = 'v6';
+const VERSION = 'v7';
 const SHELL = `swedocs-shell-${VERSION}`;
 const PUB = 'swedocs-pub';
 

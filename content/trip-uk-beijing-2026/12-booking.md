@@ -3,34 +3,33 @@
 ## 1 - MUST BOOK EARLY
 
 - **Harry Potter Studio** · £58.50  
-  Chọn slot ~10:30-11:00 ngày 29/10.
+  Pick a slot ~10:30-11:00 on 29/10.
 - **Highlands coach tour** · ~£66  
-  Xác nhận exact pickup point/time.
+  Confirm the exact pickup point/time.
 
 ## 1 - MUST BOOK
 
 - **Arsenal Stadium Tour** · ~£35-36  
-  Check fixture/event closure.
+  Check fixture/event closures.
 
 ## 2 - BOOK
 
 - **Edinburgh Castle** · ~£23.50  
-  Chọn 09:30-10:00 ngày 24/10.
+  Pick 09:30-10:00 on 24/10.
 - **Tower + Official River Tour** · £55.50 off-peak  
-  Ngày 27/10.
+  On 27/10.
 
-## 2 - BOOK 01/10
+## 2 - BOOK ON 01/10
 
 - **Bodleian 30-min tour** · £12.50  
-  Vé 14-31/10 mở 01/10 lúc 09:00 UK.
+  Tickets for 14-31/10 go on sale 01/10 at 09:00 UK time.
 
 ## 2 - CHECK/BOOK
 
 - **Christ Church Oxford** · ~£18.50 benchmark  
-  Xác nhận individual price/slot ngày 28/10.
+  Confirm the individual price/slot for 28/10.
 
 ## 2 - BOOK WHEN OPEN
 
 - **Forbidden City** · CNY 60 benchmark  
-  Passport details required; confirm policy before trip.
-
+  Passport details required; confirm the policy before the trip.

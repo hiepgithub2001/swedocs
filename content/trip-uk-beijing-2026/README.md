@@ -1,30 +1,30 @@
 ---
 collection: Book summaries
-language: vi
+language: en
 ---
 
-# Lịch trình UK + Beijing
+# UK + Beijing Trip Plan
 
-**22-31/10/2026 · 2 người · Budget trần £700/người · Breakfast tự chuẩn bị = £0**
+**22-31/10/2026 · 2 people · Budget ceiling £700/person · Self-made breakfast = £0**
 
-Đã trả: vé máy bay, tàu Edinburgh-London và Airbnb London. Edinburgh ở Leonardo Hotel Edinburgh Haymarket (không gồm breakfast). Giá dưới đây là dự toán/người, kiểm tra lại khi booking.
+Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edinburgh we stay at Leonardo Hotel Edinburgh Haymarket (breakfast not included). Prices below are estimates per person; re-check them when booking.
 
-## 1. Tổng quan & ngân sách
+## 1. Overview & budget
 
-**Ngày · Base · Main plan**
+**Dates · Base · Main plan**
 
 - **22-24/10 · Edinburgh**  
   City + Edinburgh Castle + Highlands/Loch Ness/Glencoe; Leonardo Hotel Edinburgh Haymarket: 1 Morrison Link, EH3 8DN
 - **25/10 · Edinburgh -> London**  
-  Tàu 10:50-16:00; Airbnb: 29 Oswin Street, SE11 4TF
+  Train 10:50-16:00; Airbnb: 29 Oswin Street, SE11 4TF
 - **26-29/10 · London**  
   Arsenal + Tower/Thames + Oxford + Harry Potter Studio
 - **30/10 · London -> Beijing**  
   LGW 11:30 -> PEK
 - **31/10 · Beijing**  
-  PEK ~05:00 -> city nếu được temporary entry -> bay VN 23:59
+  PEK ~05:00 -> city if temporary entry is granted -> flight to Vietnam 23:59
 
-**Ngày · Dự toán/người**
+**Day · Estimate/person**
 
 - [22 Edinburgh arrival](./02-22-10-edinburgh.md) — £26
 - [23 Highlands](./03-23-10-highlands.md) — £89
@@ -37,5 +37,4 @@ language: vi
 - [30 Gatwick / flight day](./10-30-10-gatwick-beijing.md) — £35
 - [31 Beijing](./11-31-10-beijing.md) — £30
 
-**TỔNG DỰ KIẾN: ~£600** · **BUFFER: ~£100 dưới trần £700**
-
+**ESTIMATED TOTAL: ~£600** · **BUFFER: ~£100 under the £700 ceiling**

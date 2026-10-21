@@ -1,37 +1,37 @@
 # 30/10 - London -> Gatwick -> Beijing
 
-💷 **Tổng mục tiêu: ~£35/người.**
+💷 **Target total: ~£35/person.**
 
-### 06:00-06:30 · Ăn sáng
+### 06:00-06:30 · Breakfast
 
-📍 Tự chuẩn bị · 💷 £0  
-💡 Dùng 1 trong 15 gói; pack gọn.
+📍 Self-made · 💷 £0  
+💡 Use 1 of the 15 packs; pack light.
 
-### 06:30-07:00 · Check-out
+### 06:30-07:00 · Check out
 
 📍 Walk · 💷 £0  
-💡 Kiểm tra passport + boarding pass + DJI/power bank cabin.
+💡 Check passports + boarding passes + DJI/power banks in the cabin bag.
 
 ### 07:00-08:15 · Elephant & Castle -> Gatwick Airport
 
-📍 Ưu tiên Thameslink direct nếu timetable phù hợp; fallback đổi tàu · 💷 Budget ~£15  
-💡 Check timetable 24h trước; mục tiêu tới LGW >= 3h trước.
+📍 Thameslink direct if the timetable fits; otherwise change trains · 💷 Budget ~£15  
+💡 Check the timetable 24h before; aim to reach LGW >= 3h before the flight.
 
 ### 08:15-10:30 · Bag drop/security/gate
 
 📍 Walk · 💷 £0  
-💡 Không thêm sightseeing.
+💡 No extra sightseeing.
 
-### 09:00-10:00 · Snack/lunch sớm tại airport
+### 09:00-10:00 · Early snack/lunch at the airport
 
 📍 Airport food · 💷 ~£15  
-💡 Breakfast vẫn £0.
+💡 Breakfast is still £0.
 
-### 11:30 · Bay LGW -> PEK
+### 11:30 · Flight LGW -> PEK
 
-📍 Đã trả · 💷 £0  
-💡 Power bank ở cabin.
+📍 Paid · 💷 £0  
+💡 Power banks in the cabin bag.
 
-### Trong chuyến bay · Ăn theo airline + snack dự phòng
+### During the flight · Airline meals + spare snacks
 
-📍 Flight · 💷 ~£5 dự phòng
+📍 Flight · 💷 ~£5 spare

@@ -8,4 +8,4 @@
 
 ---
 
-*Giá kiểm tra/benchmark: Lothian 2026 bus £2.40 single / £5.70 contactless cap; TfL Zones 1-2 daily cap £8.90; Tower £37 hoặc Tower+River £55.50 off-peak; Oxford Tube app return £22.50; Bodleian 30-min £12.50; Harry Potter £58.50; WB shuttle Watford Junction đã gồm trong vé. Các khoản còn lại là budget thực tế để không vượt trần, cần re-check khi booking.*
+*Giá kiểm tra/benchmark: Lothian 2026 bus £2.40 single / £5.70 contactless cap; Airlink 100 £6 single; tram airport ~£7.90-8.50; taxi Edinburgh ~£11.50 cho 3 dặm ban ngày, phí sân bay ~£6; TfL Zones 1-2 daily cap £8.90; Tower £37 hoặc Tower+River £55.50 off-peak; Oxford Tube app return £22.50; Bodleian 30-min £12.50; Harry Potter £58.50; WB shuttle Watford Junction đã gồm trong vé. Các khoản còn lại là budget thực tế để không vượt trần, cần re-check khi booking.*

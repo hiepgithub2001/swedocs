@@ -1,14 +1,16 @@
 # 24/10 - Edinburgh Castle + Old Town + Museum
 
-💷 **Tổng mục tiêu: ~£48/người.**
+💷 **Tổng mục tiêu: ~£46/người.**
 
 ### 07:30-08:00 · Ăn sáng
 
-📍 Tự chuẩn bị · 💷 £0
+📍 Tự chuẩn bị, kettle trong phòng · 💷 £0
 
-### 08:30-09:15 · EH6 -> Old Town/Castle
+### 08:45-09:15 · Haymarket -> Old Town/Castle
 
-📍 Bus + walk · 💷 ~£2.40  
+📍 Walk ~20 phút · 💷 £0  
+🔁 Bus: **2** Haymarket -> Grassmarket, rồi đi bộ lên Castle ~10 phút · £2.40  
+🚕 Taxi tới Castle Esplanade: ~£7-9/xe  
 💡 Chọn slot Castle 09:30-10:00.
 
 ### 09:30-12:00 · Edinburgh Castle
@@ -36,7 +38,8 @@
 📍 The Mosque Kitchen · 💷 ~£8.50  
 💡 Value tốt, gần Old Town.
 
-### 19:30-20:15 · Về Airbnb
+### 19:30-20:15 · Về khách sạn
 
-📍 Bus · 💷 Trong cap  
+📍 Walk, hoặc **bus 12 / 26 / 31** / tram từ Princes Street -> Haymarket · 💷 £0-2.40  
+🚕 Taxi: ~£9-12/xe  
 💡 Pack cho tàu sáng 25/10.

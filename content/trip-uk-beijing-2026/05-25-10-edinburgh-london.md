@@ -1,15 +1,17 @@
 # 25/10 - Edinburgh -> London | check-in + South Bank
 
-💷 **Tổng mục tiêu: ~£34/người (taxi Edinburgh chưa tính nếu chọn).**
+💷 **Tổng mục tiêu: ~£34/người.**
 
 ### 07:30-08:00 · Ăn sáng
 
-📍 Tự chuẩn bị · 💷 £0
+📍 Tự chuẩn bị, kettle trong phòng · 💷 £0
 
 ### 08:00-09:30 · Check-out + đi Waverley
 
-📍 Bus/taxi nếu vali nặng · 💷 ~£2.40-8  
-💡 Ưu tiên bus; taxi chỉ nếu cần.
+📍 **Tram** Haymarket -> St Andrew Square + walk ~5 phút tới Waverley · 💷 £2.40  
+🔁 Bus: **12 / 26 / 31** Haymarket -> Princes Street (east), walk ~5 phút · £2.40  
+🚕 Taxi thẳng tới Waverley: ~£8-11/xe ≈ £4-6/người (Chủ nhật, có vali)  
+💡 Tàu đi London chạy từ Waverley, không lên ở Haymarket.
 
 ### 09:30-10:30 · Mua lunch/snack cho tàu + chờ platform
 

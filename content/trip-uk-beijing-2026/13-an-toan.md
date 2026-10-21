@@ -6,4 +6,4 @@
 - Highlands: theo coach, không tự tách tour; mang waterproof layer + power bank.
 - Ngày Gatwick: không thêm điểm chơi. Mục tiêu LGW >= 3 giờ trước chuyến 11:30.
 - Beijing: city itinerary phụ thuộc temporary entry. Nếu bị từ chối, ở PEK; không cố tìm đường ra ngoài.
-- Cả 2 lưu offline: Airbnb addresses, flight/train numbers, bookings, emergency contact và điểm hẹn nếu tách nhau.
+- Cả 2 lưu offline: địa chỉ Leonardo Hotel Edinburgh Haymarket + Airbnb London, flight/train numbers, bookings, emergency contact và điểm hẹn nếu tách nhau.

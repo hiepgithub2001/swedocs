@@ -3,18 +3,18 @@ collection: Book summaries
 language: vi
 ---
 
-# UK + Beijing Trip Planner v9 - Chi tiết
+# Lịch trình UK + Beijing
 
 **22-31/10/2026 · 2 người · Budget trần £700/người · Breakfast tự chuẩn bị = £0**
 
-Đã trả: vé máy bay, tàu Edinburgh-London và Airbnb. Giá dưới đây là dự toán/người, kiểm tra lại khi booking.
+Đã trả: vé máy bay, tàu Edinburgh-London và Airbnb London. Edinburgh ở Leonardo Hotel Edinburgh Haymarket (không gồm breakfast). Giá dưới đây là dự toán/người, kiểm tra lại khi booking.
 
 ## 1. Tổng quan & ngân sách
 
 **Ngày · Base · Main plan**
 
 - **22-24/10 · Edinburgh**  
-  City + Edinburgh Castle + Highlands/Loch Ness/Glencoe
+  City + Edinburgh Castle + Highlands/Loch Ness/Glencoe; Leonardo Hotel Edinburgh Haymarket: 1 Morrison Link, EH3 8DN
 - **25/10 · Edinburgh -> London**  
   Tàu 10:50-16:00; Airbnb: 29 Oswin Street, SE11 4TF
 - **26-29/10 · London**  
@@ -26,9 +26,9 @@ language: vi
 
 **Ngày · Dự toán/người**
 
-- [22 Edinburgh arrival](./02-22-10-edinburgh.md) — £25
-- [23 Highlands](./03-23-10-highlands.md) — £91
-- [24 Edinburgh city](./04-24-10-edinburgh-castle.md) — £48
+- [22 Edinburgh arrival](./02-22-10-edinburgh.md) — £26
+- [23 Highlands](./03-23-10-highlands.md) — £89
+- [24 Edinburgh city](./04-24-10-edinburgh-castle.md) — £46
 - [25 Edinburgh -> London](./05-25-10-edinburgh-london.md) — £34
 - [26 Arsenal + Camden](./06-26-10-arsenal-camden.md) — £67
 - [27 Tower + Thames](./07-27-10-tower-thames.md) — £88

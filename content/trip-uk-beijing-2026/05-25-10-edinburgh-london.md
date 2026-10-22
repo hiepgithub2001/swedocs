@@ -2,16 +2,18 @@
 
 💷 **Target total: ~£34/person.**
 
+🌦️ **Forecast: light rain early, then clearing, 6-9°C, windy all day (9-14 m/s).** Strong wind can delay trains: check the train on the LNER / National Rail app before leaving.
+
 ### 07:30-08:00 · Breakfast
 
 📍 Self-made, room kettle · 💷 £0
 
-### 08:00-09:30 · Check out + go to Waverley
+### 08:00-09:30 · Check out (leave by 08:30) + go to Waverley
 
 📍 **Tram** Haymarket -> St Andrew Square + ~5 min walk to Waverley · 💷 £2.40  
 🔁 Bus: **12 / 26 / 31** Haymarket -> Princes Street (east), ~5 min walk · £2.40  
 🚕 Taxi straight to Waverley: ~£8-11/car ≈ £4-6/person (Sunday, with luggage)  
-💡 The London train leaves from Waverley; you cannot board it at Haymarket.
+💡 The London train leaves from Waverley; you cannot board it at Haymarket. Take the taxi if wind and rain make walking with luggage hard. If the train is cancelled, the ticket is normally valid on the next LNER train; ask staff.
 
 ### 09:30-10:30 · Buy lunch/snacks for the train + wait for the platform
 

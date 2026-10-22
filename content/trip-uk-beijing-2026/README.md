@@ -28,7 +28,7 @@ Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edin
 
 - [22 Edinburgh arrival](./02-22-10-edinburgh.md) — £26
 - [23 Highlands](./03-23-10-highlands.md) — £89
-- [24 Edinburgh city](./04-24-10-edinburgh-castle.md) — £46
+- [24 Arthur's Seat + Castle](./04-24-10-edinburgh-castle.md) — £46
 - [25 Edinburgh -> London](./05-25-10-edinburgh-london.md) — £34
 - [26 Arsenal + Camden](./06-26-10-arsenal-camden.md) — £67
 - [27 Tower + Thames](./07-27-10-tower-thames.md) — £88

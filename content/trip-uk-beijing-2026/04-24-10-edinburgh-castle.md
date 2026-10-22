@@ -1,45 +1,54 @@
-# 24/10 - Edinburgh Castle + Old Town + Museum
+# 24/10 - Arthur's Seat + Edinburgh Castle + Museum
 
 💷 **Target total: ~£46/person.**
 
-### 07:30-08:00 · Breakfast
+🌦️ **Forecast: dry until ~12:00, then heavy rain and wind (gusts ~13 m/s) until ~17:00, 4-11°C.** Outdoors in the morning, indoors once the rain starts.
+
+### 07:15-07:45 · Breakfast
 
 📍 Self-made, room kettle · 💷 £0
 
-### 08:45-09:15 · Haymarket -> Old Town/Castle
+### 07:45-08:15 · Haymarket -> Holyrood
 
-📍 Walk ~20 min · 💷 £0  
-🔁 Bus: **2** Haymarket -> Grassmarket, then walk up to the Castle ~10 min · £2.40  
-🚕 Taxi to the Castle Esplanade: ~£7-9/car  
-💡 Pick a Castle slot at 09:30-10:00.
+📍 **Bus 12 / 26 / 31** or tram to Princes Street, then walk ~15 min down to Holyrood · 💷 £2.40  
+🚕 Taxi to Holyrood Park: ~£9-12/car
 
-### 09:30-12:00 · Edinburgh Castle
-
-📍 Walk · 💷 ~£23.50  
-💡 Book online; keep the QR code offline.
-
-### 12:00-13:00 · Lunch
-
-📍 Oink Victoria Street / Canongate · 💷 ~£10  
-💡 Quick lunch, don't lose much time.
-
-### 13:15-15:30 · National Museum of Scotland
+### 08:15-10:30 · Arthur's Seat / Holyrood Park
 
 📍 Walk · 💷 £0  
-💡 Indoor backup if it rains.
+💡 Summit ~1h up and down; the Salisbury Crags path is the easier option. Sunrise ~07:50 and wind is still light early. Turn back if the wind picks up or it starts raining.
 
-### 15:30-17:30 · Royal Mile / Holyrood; Arthur's Seat only if the weather is safe
+### 10:30-11:00 · Holyrood -> Royal Mile -> Castle
 
-📍 Walk/bus · 💷 £0-5.70 cap  
-💡 Don't climb Arthur's Seat in strong wind, rain or darkness.
+📍 Walk up the Royal Mile ~25 min · 💷 £0
+
+### 11:00-13:00 · Edinburgh Castle
+
+📍 Walk · 💷 ~£23.50  
+💡 Slot ~11:00; book online and keep the QR code offline. Views first, then the indoor parts (Crown Jewels, Great Hall, National War Museum) once the rain arrives around 12:00.
+
+### 13:00-14:00 · Lunch
+
+📍 Oink Victoria Street · 💷 ~£10  
+💡 Quick lunch, just below the Castle.
+
+### 14:00-16:30 · National Museum of Scotland
+
+📍 Walk ~5 min · 💷 £0  
+💡 Indoors through the heaviest rain; the rooftop terrace only if it is dry.
+
+### 16:30-18:00 · St Giles' Cathedral + Writers' Museum
+
+📍 Walk, both on/just off the Royal Mile · 💷 £0  
+💡 Backup: National Gallery on the Mound (free).
 
 ### 18:00-19:30 · Dinner
 
 📍 The Mosque Kitchen · 💷 ~£8.50  
-💡 Good value, close to the Old Town.
+💡 Good value, close to the Museum.
 
 ### 19:30-20:15 · Back to the hotel
 
-📍 Walk, or **bus 12 / 26 / 31** / tram from Princes Street -> Haymarket · 💷 £0-2.40  
+📍 Walk ~10 min to Princes Street, then **bus 12 / 26 / 31** or tram -> Haymarket · 💷 £2.40 (within the £5.70 cap)  
 🚕 Taxi: ~£9-12/car  
 💡 Pack for the morning train on 25/10.

@@ -15,7 +15,7 @@
 ## 2 - BOOK
 
 - **Edinburgh Castle** · ~£23.50  
-  Pick 09:30-10:00 on 24/10.
+  Pick ~11:00 on 24/10 (Arthur's Seat first, while it is dry).
 - **Tower + Official River Tour** · £55.50 off-peak  
   On 27/10.
 

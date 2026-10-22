@@ -2,6 +2,8 @@
 
 💷 **Target total: ~£26/person.**
 
+🌦️ **Forecast: dry, 3-10°C, light wind - the driest of the four Edinburgh days.** A relaxed first day after the early flight; Arthur's Seat waits for Saturday morning.
+
 ### 07:50-09:00 · Flight Ireland -> Edinburgh
 
 📍 Paid  
@@ -24,12 +26,12 @@
 📍 Quick local lunch or a light cafe · 💷 ~£10  
 💡 No need to buy breakfast out.
 
-### 12:00-16:00 · Royal Mile -> Victoria Street -> Grassmarket -> Princes Street
+### 12:00-16:00 · Royal Mile -> Victoria Street -> Grassmarket -> Princes Street Gardens
 
 📍 Walk (Haymarket -> Old Town ~20 min) · 💷 £0  
 🔁 Bus: **2** Haymarket -> Grassmarket, or **12 / 26 / 31** / tram -> Princes Street · £2.40  
 🚕 Taxi Haymarket -> Royal Mile: ~£8-10/car  
-💡 Take the first day slowly; favour outdoor sights if the weather is good.
+💡 Take the first day slowly; all outdoors today while it is dry.
 
 ### 16:00-17:15 · Calton Hill
 

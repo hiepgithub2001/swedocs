@@ -201,7 +201,18 @@ export function createReader({ settings, hrefFor, onRelocate, onExternalLink, on
         const link = current.manifest.readingOrder[index];
         await view.goTo(anchor ? `${link.href}#${anchor}` : index);
       } else if (saved?.cfi) {
-        await view.init({ lastLocation: saved.cfi });
+        // A rebuilt book can pull a saved position out from under the reader:
+        // the chapter renamed, or its text rewritten so the CFI names a node
+        // that is no longer there. The chapter it was in, else the start of
+        // the book, beats refusing to open.
+        try {
+          await view.init({ lastLocation: saved.cfi });
+        } catch {
+          const chapter = current.manifest.readingOrder.findIndex(
+            (l) => saved.route && l.properties?.route === saved.route,
+          );
+          await (chapter >= 0 ? view.goTo(chapter) : view.init({ showTextStart: true }));
+        }
       } else {
         await view.init({ showTextStart: true });
       }

@@ -4,8 +4,8 @@
 
 - **Harry Potter Studio** · £58.50  
   Pick a slot ~10:30-11:00 on 29/10.
-- **Highlands coach tour** · ~£66  
-  Confirm the exact pickup point/time.
+- **Highlands coach tour** · £65.50 · ✅ booked  
+  Stewart Tours via Booking.com (refs on the ticket PDF); 23/10, check in 08:00 at 17 Charlotte Square, departs 08:15.
 
 ## 1 - MUST BOOK
 

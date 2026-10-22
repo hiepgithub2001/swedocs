@@ -14,7 +14,7 @@ Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edin
 **Dates · Base · Main plan**
 
 - **22-24/10 · Edinburgh**  
-  City + Edinburgh Castle + Highlands/Loch Ness/Glencoe; Leonardo Hotel Edinburgh Haymarket: 1 Morrison Link, EH3 8DN
+  City + Edinburgh Castle + Highlands tour (Glencoe, Fort William, Glenfinnan Viaduct); Leonardo Hotel Edinburgh Haymarket: 1 Morrison Link, EH3 8DN
 - **25/10 · Edinburgh -> London**  
   Train 10:50-16:00; Airbnb: 29 Oswin Street, SE11 4TF
 - **26-29/10 · London**  
@@ -27,7 +27,7 @@ Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edin
 **Day · Estimate/person**
 
 - [22 Edinburgh arrival](./02-22-10-edinburgh.md) — £26
-- [23 Highlands](./03-23-10-highlands.md) — £89
+- [23 Highlands: Glencoe + Glenfinnan](./03-23-10-highlands.md) — £85
 - [24 Castle + Museum](./04-24-10-edinburgh-castle.md) — £44
 - [25 Edinburgh -> London](./05-25-10-edinburgh-london.md) — £34
 - [26 Arsenal + Camden](./06-26-10-arsenal-camden.md) — £67
@@ -37,4 +37,4 @@ Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edin
 - [30 Gatwick / flight day](./10-30-10-gatwick-beijing.md) — £35
 - [31 Beijing](./11-31-10-beijing.md) — £30
 
-**ESTIMATED TOTAL: ~£600** · **BUFFER: ~£100 under the £700 ceiling**
+**ESTIMATED TOTAL: ~£590** · **BUFFER: ~£110 under the £700 ceiling**

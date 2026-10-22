@@ -49,4 +49,4 @@
 
 📍 ~10 min walk to Princes Street, then **bus 12 / 26 / 31** or tram -> Haymarket · 💷 £2.40 (within the £5.70 cap)  
 🚕 Taxi to the hotel: ~£9-12/car  
-💡 Check the room has a kettle for the breakfast packs; get ready for the Highlands tomorrow.
+💡 Check the room has a kettle for the breakfast packs. Buy tomorrow's packed lunch + snacks + water at a Tesco/Sainsbury's near Haymarket (~£5). Tomorrow: leave the hotel 07:35 for the 08:00 check-in at Charlotte Square.

@@ -1,7 +1,7 @@
 # 5. Re-check close to the date
 
 - 7 days before: Edinburgh tram/bus disruption, Highlands weather/operator, Arsenal fixtures, rail strikes, TfL disruption.
-- 3-5 days before: weather; swap Arthur's Seat/outdoor stops if there is heavy rain or wind.
+- 3-5 days before: weather; swap outdoor stops for indoor ones if there is heavy rain or wind.
 - 24 hours before: each terminal/platform, the Gatwick route, baggage rules, power-bank rules.
 - Re-check the food rules for the 15 breakfast packs when entering Great Britain/China.
 - Check UK entry permission/visa and PEK temporary-entry eligibility for your actual passports.

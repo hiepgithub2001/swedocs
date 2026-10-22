@@ -1,8 +1,10 @@
-# 22/10 - Arrive in Edinburgh | check-in + Old Town + Calton Hill
+# 22/10 - Arrive in Edinburgh | Old Town + Calton Hill + Arthur's Seat
 
 💷 **Target total: ~£26/person.**
 
-🌦️ **Forecast: dry, 3-10°C, light wind - the driest of the four Edinburgh days.** A relaxed first day after the early flight; Arthur's Seat waits for Saturday morning.
+🌦️ **Forecast: dry, 3-10°C, light wind - the driest of the four Edinburgh days.**
+
+✅ **Done: the Old Town walk, Calton Hill and Arthur's Seat all on the dry day**, so Saturday morning goes back to the Castle.
 
 ### 07:50-09:00 · Flight Ireland -> Edinburgh
 

@@ -5,6 +5,8 @@ language: en
 
 # UK + Beijing Trip Plan
 
+> 🔄 **Last updated: Sat 24 Oct 2026, 11:11 (UK time)** - wake at 06:00 from the 25th, early-morning stops in London.
+
 **22-31/10/2026 · 2 people · Budget ceiling £700/person · Self-made breakfast = £0**
 
 Already paid: flights, the Edinburgh-Preston-London trains and the London Airbnb. In Edinburgh we stay at Leonardo Hotel Edinburgh Haymarket (breakfast not included). Prices below are estimates per person; re-check them when booking.

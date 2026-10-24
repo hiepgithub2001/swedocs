@@ -3,9 +3,9 @@ collection: Book summaries
 language: en
 ---
 
-# UK + Beijing Trip Plan
+# UK + Beijing Trip Plan · updated 24/10 11:19
 
-> 🔄 **Last updated: Sat 24 Oct 2026, 11:13 (UK time)** - mornings: 45 min to get ready + 30 min breakfast, out by 07:30; Friday wake 05:30.
+> 🔄 **Last updated: Sat 24 Oct 2026, 11:19 (UK time)** - mornings: 45 min to get ready + 30 min breakfast, out by 07:30; Friday wake 05:30.
 
 **22-31/10/2026 · 2 people · Budget ceiling £700/person · Self-made breakfast = £0**
 

@@ -2,6 +2,8 @@
 
 💷 **Target total: ~£34/person.**
 
+⏰ **Wake up 06:00.** Daylight is short (sunrise ~06:45, dark by ~17:20), so the early start goes into the morning; 06:00 GMT feels like 07:00 on Saturday.
+
 🕐 **Clocks go back tonight (02:00 BST -> 01:00 GMT).** Phones change by themselves; all times below are the new time. London sunset 16:47, dark by ~17:20.
 
 🌬️ **Storm Boelo: amber wind warning 21:00 Sat -> 21:00 Sun for Lothian & Borders and northern England, gusts ~55-65 mph.** Avanti *strongly recommends avoiding travel north of Preston* on Sunday and runs a reduced, slower timetable; Avanti tickets dated 25/10 north of Preston are also valid on Sat 24, Mon 26 or Tue 27, or refundable. Check both trains in the app the evening before and at ~07:00. London itself: clear, 9-13°C, light wind.
@@ -12,17 +14,22 @@
 - **Preston -> London Euston, LumoFixed - only the 13:27, coach B seat 43, arrives 16:01.**
 - ⚠️ 10:51 -> 13:16 leaves only **11 min** at Preston for the fixed 13:27. On a speed-restricted day, take the **earliest Avanti train running** to Preston instead, or do this leg on Saturday under the storm easement and stay in Preston.
 
-### 07:30-08:00 · Breakfast
+### 06:00-06:30 · Wake up + check both trains in the app
+
+📍 Hotel · 💷 £0  
+💡 Look for any Avanti train to Preston **before 10:51** - with an earlier one you get more than 11 minutes for the fixed 13:27 Lumo.
+
+### 06:30-07:00 · Breakfast
 
 📍 Self-made, room kettle · 💷 £0
 
-### 08:00-09:30 · Check out + go to Waverley
+### 07:15-08:30 · Check out + go to Waverley
 
 📍 **Taxi** to Waverley recommended in the wind with luggage: ~£8-11/car  
 🔁 **Tram** Haymarket -> St Andrew Square + walk ~5 min · £2.40 (trams can stop in very high wind); bus **12 / 26 / 31** -> Princes Street (east) · £2.40  
-💡 The train leaves from Waverley, not Haymarket. At Waverley, check the boards and take the earliest Avanti train to Preston that is running; ask staff if anything is cancelled.
+💡 Leave in time for the earliest running train; if 10:51 is the first, you still have time to sit in the station. The train leaves from Waverley, not Haymarket. At Waverley, check the boards and take the earliest Avanti train to Preston that is running; ask staff if anything is cancelled.
 
-### 09:30-10:30 · Buy lunch/snacks + water for the train, wait for the platform
+### 08:30-10:30 · Buy lunch/snacks + water for the train, wait for the platform
 
 📍 Walk · 💷 ~£8  
 💡 Pack food, water and charged power banks in the day bag in case of long delays.

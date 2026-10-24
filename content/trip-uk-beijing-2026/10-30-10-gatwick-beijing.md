@@ -4,12 +4,14 @@
 
 🌦️ **Forecast (less certain): cloudy, dry, 9-13°C, calm.** Sunrise 06:50 - it is just light when you leave at 07:00.
 
-### 06:00-06:30 · Breakfast
+⏰ **Wake up 06:00** - pack the night before so the morning is just breakfast and check-out.
+
+### 06:00-06:35 · Breakfast
 
 📍 Self-made · 💷 £0  
-💡 Use 1 of the 15 packs; pack light.
+💡 Use 1 of the 15 packs.
 
-### 06:30-07:00 · Check out
+### 06:35-07:00 · Check out
 
 📍 Walk · 💷 £0  
 💡 Check passports + boarding passes + DJI/power banks in the cabin bag.

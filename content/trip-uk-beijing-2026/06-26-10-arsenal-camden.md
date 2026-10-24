@@ -4,13 +4,24 @@
 
 🌦️ **Forecast: cloudy, 9-16°C, light rain (~3 mm) heaviest around 11:00 - while you are inside the stadium tour.** Sunrise 06:43, sunset 16:45, dark by ~17:20.
 
-### 07:30-08:00 · Breakfast
+⏰ **Wake up 06:00.** Daylight is short (sunrise ~06:45, dark by ~17:20), so the early start goes into the morning.
+
+### 06:15-06:45 · Breakfast
 
 📍 Self-made · 💷 £0
 
-### 08:30-09:30 · Airbnb -> Emirates Stadium
+### 07:00-07:30 · Airbnb -> King's Cross
 
-📍 Tube: Elephant & Castle -> King's Cross/St Pancras -> Arsenal/Holloway Road + walk · 💷 Within the £8.90 cap  
+📍 Northern line Elephant & Castle -> King's Cross St Pancras, direct ~15 min · 💷 Within the £8.90 cap
+
+### 07:30-09:15 · King's Cross: Platform 9¾ + Granary Square + Regent's Canal
+
+📍 Walk · 💷 £0  
+💡 On the way to Arsenal. Platform 9¾ photo spot early, before the queue (check its opening time; usually ~08:00); St Pancras station; Granary Square fountains, Coal Drops Yard and a short Regent's Canal towpath walk. Coffee here.
+
+### 09:15-09:45 · King's Cross -> Emirates Stadium
+
+📍 Piccadilly line King's Cross -> Arsenal (2 stops) + walk · 💷 Within the cap  
 💡 Allow 15 min spare.
 
 ### 10:00-11:30 · Arsenal Stadium Tour + Museum

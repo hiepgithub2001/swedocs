@@ -4,11 +4,18 @@
 
 🌦️ **Forecast (less certain): partly cloudy, 8-13°C, maybe a light afternoon shower - mostly indoors anyway.** Sunset 16:40, dark by ~17:15.
 
-### 07:30-08:00 · Breakfast
+⏰ **Wake up 06:00.** Daylight is short (sunrise ~06:45, dark by ~17:20), so the early start goes into the morning.
+
+### 06:15-06:45 · Breakfast
 
 📍 Self-made · 💷 £0
 
-### 08:00-09:00 · Airbnb -> London Euston
+### 06:50-08:00 · Westminster at sunrise
+
+📍 Walk ~20 min from the Airbnb (or bus) · 💷 £0  
+💡 Sunrise ~06:48: Westminster Bridge, Big Ben and the London Eye nearly empty. Then Northern line from Embankment/Waterloo to Euston.
+
+### 08:00-09:00 · Westminster -> London Euston
 
 📍 Tube/bus · 💷 Part of the transport budget  
 💡 Book a Studio slot around 10:30-11:00 if available.

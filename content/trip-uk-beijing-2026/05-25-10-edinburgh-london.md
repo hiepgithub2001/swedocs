@@ -14,16 +14,16 @@
 - **Preston -> London Euston, LumoFixed - only the 13:27, coach B seat 43, arrives 16:01.**
 - ⚠️ 10:51 -> 13:16 leaves only **11 min** at Preston for the fixed 13:27. On a speed-restricted day, take the **earliest Avanti train running** to Preston instead, or do this leg on Saturday under the storm easement and stay in Preston.
 
-### 06:00-06:30 · Wake up + check both trains in the app
+### 06:00-06:45 · Wake up, check both trains in the app, shower, get ready
 
 📍 Hotel · 💷 £0  
 💡 Look for any Avanti train to Preston **before 10:51** - with an earlier one you get more than 11 minutes for the fixed 13:27 Lumo.
 
-### 06:30-07:00 · Breakfast
+### 06:45-07:15 · Breakfast
 
 📍 Self-made, room kettle · 💷 £0
 
-### 07:15-08:30 · Check out + go to Waverley
+### 07:30-08:30 · Check out + go to Waverley
 
 📍 **Taxi** to Waverley recommended in the wind with luggage: ~£8-11/car  
 🔁 **Tram** Haymarket -> St Andrew Square + walk ~5 min · £2.40 (trams can stop in very high wind); bus **12 / 26 / 31** -> Princes Street (east) · £2.40  

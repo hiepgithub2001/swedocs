@@ -4,17 +4,21 @@
 
 🌦️ **Forecast: rain 06:00-12:00 (~2 mm), then fair, clear evening, 12-16°C.** Sunrise 06:45, sunset 16:43, dark by ~17:20.
 
-⏰ **Wake up 06:00.** Daylight is short (sunrise ~06:45, dark by ~17:20), so the early start goes into the morning.
+⏰ **Wake up 06:00, out by 07:30.** 45 min to get ready, 30 min breakfast; daylight is short (sunrise ~06:45, dark by ~17:20), so the early start goes into the morning.
 
-### 06:15-06:45 · Breakfast
+### 06:00-06:45 · Wake up, shower, get ready
+
+📍 Airbnb · 💷 £0
+
+### 06:45-07:15 · Breakfast
 
 📍 Self-made · 💷 £0
 
-### 07:15-07:45 · Airbnb -> Bank / Monument
+### 07:30-07:50 · Airbnb -> Bank / Monument
 
 📍 Northern line Elephant & Castle -> Bank, direct ~5 min · 💷 Within the £8.90 cap
 
-### 07:45-08:50 · Leadenhall Market + St Dunstan in the East
+### 07:50-08:50 · Leadenhall Market + St Dunstan in the East
 
 📍 Walk · 💷 £0  
 💡 Leadenhall Market is a covered Victorian arcade (Diagon Alley in the first Harry Potter film) - dry in the morning rain and empty this early. St Dunstan in the East, a bombed-out church turned garden, opens around 08:00; 5 min from the Tower.

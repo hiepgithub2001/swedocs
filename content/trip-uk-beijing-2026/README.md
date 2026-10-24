@@ -7,7 +7,7 @@ language: en
 
 **22-31/10/2026 · 2 people · Budget ceiling £700/person · Self-made breakfast = £0**
 
-Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edinburgh we stay at Leonardo Hotel Edinburgh Haymarket (breakfast not included). Prices below are estimates per person; re-check them when booking.
+Already paid: flights, the Edinburgh-Preston-London trains and the London Airbnb. In Edinburgh we stay at Leonardo Hotel Edinburgh Haymarket (breakfast not included). Prices below are estimates per person; re-check them when booking.
 
 ## 1. Overview & budget
 
@@ -16,7 +16,7 @@ Already paid: flights, the Edinburgh-London train and the London Airbnb. In Edin
 - **22-24/10 · Edinburgh**  
   City + Edinburgh Castle + Highlands tour (Glencoe, Fort William, Glenfinnan Viaduct); Leonardo Hotel Edinburgh Haymarket: 1 Morrison Link, EH3 8DN
 - **25/10 · Edinburgh -> London**  
-  Train 10:50-16:00; Airbnb: 29 Oswin Street, SE11 4TF
+  Train 10:51 Edinburgh -> Preston, 13:27 Lumo -> London Euston 16:01 (Storm Boelo: check before travel); Airbnb: 29 Oswin Street, SE11 4TF
 - **26-29/10 · London**  
   Arsenal + Tower/Thames + Oxford + Harry Potter Studio
 - **30/10 · London -> Beijing**  

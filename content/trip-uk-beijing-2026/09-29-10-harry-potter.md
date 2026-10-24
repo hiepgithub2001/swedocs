@@ -2,6 +2,8 @@
 
 💷 **Target total: ~£98/person. The most expensive day, but the trip total stays under £700.**
 
+🌦️ **Forecast (less certain): partly cloudy, 8-13°C, maybe a light afternoon shower - mostly indoors anyway.** Sunset 16:40, dark by ~17:15.
+
 ### 07:30-08:00 · Breakfast
 
 📍 Self-made · 💷 £0
@@ -43,7 +45,7 @@
 ### 16:30-18:30 · Leicester Square / Chinatown if you still have energy
 
 📍 Tube/walk · 💷 Within budget  
-💡 Optional.
+💡 Optional; after dark, with the lights of Leicester Square and Chinatown.
 
 ### 18:30-20:00 · Dinner
 

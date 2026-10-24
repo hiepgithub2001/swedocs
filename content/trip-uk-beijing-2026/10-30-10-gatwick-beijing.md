@@ -2,6 +2,8 @@
 
 💷 **Target total: ~£35/person.**
 
+🌦️ **Forecast (less certain): cloudy, dry, 9-13°C, calm.** Sunrise 06:50 - it is just light when you leave at 07:00.
+
 ### 06:00-06:30 · Breakfast
 
 📍 Self-made · 💷 £0  
